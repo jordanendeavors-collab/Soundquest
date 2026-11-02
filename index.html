@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quazart's Quest</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}
+:root{
+  --bg:#e8f2f3; --surface:#ffffff; --ink:#12313a; --muted:#52707a; --line:#c6dbdf;
+  --teal:#0e7a85; --tealsoft:#d6ecef; --coral:#df5139; --sun:#f0a91a;
+  --good:#1d8549; --goodsoft:#dcf2e4; --bad:#bf3a2a; --badsoft:#fbe3df; --onaccent:#ffffff;
+  --display: ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --body: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono: ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1c21; --surface:#12282e; --ink:#e3f0f1; --muted:#97b3b9; --line:#244148;
+  --teal:#4bc0ca; --tealsoft:#163840; --coral:#ff7a5e; --sun:#ffc84a;
+  --good:#4fd18a; --goodsoft:#123a28; --bad:#ff7a6a; --badsoft:#3e1d1a; --onaccent:#0b1c21; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1c21; --surface:#12282e; --ink:#e3f0f1; --muted:#97b3b9; --line:#244148;
+  --teal:#4bc0ca; --tealsoft:#163840; --coral:#ff7a5e; --sun:#ffc84a;
+  --good:#4fd18a; --goodsoft:#123a28; --bad:#ff7a6a; --badsoft:#3e1d1a; --onaccent:#0b1c21; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app{max-width:640px;margin:0 auto;padding-block:14px 40px;display:flex;flex-direction:column;gap:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:.9rem}
+.chip:hover{border-color:var(--teal)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+/* hero */
+.hero{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:10px}
+.hero h1{font-size:clamp(2rem,8vw,2.9rem);letter-spacing:-.5px;color:var(--teal)}
+.hero h1 span{color:var(--coral)}
+.hero p{margin:0;color:var(--muted)}
+#heroWave{width:100%;height:90px;display:block;border-radius:14px;background:var(--tealsoft)}
+.namebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.namebox label{font-weight:700}
+.namebox input{font:inherit;font-weight:700;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);width:10em}
+.sect{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sect h2{font-size:1.3rem}
+.sect small{color:var(--muted)}
+.levels{display:grid;gap:10px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;min-height:70px}
+.lvl:hover:not([disabled]){border-color:var(--teal);transform:translateY(-1px)}
+.lvl[disabled]{opacity:.5;cursor:not-allowed}
+.lvl .num{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:var(--onaccent);font-family:var(--display);font-weight:800;font-size:1.2rem}
+.lvl.boss .num{background:var(--coral)}
+.lvl .txt{flex:1;min-width:0}
+.lvl b{font-family:var(--display);font-size:1.12rem;display:block}
+.lvl span{color:var(--muted);font-size:.88rem}
+.stars{flex:none;font-size:1.25rem;letter-spacing:1px;color:var(--line)}
+.stars .on{color:var(--sun)}
+.labbtn{border:2px dashed var(--teal);background:var(--tealsoft);border-radius:18px;padding:14px;text-align:left;display:flex;gap:12px;align-items:center}
+.labbtn b{font-family:var(--display);font-size:1.12rem;display:block}
+.labbtn span{color:var(--muted);font-size:.88rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.badge{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.badge svg{width:44px;height:44px}
+.badge b{font-size:.9rem;font-family:var(--display)}
+.badge small{color:var(--muted);font-size:.75rem;line-height:1.3}
+.badge.locked{opacity:.45}
+.badge.locked .medal{fill:var(--line)}
+.medal{fill:var(--sun)}
+.medal-wave{stroke:var(--ink);fill:none;stroke-width:3;stroke-linecap:round}
+/* play */
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hud .title{font-family:var(--display);font-weight:800;font-size:1.05rem;flex:1;min-width:0}
+.score{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:4px 10px}
+.bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--sun));transition:width .4s}
+.echoRow{display:flex;align-items:center;gap:12px}
+.echo{width:84px;height:84px;flex:none}
+.echo{overflow:visible}
+.echo .core{fill:var(--teal)}
+.echo .glow{fill:var(--sun);opacity:.22;animation:pulse 2.4s ease-in-out infinite}
+.echo .jet{fill:var(--sun);transform-origin:60px 60px}
+.echo .disk{stroke:var(--coral);fill:none;stroke-width:5;stroke-linecap:round}
+.echo .spark{fill:var(--sun)}
+.echo.happy .jet{animation:flare .8s ease}
+.echo.happy .glow{opacity:.45}
+.echo.sad .glow{opacity:.06}
+@keyframes pulse{0%,100%{opacity:.16}50%{opacity:.34}}
+@keyframes flare{0%,100%{transform:scaleY(1)}40%{transform:scaleY(1.35)}}
+.echo .eye{fill:var(--surface)}
+.echo .pupil{fill:var(--ink)}
+.echo .mouth{stroke:var(--surface);stroke-width:4;fill:none;stroke-linecap:round}
+.echo .ring{stroke:var(--coral);stroke-width:4;fill:none;stroke-linecap:round;opacity:0}
+.echo.happy{animation:hop .7s ease}
+.echo.happy .ring{animation:ring .9s ease-out}
+.echo.happy .r2{animation-delay:.12s}.echo.happy .r3{animation-delay:.24s}
+.echo.sad{animation:wob .6s ease}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-16px) rotate(-6deg)}65%{transform:translateY(0) rotate(4deg)}}
+@keyframes ring{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(14px)}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}}
+.bubble{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:600;flex:1;min-width:0}
+.combo{display:inline-block;background:var(--coral);color:var(--onaccent);border-radius:999px;padding:2px 10px;font-weight:800;font-size:.85rem;margin-left:6px}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:14px}
+.card h2{font-size:1.35rem}
+.retry{font-size:.8rem;font-weight:800;color:var(--coral);text-transform:uppercase;letter-spacing:.08em}
+.opts{display:grid;gap:10px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:56px;border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:10px 14px;font-family:var(--display);font-weight:700;font-size:1.1rem;text-align:left}
+.opts.two .opt,.opts.three .opt{text-align:center}
+.opt:hover:not([disabled]){border-color:var(--teal)}
+.opt[disabled]{cursor:default}
+.opt.right{background:var(--goodsoft);border-color:var(--good)}
+.opt.wrong{background:var(--badsoft);border-color:var(--bad)}
+canvas.wave{width:100%;height:200px;display:block;background:var(--tealsoft);border-radius:14px;touch-action:manipulation}
+canvas.tap{cursor:crosshair}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmpbtn{border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:8px;display:grid;gap:6px;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.cmpbtn:hover:not([disabled]){border-color:var(--teal)}
+.cmpbtn canvas{width:100%;height:110px;display:block;background:var(--tealsoft);border-radius:10px}
+.cmpbtn.right{border-color:var(--good);background:var(--goodsoft)}
+.cmpbtn.wrong{border-color:var(--bad);background:var(--badsoft)}
+.play{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;border:2px solid var(--teal);background:var(--tealsoft);border-radius:14px;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.play.on{background:var(--teal);color:var(--onaccent)}
+.play svg{width:22px;height:22px;fill:currentColor}
+.note{color:var(--muted);font-size:.9rem;margin:0}
+.fb{border-radius:18px;padding:14px 16px;display:grid;gap:8px;border:2px solid}
+.fb.good{background:var(--goodsoft);border-color:var(--good)}
+.fb.bad{background:var(--badsoft);border-color:var(--bad)}
+.fb h3{font-size:1.2rem}
+.fb p{margin:0}
+.next{justify-self:start;background:var(--teal);color:var(--onaccent);border:0;border-radius:14px;padding:12px 22px;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.big{background:var(--teal);color:var(--onaccent);border:0;border-radius:14px;padding:12px 22px;font-family:var(--display);font-weight:800;font-size:1.05rem}
+.ghost{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 18px;font-family:var(--display);font-weight:700}
+/* done */
+.done{text-align:center;justify-items:center}
+.done .bigstars{font-size:3.2rem;letter-spacing:6px;color:var(--line)}
+.done .bigstars .on{color:var(--sun);display:inline-block;animation:pop .5s ease both}
+.done .bigstars .on:nth-child(2){animation-delay:.2s}.done .bigstars .on:nth-child(3){animation-delay:.4s}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+/* lab */
+.ctrl{display:grid;gap:4px}
+.ctrl label{font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ctrl label span{font-family:var(--mono);color:var(--teal);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);height:32px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-weight:700;z-index:30;max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:20;width:100%;height:100%}
+@media (max-width:420px){.opts.three{grid-template-columns:repeat(3,1fr)}.opt{font-size:1rem}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- Quazart's Quest additions ---- */
+.worlds{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.world{display:flex;gap:14px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:20px;padding:14px;min-height:92px}
+.world:hover{border-color:var(--teal);transform:translateY(-1px)}
+.world .wic{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:1.9rem;color:var(--onaccent)}
+.world .wtx{flex:1;min-width:0;display:grid;gap:4px}
+.world b{font-family:var(--display);font-size:1.15rem}
+.world span{color:var(--muted);font-size:.86rem}
+.mini{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.mini i{display:block;height:100%;background:var(--sun)}
+.c-teal{background:var(--teal)}.c-coral{background:var(--coral)}.c-sun{background:var(--sun)}.c-good{background:var(--good)}.c-ink{background:var(--ink)}
+.grade{display:inline-block;font-size:.7rem;font-weight:800;border:1.5px solid var(--line);border-radius:6px;padding:0 6px;margin-left:6px;color:var(--muted);vertical-align:middle;letter-spacing:.04em}
+.vis{display:flex;justify-content:center}
+.vis svg{width:100%;max-width:440px;height:auto;display:block}
+.s-a{fill:var(--teal)}.s-b{fill:var(--coral)}.s-c{fill:var(--sun)}
+.s-e{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.s-fill{fill:var(--tealsoft);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.s-l{stroke:var(--ink);stroke-width:3;fill:none;stroke-linecap:round}
+.s-d{stroke:var(--coral);stroke-width:3;stroke-dasharray:8 6;fill:none}
+.s-g{stroke:var(--teal);stroke-width:3;fill:none}
+.s-t{fill:var(--ink);font:700 17px var(--body)}
+.s-big{fill:var(--ink);font:800 120px var(--body)}
+.s-ok{fill:var(--good)}.s-no{fill:var(--bad)}
+.part{fill:var(--surface);stroke:var(--ink);stroke-width:2;cursor:pointer}
+.part.on{fill:var(--coral)}
+.part:hover{fill:var(--tealsoft)}.part.on:hover{fill:var(--coral)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-variant-numeric:tabular-nums;margin:0 2px}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 3px 3px}
+.frac>span:last-child{padding:3px 3px 0}
+.eq{font-family:var(--display);font-size:clamp(1.8rem,8vw,2.4rem);font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.kpd{font-family:var(--mono);font-size:2rem;font-weight:700;text-align:center;border:2px solid var(--line);border-radius:14px;padding:6px 12px;background:var(--bg);min-height:62px;display:flex;align-items:center;justify-content:center;gap:10px;font-variant-numeric:tabular-nums}
+.kpd small{font-family:var(--body);font-size:1rem;color:var(--muted);font-weight:600}
+.kpd .cur{color:var(--muted)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kp button{min-height:56px;border:2px solid var(--line);background:var(--bg);border-radius:14px;font-family:var(--display);font-weight:800;font-size:1.4rem}
+.kp button:hover:not([disabled]){border-color:var(--teal)}
+.kp .go{background:var(--teal);color:var(--onaccent);border-color:var(--teal)}
+.kp button[disabled]{opacity:.45;cursor:default}
+.timer{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--sun)}
+.timer.run i{animation:drain 8s linear forwards}
+@keyframes drain{to{width:0}}
+.check{justify-self:start}
+.rep{display:grid;gap:14px}
+.repw{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:8px}
+.repw h3{font-size:1.1rem}
+.repr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;font-size:.92rem;border-top:1px solid var(--line);padding-top:6px}
+.repr .n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.pill{font-size:.75rem;font-weight:800;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.pill.g{background:var(--goodsoft);color:var(--good)}.pill.y{background:var(--tealsoft);color:var(--ink);outline:2px solid var(--sun)}.pill.r{background:var(--badsoft);color:var(--bad)}.pill.n{background:var(--bg);color:var(--muted)}
+.focus{background:var(--tealsoft);border-radius:16px;padding:12px 14px}
+.focus ol{margin:6px 0 0;padding-left:1.2em}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="app">
+
+  <!-- HUB -->
+  <section id="home" style="display:grid;gap:16px">
+    <div class="topbar">
+      <div class="row"><button class="chip" id="themeBtn" type="button">Dark mode</button><button class="chip" id="muteBtn" type="button">Sound effects: on</button></div>
+      <div class="row"><button class="chip" id="reportBtn" type="button">Grown-up report</button><button class="chip" id="resetBtn" type="button">Reset</button></div>
+    </div>
+    <div class="hero">
+      <div class="echoRow">
+        <svg class="echo" viewBox="0 0 120 120" aria-hidden="true"></svg>
+        <h1>Quazart's <span>Quest</span></h1>
+      </div>
+      <canvas id="heroWave"></canvas>
+      <p>Pick a world. Win stars to unlock harder levels, from Grade 3 up through Grade 4.</p>
+      <div class="namebox"><label for="nameIn">Player</label><input id="nameIn" maxlength="16" autocomplete="off"><span class="score" id="totStars"></span></div>
+      <div id="confirmReset" hidden class="fb bad"><p>Erase all stars, badges and report data?</p><div class="row"><button class="big" id="yesReset" type="button">Erase</button><button class="ghost" id="noReset" type="button">Keep them</button></div></div>
+    </div>
+    <div class="sect"><h2>Worlds</h2></div>
+    <div class="worlds" id="worlds"></div>
+    <div class="sect"><h2>Badges</h2><small id="badgeCount"></small></div>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <!-- WORLD -->
+  <section id="world" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="worldBack" type="button">← Worlds</button><div class="title" id="worldTitle"></div><div class="score" id="worldStars"></div></div>
+    <p class="note" id="worldBlurb"></p>
+    <div class="levels" id="levels"></div>
+    <button class="labbtn" id="labOpen" type="button" hidden><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 20 Q9 4 15 20 T27 20 T39 20" fill="none" stroke="var(--teal)" stroke-width="4" stroke-linecap="round"/></svg><div><b>Wave Lab</b><span>Make your own wave. Change frequency and amplitude, then hear it.</span></div></button>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden style="display:grid;gap:14px">
+    <div class="hud">
+      <button class="chip" id="quitBtn" type="button">← Levels</button>
+      <div class="title" id="lvlTitle"></div>
+      <div class="score" id="scoreBox">0 pts</div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="timer" id="timer" hidden><i></i></div>
+    <div class="echoRow">
+      <svg class="echo" id="echoPlay" viewBox="0 0 120 120" aria-hidden="true"></svg>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <div class="card" id="card"></div>
+    <div class="fb" id="fb" hidden></div>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" hidden><div class="card done" id="doneCard"></div></section>
+
+  <!-- LAB -->
+  <section id="lab" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="labBack" type="button">← Levels</button><div class="title">Wave Lab</div></div>
+    <div class="card">
+      <canvas class="wave" id="labWave" style="height:220px"></canvas>
+      <div class="ctrl"><label for="labFreq">Frequency (how many crests) <span id="labFreqOut"></span></label><input type="range" id="labFreq" min="1" max="8" step="0.5" value="3"></div>
+      <div class="ctrl"><label for="labAmp">Amplitude (how tall) <span id="labAmpOut"></span></label><input type="range" id="labAmp" min="0.1" max="1" step="0.05" value="0.6"></div>
+      <div class="row"><button class="play" id="labPlay" type="button" style="flex:1"></button><button class="ghost" id="labLabels" type="button">Show labels</button></div>
+      <p class="note">Slide frequency up: crests squeeze together and the pitch climbs. Slide amplitude up: the wave grows taller and gets louder. Turn the volume down before you start.</p>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="report" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="repBack" type="button">← Worlds</button><div class="title">Grown-up report</div></div>
+    <p class="note">First-try accuracy on each skill. Second-chance answers don't count. Skills show a rating after 5 questions.</p>
+    <div id="focus" class="focus"></div>
+    <div class="rep" id="rep"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script>
+(function(){
+const KEY='quazartQuest.v1';
+const sget=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const sset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let P=sget(KEY);
+if(!P){P={name:'Sylas',stars:{},badges:[],ear:0,fast:0,stats:{},theme:null,muted:false};
+ const old=sget('soundWaveQuest.v1');
+ if(old){P.name=old.name||P.name;P.theme=old.theme||null;P.muted=!!old.muted;P.ear=old.ear||0;
+  Object.entries(old.stars||{}).forEach(([k,v])=>P.stars['sound.'+k]=v);
+  (old.badges||[]).forEach(b=>{if(['ear','lab','perfect','combo5'].includes(b))P.badges.push(b);if(b==='master')P.badges.push('w_sound')})}}
+P=Object.assign({name:'Sylas',stars:{},badges:[],ear:0,fast:0,stats:{},theme:null,muted:false},P);
+const save=()=>sset(KEY,P);
+const $=s=>document.querySelector(s);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const who=()=>P.name||'Sylas';
+const frac=(n,d)=>'<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';
+function opts(correct,cands){const s=[correct];shuffle(cands).forEach(c=>{if(s.length<4&&!s.includes(c))s.push(c)});return s}
+function numOpts(ans,cands){return opts(String(ans),cands.filter(c=>c>=0&&c!==ans).map(String))}
+
+/* ================= SVG builders ================= */
+const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
+function arraySvg(r,c){const s=38;let o='';for(let i=0;i<r;i++)for(let j=0;j<c;j++)o+='<circle class="s-a" cx="'+(14+s/2+j*s)+'" cy="'+(14+s/2+i*s)+'" r="13"/>';return svg(c*s+28,r*s+28,o)}
+function groupsSvg(g,e){const per=Math.min(g,5),rows=Math.ceil(g/5),S=96;let o='';for(let k=0;k<g;k++){const gx=S/2+(k%5)*S+4,gy=S/2+Math.floor(k/5)*S+4;o+='<circle class="s-e" cx="'+gx+'" cy="'+gy+'" r="42"/>';const cols=Math.ceil(Math.sqrt(e)),rws=Math.ceil(e/cols),sp=18;for(let i=0;i<e;i++){const cx=gx-(cols-1)*sp/2+(i%cols)*sp,cy=gy-(rws-1)*sp/2+Math.floor(i/cols)*sp;o+='<circle class="s-b" cx="'+cx+'" cy="'+cy+'" r="7"/>'}}return svg(per*S+8,rows*S+8,o)}
+function dotsSvg(n){const per=Math.min(n,10),rows=Math.ceil(n/10),s=34;let o='';for(let i=0;i<n;i++)o+='<circle class="s-c" cx="'+(20+(i%10)*s)+'" cy="'+(20+Math.floor(i/10)*s)+'" r="12"/>';return svg(per*s+6,rows*s+6,o)}
+function barParts(n,d,x,y,w,h,cls){let o='';const pw=w/d;for(let i=0;i<d;i++)o+='<rect '+(cls?'data-i="'+i+'" class="part'+(i<n?' on':'')+'"':'class="'+(i<n?'s-b':'s-e')+'"')+' x="'+(x+i*pw)+'" y="'+y+'" width="'+pw+'" height="'+h+'"/>';return o}
+function barSvg(n,d){return svg(380,70,barParts(n,d,10,10,360,50))}
+function wedge(cx,cy,r,a0,a1){const p=a=>[cx+r*Math.sin(a),cy-r*Math.cos(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);return 'M'+cx+' '+cy+' L'+x0.toFixed(2)+' '+y0.toFixed(2)+' A'+r+' '+r+' 0 '+((a1-a0)>Math.PI?1:0)+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)+' Z'}
+function pieParts(n,d,cls){let o='';for(let i=0;i<d;i++){const a0=i/d*2*Math.PI,a1=(i+1)/d*2*Math.PI;o+='<path '+(cls?'data-i="'+i+'" class="part'+(i<n?' on':'')+'"':'class="'+(i<n?'s-b':'s-e')+'"')+' d="'+wedge(100,100,88,a0,a1)+'"/>'}return o}
+function pieSvg(n,d){return svg(200,200,pieParts(n,d))}
+function twoBars(a,b){return svg(440,150,'<text class="s-t" x="8" y="48">'+a[0]+'/'+a[1]+'</text>'+barParts(a[0],a[1],70,15,360,48)+'<text class="s-t" x="8" y="118">'+b[0]+'/'+b[1]+'</text>'+barParts(b[0],b[1],70,85,360,48))}
+const SHAPES={
+ square:{p:[[60,20],[160,20],[160,120],[60,120]],sides:4,sym:4,is:['square','rectangle','rhombus','parallelogram','quadrilateral']},
+ rectangle:{p:[[20,30],[200,30],[200,110],[20,110]],sides:4,sym:2,is:['rectangle','parallelogram','quadrilateral']},
+ rhombus:{p:[[80,20],[180,20],[120,100],[20,100]],sides:4,sym:0,is:['rhombus','parallelogram','quadrilateral'],w:210},
+ parallelogram:{p:[[60,25],[200,25],[160,115],[20,115]],sides:4,sym:0,is:['parallelogram','quadrilateral']},
+ trapezoid:{p:[[70,25],[150,25],[200,115],[20,115]],sides:4,sym:1,is:['trapezoid','quadrilateral']},
+ triangle:{p:[[110,12],[195,125],[25,125]],sides:3,sym:1,is:['triangle']},
+ 'right triangle':{p:[[40,15],[40,125],[190,125]],sides:3,sym:0,is:['right triangle','triangle']},
+ pentagon:{reg:5,sides:5,sym:5,is:['pentagon']},hexagon:{reg:6,sides:6,sym:6,is:['hexagon']},octagon:{reg:8,sides:8,sym:8,is:['octagon']},
+ 'equilateral triangle':{reg:3,sides:3,sym:3,is:['equilateral triangle','triangle']}
+};
+const NAMES=['square','rectangle','rhombus','parallelogram','trapezoid','triangle','pentagon','hexagon','octagon'];
+function shapePts(k){const s=SHAPES[k];if(s.p)return s.p;const pts=[];for(let i=0;i<s.reg;i++){const a=-Math.PI/2+i*2*Math.PI/s.reg+(s.reg%2?0:Math.PI/s.reg);pts.push([110+62*Math.cos(a),72+62*Math.sin(a)])}return pts}
+function shapeSvg(k,extra){return svg(220,140,'<polygon class="s-fill" points="'+shapePts(k).map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')+'"/>'+(extra||''))}
+function gridSvg(w,h){const u=34;let o='';for(let i=0;i<h;i++)for(let j=0;j<w;j++)o+='<rect class="s-fill" x="'+(6+j*u)+'" y="'+(6+i*u)+'" width="'+u+'" height="'+u+'"/>';return svg(w*u+12,h*u+12,o)}
+function rectSvg(w,h,unit){const sc=Math.min(240/w,120/h),W=w*sc,H=h*sc;return svg(W+120,H+70,'<rect class="s-fill" x="60" y="34" width="'+W+'" height="'+H+'"/><text class="s-t" text-anchor="middle" x="'+(60+W/2)+'" y="24">'+w+' '+unit+'</text><text class="s-t" x="'+(66+W)+'" y="'+(40+H/2)+'">'+h+' '+unit+'</text>')}
+function angleSvg(deg){const cx=150,cy=150,L=125,a=deg*Math.PI/180;const x=cx+L*Math.cos(a),y=cy-L*Math.sin(a);let mark;if(deg===90)mark='<path class="s-l" style="stroke-width:2" d="M'+(cx+22)+' '+cy+' L'+(cx+22)+' '+(cy-22)+' L'+cx+' '+(cy-22)+'"/>';else{const r=32;mark='<path class="s-g" d="M'+(cx+r)+' '+cy+' A'+r+' '+r+' 0 0 0 '+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy-r*Math.sin(a)).toFixed(1)+'"/>'}
+ return svg(300,165,'<path class="s-l" d="M'+cx+' '+cy+' L'+(cx+L)+' '+cy+' M'+cx+' '+cy+' L'+x.toFixed(1)+' '+y.toFixed(1)+'"/>'+mark+'<circle class="s-b" cx="'+cx+'" cy="'+cy+'" r="5"/>')}
+function linesSvg(k){let d;if(k==='parallel')d='M20 50 L280 30 M20 120 L280 100';else if(k==='perpendicular')d='M30 80 L270 80 M150 10 L150 150';else d='M30 140 L270 30 M30 40 L270 120';return svg(300,160,'<path class="s-l" d="'+d+'"/>')}
+function letterSvg(ch){return svg(220,140,'<text class="s-big" text-anchor="middle" x="110" y="118">'+ch+'</text>')}
+
+/* ================= SOUND world content ================= */
+const PITCH_WHY='The higher sound vibrates more times every second. More vibrations = higher frequency = higher pitch.';
+const LOUD_WHY='The louder sound makes taller waves. Bigger amplitude = louder volume.';
+const SOUND=[
+ {id:'parts',name:'Wave Parts',grade:'Gr 3',blurb:'Crest, trough, wavelength, amplitude',bank:[
+  {t:'mc',q:'Sound is a form of ____ that you can hear. It travels in waves.',a:['energy','water','color','metal'],why:'Sound is energy. It moves out from whatever made it, in waves.'},
+  {t:'mc',q:'A change that carries energy from one place to another is a ____.',a:['wave','crest','trough','pitch'],why:'A wave carries energy. Ocean waves carry it across water. Sound waves carry it through air.'},
+  {t:'mc',q:'The HIGH point of a wave is called the ____.',a:['crest','trough','amplitude','frequency'],why:'Crest = top. Think of the crest of a hill.'},
+  {t:'mc',q:'The LOW point of a wave is called the ____.',a:['trough','crest','wavelength','medium'],why:'Trough = bottom. A trough is a low dip in the ground.'},
+  {t:'tap',target:'crest',why:'Crests are the tops of the wave, the highest points.'},
+  {t:'tap',target:'trough',why:'Troughs are the bottoms of the wave, the lowest points.'},
+  {t:'arrow',target:'wavelength',why:'Wavelength goes sideways: from one crest to the very next crest.'},
+  {t:'arrow',target:'amplitude',why:'Amplitude goes up or down: from the dashed resting line to a crest or a trough.'},
+  {t:'mc',q:'The distance from one crest to the NEXT crest is the ____.',a:['wavelength','frequency','amplitude','volume'],why:'Wave-LENGTH is a length. You could measure it with a ruler, crest to crest.'},
+  {t:'mc',q:'Amplitude is the distance from the ____ to a crest or trough.',a:['resting line in the middle','next crest','bottom of the page','speaker'],why:'Amplitude starts at the middle resting line and goes up to a crest, or down to a trough.'},
+  {t:'tf',q:'A trough is the top of a wave.',a:false,why:'False. The trough is the bottom. The crest is the top.'},
+  {t:'tf',q:'Wavelength is measured from crest to crest.',a:true,why:'True. Crest to the next crest, or trough to the next trough.'}]},
+ {id:'pitch',name:'Frequency & Pitch',grade:'Gr 3',blurb:'How often waves pass, and high vs low',bank:[
+  {t:'mc',q:'The number of crests that pass by in a certain amount of time is called ____.',a:['frequency','wavelength','amplitude','volume'],why:'FREQUENCY tells how FREQUENTLY crests pass by. Lots of crests each second = high frequency.'},
+  {t:'mc',q:'Pitch is how ____ a sound is.',a:['high or low','loud or soft','long or short','hot or cold'],why:'Pitch is high or low, like a bird chirp (high) or a tuba (low).'},
+  {t:'tf',q:'A sound with a high frequency has a high pitch.',a:true,why:'True. More vibrations each second make a higher pitch.'},
+  {t:'tf',q:'A big tuba plays higher notes than a tiny flute.',a:false,why:'False. Big, long things vibrate slowly and sound low. Small things vibrate fast and sound high.'},
+  {t:'listen',ask:'high',why:PITCH_WHY},{t:'listen',ask:'low',why:PITCH_WHY},{t:'listen',ask:'freqHigh',why:PITCH_WHY},
+  {t:'compare',ask:'freqHigh',why:'Count the crests. More crests packed in = higher frequency.'},
+  {t:'compare',ask:'pitchLow',why:'Fewer crests = lower frequency = lower pitch.'},
+  {t:'compare',ask:'longWave',why:'A long wavelength means the crests are far apart.'},
+  {t:'mc',q:'If MORE crests pass by every second, the frequency gets ____.',a:['higher','lower','quieter','the same'],why:'More crests per second means a higher frequency and a higher pitch.'},
+  {t:'mc',q:'Which sound has the HIGHEST pitch?',a:['a bird chirping','a lion roaring','a big drum','thunder'],why:'A bird’s tiny voice box vibrates super fast, so its chirp is high.'},
+  {t:'mc',q:'Frequency is counted in hertz. One hertz means one wave every ____.',a:['second','minute','hour','mile'],why:'1 hertz = 1 wave each second. The note A that orchestras tune to is 440 hertz: 440 waves every second!'},
+  {t:'tf',q:'When waves get closer together (shorter wavelength), the frequency goes up.',a:true,why:'True. Squeeze the waves closer and more of them pass by each second.'}]},
+ {id:'volume',name:'Volume & Amplitude',grade:'Gr 3',blurb:'Loud vs soft, tall vs short waves',bank:[
+  {t:'mc',q:'____ is how loud or soft a sound is.',a:['Volume','Pitch','Frequency','Wave'],why:'Volume = loud or soft. Pitch = high or low. Two different things.'},
+  {t:'mc',q:'A wave with a BIG amplitude sounds ____.',a:['louder','softer','higher','lower'],why:'Taller waves carry more energy, so they sound louder.'},
+  {t:'listen',ask:'loud',why:LOUD_WHY},{t:'listen',ask:'soft',why:LOUD_WHY},
+  {t:'compare',ask:'louder',why:'Taller wave = bigger amplitude = louder.'},
+  {t:'compare',ask:'softer',why:'Shorter wave = smaller amplitude = softer.'},
+  {t:'tf',q:'Volume and pitch mean the same thing.',a:false,why:'False. Volume is loud vs soft. Pitch is high vs low. A sound can be high AND quiet.'},
+  {t:'tf',q:'A whisper makes waves with a small amplitude.',a:true,why:'True. Soft sounds have small, short waves.'},
+  {t:'mc',q:'How do you make a drum sound LOUDER?',a:['hit it harder','hit it softer','paint it red','use a smaller drum'],why:'Hitting harder makes the drum skin move farther, so the wave gets taller (bigger amplitude).'},
+  {t:'mc',q:'Two waves have the same number of crests, but one is much TALLER. What is different?',a:['amplitude (volume)','frequency','pitch','wavelength'],why:'Same number of crests means same frequency and pitch. Taller means bigger amplitude, so louder.'},
+  {t:'tf',q:'You can turn up the volume without changing the pitch.',a:true,why:'True. Turning up the radio makes the song louder, but the notes stay the same.'}]},
+ {id:'matter',name:'Sound on the Move',grade:'Gr 3',blurb:'Vibrations, mediums, solids vs space',bank:[
+  {t:'mc',q:'Sound is made when matter ____.',a:['vibrates','freezes','melts','glows'],why:'Every sound starts with something vibrating.'},
+  {t:'mc',q:'Vibrating means ____.',a:['moving back and forth quickly','standing very still','getting hot','changing color'],why:'Vibrating is moving back and forth fast. Touch your throat while you hum and feel it.'},
+  {t:'mc',q:'The matter that sound travels through is called the ____.',a:['medium','amplitude','pitch','volume'],why:'The medium is the stuff sound travels through: a solid, a liquid, or a gas like air.'},
+  {t:'mc',q:'Sound CANNOT travel through ____.',a:['empty space','a solid','a liquid','a gas'],why:'Empty space has no matter to vibrate, so sound has nothing to travel through.'},
+  {t:'mc',q:'Sound waves move FASTEST through ____.',a:['solids','liquids','gases','empty space'],why:'In solids the particles are packed tight, so they pass the vibration along fastest.'},
+  {t:'mc',q:'Sound moves SLOWEST through ____.',a:['gases, like air','solids, like steel','liquids, like water','wood'],why:'Gas particles are spread far apart, so the vibration takes longer to pass along.'},
+  {t:'tf',q:'All sounds are caused by vibrations.',a:true,why:'True. No vibration, no sound.'},
+  {t:'tf',q:'The sound from a piano comes from strings vibrating inside it.',a:true,why:'True. Each key makes a little hammer hit a string, and the string vibrates.'},
+  {t:'tf',q:'Astronauts can hear each other yell in outer space without radios.',a:false,why:'False. Space is empty, with no air to carry sound. That is why astronauts use radios.'},
+  {t:'tf',q:'Water is a medium that sound can travel through.',a:true,why:'True. Whales and dolphins call to each other through water.'},
+  {t:'mc',q:'Put your ear on a table and tap the other end. Why is the tap so clear?',a:['sound travels well through solids','the table is magic','your ear gets bigger','tables are hollow'],why:'Solids carry sound fast and strong, so the tap comes through loud and clear.'}]}
+];
+
+/* ================= MULTIPLY ================= */
+const TIPS={1:'Anything times 1 stays the same.',2:'Double it.',3:'Count by 3s: 3, 6, 9, 12…',4:'Double it, then double again.',5:'Count by 5s. Answers end in 0 or 5.',6:'Do ×5, then add one more group.',7:'Split it: ×5 plus ×2.',8:'Double, double, double.',9:'Do ×10, then take away one group.',10:'Put a zero on the end.'};
+function fact(set){const a=pick(set),b=ri(1,10);const [x,y]=Math.random()<.5?[a,b]:[b,a];return{t:'num',eq:x+' × '+y+' = ?',ans:x*y,why:x+' × '+y+' = '+x*y+'. Tip for '+a+'s: '+TIPS[a],key:x+'x'+y}}
+const M_ARR=()=>{const r=ri(2,5),c=ri(2,6),v=ri(0,2);
+ if(v===0)return{t:'num',q:'How many dots in all?',svg:arraySvg(r,c),ans:r*c,why:r+' rows of '+c+' is '+r+' × '+c+' = '+r*c+'.'};
+ if(v===1)return{t:'mc',q:'Which multiplication matches this array?',svg:arraySvg(r,c),a:opts(r+' × '+c,[r+' + '+c,(r+1)+' × '+c,r+' × '+(c+1),(r-1)+' × '+c]),why:r+' rows with '+c+' in each row is '+r+' × '+c+'.'};
+ const g=ri(2,5),e=ri(2,5);return{t:'num',q:g+' bags with '+e+' marbles in each. How many marbles?',svg:groupsSvg(g,e),ans:g*e,why:g+' equal groups of '+e+' is '+g+' × '+e+' = '+g*e+'.'}};
+const M_WORD=()=>{const a=ri(3,9),b=ri(3,9);const t=pick([
+ [a+' rows of chairs, '+b+' chairs in each row. How many chairs?'],
+ [who()+' reads '+b+' pages a day for '+a+' days. How many pages?'],
+ [a+' packs of gum with '+b+' pieces each. How many pieces?'],
+ ['A spider has 8 legs. How many legs on '+a+' spiders?',8]]);const bb=t[1]||b;return{t:'num',q:t[0],ans:a*bb,why:a+' groups of '+bb+' → '+a+' × '+bb+' = '+a*bb+'.'}};
+const M_MISS=()=>{const a=ri(2,10),b=ri(2,10);return{t:'num',eq:'? × '+b+' = '+a*b,ans:a,why:'Think: what times '+b+' makes '+a*b+'? '+a+' × '+b+' = '+a*b+'.'}};
+const M_BIG=()=>{const v=ri(0,3);
+ if(v===0){const k=ri(2,9)*10,b=ri(2,9);return{t:'num',eq:k+' × '+b+' = ?',ans:k*b,why:(k/10)+' × '+b+' = '+(k/10*b)+', then add a zero: '+k*b+'.'}}
+ if(v===1){const k=ri(1,5)*100,b=ri(2,6);return{t:'num',eq:k+' × '+b+' = ?',ans:k*b,why:(k/100)+' × '+b+' = '+(k/100*b)+', then add two zeros: '+k*b+'.'}}
+ if(v===2){const a=ri(12,49),b=ri(2,6),t=Math.floor(a/10)*10,o=a%10;return{t:'num',eq:a+' × '+b+' = ?',ans:a*b,why:'Break it apart: ('+t+' × '+b+') + ('+o+' × '+b+') = '+t*b+' + '+o*b+' = '+a*b+'.'}}
+ const a=ri(11,19),b=ri(11,14);return{t:'num',eq:a+' × '+b+' = ?',ans:a*b,why:'Area model: '+a+' × '+b+' = ('+a+' × 10) + ('+a+' × '+(b-10)+') = '+a*10+' + '+a*(b-10)+' = '+a*b+'.'}};
+
+/* ================= DIVIDE ================= */
+const D_SHARE=()=>{const b=ri(2,5),q=ri(2,6),n=b*q;return pick([
+ {t:'num',q:'Split '+n+' cookies equally onto '+b+' plates. How many on each plate?',svg:dotsSvg(n),ans:q,why:n+' ÷ '+b+' = '+q+' because '+b+' × '+q+' = '+n+'.'},
+ {t:'num',q:'How many groups of '+b+' can you make from '+n+' cookies?',svg:dotsSvg(n),ans:q,why:'Circle groups of '+b+'. You get '+q+' groups. '+n+' ÷ '+b+' = '+q+'.'}])};
+const D_FAM=()=>{const a=ri(2,9),b=ri(2,9),p=a*b;return pick([
+ {t:'num',q:'If '+a+' × '+b+' = '+p+', then…',eq:p+' ÷ '+b+' = ?',ans:a,why:'Same fact family: '+a+' × '+b+' = '+p+', so '+p+' ÷ '+b+' = '+a+'.'},
+ {t:'mc',q:'Which is in the same fact family as '+a+' × '+b+' = '+p+'?',a:opts(p+' ÷ '+b+' = '+a,[p+' − '+b+' = '+(p-b),a+' + '+b+' = '+(a+b),(p+2)+' ÷ 2 = '+((p+2)/2)]),why:'A fact family uses the same three numbers: '+a+', '+b+' and '+p+'.'}])};
+const D_FACT=()=>{const b=ri(2,10),q=ri(1,10),n=b*q;return{t:'num',eq:n+' ÷ '+b+' = ?',ans:q,why:'Think multiplication: '+b+' × ? = '+n+'. '+b+' × '+q+' = '+n+', so the answer is '+q+'.',key:n+'/'+b}};
+const D_REM=()=>{const b=ri(3,9),q=ri(2,9),r=ri(1,b-1),n=b*q+r;
+ if(Math.random()<.2){const d=ri(3,6);return{t:'mc',q:'When you divide by '+d+', which remainder is IMPOSSIBLE?',a:opts(String(d),[String(d-1),'1','2',String(d-2)]),why:'The remainder must always be smaller than the number you divide by. If you had '+d+' left over, you could make one more group!'}}
+ return{t:'mc',eq:n+' ÷ '+b+' = ?',a:opts(q+' R'+r,[(q+1)+' R'+r,q+' R'+(r+1<b?r+1:r-1),(q-1)+' R'+(r+b),q+' R0']),why:b+' × '+q+' = '+b*q+'. '+n+' − '+b*q+' = '+r+' left over. So '+n+' ÷ '+b+' = '+q+' R'+r+'.'}};
+const D_WORD=()=>{const b=ri(3,6),q=ri(3,8),r=ri(1,b-1),v=ri(0,2);
+ if(v===0){const n=b*q;return{t:'num',q:n+' students sit '+b+' at each table. How many tables do they fill?',ans:q,why:n+' ÷ '+b+' = '+q+' tables.'}}
+ const n=b*q+r;
+ if(v===1)return{t:'num',q:n+' kids need rides. Each car holds '+b+'. How many cars do they need?',ans:q+1,why:n+' ÷ '+b+' = '+q+' R'+r+'. Those '+r+' extra kids still need a ride, so you need one more car: '+(q+1)+'.'};
+ return{t:'num',q:n+' stickers are shared equally by '+b+' kids. How many stickers are LEFT OVER?',ans:r,why:n+' ÷ '+b+' = '+q+' R'+r+'. Each kid gets '+q+' and '+r+' are left over.'}};
+const D_BIG=()=>{const b=ri(2,9);let q=Math.random()<.35?ri(2,9)*10:ri(11,99);while(b*q>999)q=Math.floor(q/2);const n=b*q,t=Math.floor(q/10)*10,o=q%10;
+ return{t:'num',eq:n+' ÷ '+b+' = ?',ans:q,why:o===0?(n+' ÷ '+b+' = '+q+' because '+b+' × '+q+' = '+n+'.'):('Split '+n+' into '+t*b+' + '+o*b+'. '+t*b+' ÷ '+b+' = '+t+' and '+o*b+' ÷ '+b+' = '+o+'. '+t+' + '+o+' = '+q+'.')}};
+
+/* ================= FRACTIONS ================= */
+const F_NAME=()=>{const d=pick([2,3,4,6,8]),n=ri(1,d-1);const pie=Math.random()<.5;
+ if(Math.random()<.15)return{t:'mc',q:'Which fraction equals ONE whole?',a:opts(frac(d,d),[frac(1,d),frac(0,d),frac(1,d+1)]),why:'When ALL the parts are shaded, the top and bottom match: '+d+'/'+d+' = 1 whole.'};
+ return{t:'mc',q:'What fraction is shaded?',svg:pie?pieSvg(n,d):barSvg(n,d),a:opts(frac(n,d),[frac(d-n,d),frac(n,d+1),frac(d,n),frac(Math.min(n+1,d),d)]),why:n+' of the '+d+' equal parts are shaded, so it is '+n+'/'+d+'. The bottom number counts ALL the parts.'}};
+const F_SHADE=()=>{const d=pick([2,3,4,5,6,8]),n=ri(1,d-1);return{t:'shade',n,d,pie:Math.random()<.4,why:n+'/'+d+' means '+n+' out of '+d+' equal parts.'}};
+const F_LINE=()=>{const d=pick([2,3,4,6,8]),n=ri(1,d-1);return{t:'line',n,d,why:'The line from 0 to 1 is cut into '+d+' equal jumps. Count '+n+' jump'+(n>1?'s':'')+' from 0 to land on '+n+'/'+d+'.'}};
+const F_CMP=()=>{let a,b,why;if(Math.random()<.55){const d=pick([3,4,5,6,8]);let x=ri(1,d-1),y=ri(1,d-1);if(x===y)y=x===1?2:x-1;a=[x,d];b=[y,d];why='Same size pieces (both are '+d+'ths). More pieces = more. Compare the tops.'}
+ else{const n=ri(1,3);let d1=pick([3,4,6,8]),d2=pick([2,3,4,6,8].filter(v=>v!==d1&&v>n));if(d1<=n)d1=n+2;a=[n,d1];b=[n,d2];why='Same number of pieces, but a SMALLER bottom number means BIGGER pieces. Fewer cuts = bigger slices.'}
+ const va=a[0]/a[1],vb=b[0]/b[1],ans=va>vb?'>':va<vb?'<':'=';
+ return{t:'mc',q:'Which sign makes it true?',eq:frac(a[0],a[1])+' ? '+frac(b[0],b[1]),svg:twoBars(a,b),a:[ans].concat(['<','>','='].filter(s=>s!==ans)),fixed:['<','>','='],why}};
+const F_EQ=()=>{const [n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[2,5],[1,5]]),k=ri(2,4);
+ if(Math.random()<.5)return{t:'num',eq:frac(n,d)+' = '+frac('?',d*k),svg:twoBars([n,d],[n*k,d*k]),ans:n*k,why:'Multiply the top AND bottom by '+k+': '+n+' × '+k+' = '+n*k+', '+d+' × '+k+' = '+d*k+'. Same amount, smaller pieces.'};
+ return{t:'mc',q:'Which fraction is EQUAL to '+n+'/'+d+'?',a:opts(frac(n*k,d*k),[frac(n+1,d+1),frac(n*k,d),frac(n,d*k),frac(n+k,d+k)]),why:'Multiply top and bottom by the same number: '+n+'/'+d+' = '+n*k+'/'+d*k+'.'}};
+const F_OPS=()=>{const v=ri(0,3),d=pick([3,4,5,6,8,10,12]);
+ if(v===0){const a=ri(1,d-2),b=ri(1,d-a);return{t:'mc',eq:frac(a,d)+' + '+frac(b,d)+' = ?',a:opts(frac(a+b,d),[frac(a+b,d*2),frac(a+b+1,d),frac(Math.max(a+b-1,1),d)]),why:'Same bottom number, so add the tops and KEEP the bottom: '+a+' + '+b+' = '+(a+b)+'. Answer: '+(a+b)+'/'+d+'.'}}
+ if(v===1){const a=ri(2,d-1),b=ri(1,a-1);return{t:'mc',eq:frac(a,d)+' − '+frac(b,d)+' = ?',a:opts(frac(a-b,d),[frac(a-b,0||d*2),frac(a+b,d),frac(a-b+1,d)]),why:'Subtract the tops, keep the bottom: '+a+' − '+b+' = '+(a-b)+'. Answer: '+(a-b)+'/'+d+'.'}}
+ if(v===2){const w=ri(1,3),n=ri(1,d-1);return{t:'num',eq:w+' '+frac(n,d)+' = '+frac('?',d),ans:w*d+n,why:'Each whole is '+d+'/'+d+'. '+w+' whole'+(w>1?'s':'')+' = '+w*d+'/'+d+'. Add '+n+' more: '+(w*d+n)+'/'+d+'.'}}
+ const k=ri(2,6),dd=pick([3,4,5,6,8]);return{t:'num',eq:k+' × '+frac(1,dd)+' = '+frac('?',dd),ans:k,why:k+' groups of 1/'+dd+' is '+k+'/'+dd+'.'}};
+
+/* ================= GEOMETRY ================= */
+const G_SHAPE=()=>{const v=ri(0,3);
+ if(v===0){const k=pick(NAMES);return{t:'mc',q:'What is the name of this shape?',svg:shapeSvg(k),a:opts(k,NAMES.filter(n=>!SHAPES[k].is.includes(n))),why:k==='square'?'4 equal sides and 4 right angles. A square is also a rectangle and a rhombus!':k==='rhombus'?'All 4 sides are the same length, but the corners are not square.':k==='trapezoid'?'Only ONE pair of sides is parallel (the top and bottom).':k==='parallelogram'?'Two pairs of parallel sides, but the sides are not all equal.':'Count the sides and look at the corners.'}}
+ if(v===1){const k=pick(['triangle','pentagon','hexagon','octagon','trapezoid']);return{t:'num',q:'How many sides does this shape have?',svg:shapeSvg(k),ans:SHAPES[k].sides,why:'A '+k+' has '+SHAPES[k].sides+' sides.'}}
+ const tf=pick([['A square is also a rectangle.',true,'True! A rectangle needs 4 right angles. A square has them, plus equal sides.'],['Every rectangle is a square.',false,'False. A long, skinny rectangle does not have 4 equal sides.'],['A rhombus has 4 equal sides.',true,'True. That is what makes it a rhombus.'],['A trapezoid has 5 sides.',false,'False. A trapezoid is a quadrilateral, so it has 4 sides.'],['All quadrilaterals have 4 sides.',true,'True. "Quad" means four.'],['A triangle can have 2 right angles.',false,'False. Two right angles would use up all the turning, so the sides could never meet.']]);
+ return{t:'tf',q:tf[0],a:tf[1],why:tf[2]}};
+const G_AREA=()=>{const v=ri(0,2),w=ri(2,7),h=ri(2,5);
+ if(v===0)return{t:'num',q:'What is the area of this rectangle?',svg:gridSvg(w,h),unit:'sq units',ans:w*h,why:'Count the squares, or multiply: '+h+' rows of '+w+' = '+h+' × '+w+' = '+w*h+' square units.'};
+ if(v===1){const W=ri(3,12),H=ri(2,9);return{t:'num',q:'A garden is '+W+' feet long and '+H+' feet wide. What is its area?',svg:rectSvg(W,H,'ft'),unit:'sq ft',ans:W*H,why:'Area = length × width = '+W+' × '+H+' = '+W*H+' square feet.'}}
+ const A=w*h;return{t:'num',q:'A rectangle has an area of '+A+' square units. One side is '+w+'. How long is the other side?',unit:'units',ans:h,why:'? × '+w+' = '+A+'. '+A+' ÷ '+w+' = '+h+'.'}};
+const G_PER=()=>{const v=ri(0,3);
+ if(v===0){const w=ri(3,12),h=ri(2,9);return{t:'num',q:'What is the perimeter?',svg:rectSvg(w,h,'cm'),unit:'cm',ans:2*(w+h),why:'Add all 4 sides: '+w+' + '+h+' + '+w+' + '+h+' = '+2*(w+h)+' cm.'}}
+ if(v===1){const s=ri(2,12);return{t:'num',q:'A square has sides of '+s+' inches. What is its perimeter?',svg:rectSvg(s,s,'in'),unit:'in',ans:4*s,why:'4 equal sides: '+s+' × 4 = '+4*s+' inches.'}}
+ if(v===2){const w=ri(4,12),h=ri(2,8),p=2*(w+h);return{t:'num',q:'A rectangle has a perimeter of '+p+' m. Its length is '+w+' m. What is its width?',unit:'m',ans:h,why:'Two lengths use '+w+' + '+w+' = '+2*w+'. '+p+' − '+2*w+' = '+(p-2*w)+' left for two widths. '+(p-2*w)+' ÷ 2 = '+h+' m.'}}
+ return pick([{t:'mc',q:'You are putting a FENCE around a yard. What are you measuring?',a:['perimeter','area','volume','angle'],why:'A fence goes AROUND the edge. Distance around = perimeter.'},{t:'mc',q:'You are covering a floor with carpet. What are you measuring?',a:['area','perimeter','length','angle'],why:'Carpet covers the space INSIDE. Space inside = area.'}])};
+const G_ANG=()=>{const v=ri(0,3);
+ if(v<=1){const deg=pick([30,45,60,90,90,120,135,150,180]);const ans=deg<90?'acute':deg===90?'right':deg<180?'obtuse':'straight';return{t:'mc',q:'What kind of angle is this?',svg:angleSvg(deg),a:opts(ans,['acute','right','obtuse','straight']),why:{acute:'Smaller than a square corner (less than 90°) is ACUTE. "A cute little angle."',right:'A perfect square corner is a RIGHT angle: exactly 90°.',obtuse:'Wider than a square corner (more than 90°) is OBTUSE.',straight:'A flat line is a STRAIGHT angle: 180°.'}[ans]}}
+ if(v===2){const k=pick(['parallel','perpendicular','intersecting']);return{t:'mc',q:'What kind of lines are these?',svg:linesSvg(k),a:opts(k,['parallel','perpendicular','intersecting','curved']),why:{parallel:'Parallel lines never meet, like train tracks.',perpendicular:'Perpendicular lines cross and make square corners (right angles).',intersecting:'These lines cross, but not at a square corner, so they are just intersecting.'}[k]}}
+ return pick([{t:'num',q:'How many degrees is a right angle?',ans:90,why:'A right angle is 90°, a quarter turn.'},{t:'num',q:'How many degrees is a straight angle?',ans:180,why:'A straight line is 180°, a half turn.'},{t:'num',q:'How many right angles does a rectangle have?',ans:4,why:'All 4 corners of a rectangle are right angles.'},{t:'num',q:'How many degrees in a full turn?',ans:360,why:'A full circle turn is 360°.'}])};
+const G_SYM=()=>{const v=ri(0,2);
+ if(v===0){const k=pick(['square','rectangle','equilateral triangle','hexagon','pentagon','parallelogram','trapezoid']);return{t:'num',q:'How many lines of symmetry does this shape have?',svg:shapeSvg(k),ans:SHAPES[k].sym,why:'A '+k+' has '+SHAPES[k].sym+' line'+(SHAPES[k].sym===1?'':'s')+' of symmetry. '+(k==='rectangle'?'The diagonals do NOT work. Fold it corner to corner and the flaps miss.':k==='parallelogram'?'No fold makes the halves match.':'Each fold line makes two matching halves.')}}
+ if(v===1){const [ch,n]=pick([['A',1],['H',2],['X',2],['F',0],['E',1],['T',1],['Z',0],['M',1],['L',0]]);return{t:'num',q:'How many lines of symmetry does this letter have?',svg:letterSvg(ch),ans:n,why:ch+' has '+n+' line'+(n===1?'':'s')+' of symmetry.'+(n===0?' No fold makes it match.':'')}}
+ const diag=Math.random()<.5;const ext=diag?'<path class="s-d" d="M20 30 L200 110"/>':'<path class="s-d" d="M110 15 L110 125"/>';
+ return{t:'tf',q:'Is the dashed line a line of symmetry?',svg:shapeSvg('rectangle',ext),a:!diag,why:diag?'No! Fold a rectangle on its diagonal and the corners stick out. Try it with paper.':'Yes. Fold on that line and both halves match.'}};
+
+/* ================= worlds ================= */
+const WORLDS=[
+ {id:'mult',name:'Times Tower',sub:'Multiplication',icon:'×',col:'c-coral',math:true,blurb:'Climb from equal groups to big multiplication.',levels:[
+  {id:'arr',name:'Groups & Arrays',grade:'Gr 3',blurb:'See multiplication as rows and groups',gen:M_ARR},
+  {id:'f1',name:'Facts: 2, 5, 10',grade:'Gr 3',blurb:'The easy-skip-count facts',gen:()=>fact([2,5,10])},
+  {id:'f2',name:'Facts: 3, 4, 6',grade:'Gr 3',blurb:'Doubles and add-a-group',gen:()=>fact([3,4,6])},
+  {id:'f3',name:'Facts: 7, 8, 9',grade:'Gr 3',blurb:'The tough ones',gen:()=>fact([7,8,9])},
+  {id:'mix',name:'Missing Numbers & Stories',grade:'Gr 3',blurb:'? × 6 = 42 and word problems',gen:()=>Math.random()<.5?M_MISS():M_WORD()},
+  {id:'big',name:'Big Multiplication',grade:'Gr 4',blurb:'Tens, hundreds, 2-digit × 1-digit',gen:M_BIG},
+  {id:'boss',name:'Boss: Tower Top',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'div',name:'Divide Canyon',sub:'Division',icon:'÷',col:'c-teal',math:true,blurb:'Fair shares, fact families, remainders.',levels:[
+  {id:'share',name:'Fair Share',grade:'Gr 3',blurb:'Split things into equal groups',gen:D_SHARE},
+  {id:'fam',name:'Fact Families',grade:'Gr 3',blurb:'Use multiplication to divide',gen:D_FAM},
+  {id:'facts',name:'Division Facts',grade:'Gr 3',blurb:'Divide within 100',gen:D_FACT},
+  {id:'word',name:'Story Problems',grade:'Gr 3–4',blurb:'What does the leftover mean?',gen:D_WORD},
+  {id:'rem',name:'Remainders',grade:'Gr 4',blurb:'17 ÷ 5 = 3 R2',gen:D_REM},
+  {id:'big',name:'Big Division',grade:'Gr 4',blurb:'Up to 3-digit ÷ 1-digit',gen:D_BIG},
+  {id:'boss',name:'Boss: Canyon Crossing',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'frac',name:'Fraction Falls',sub:'Fractions',icon:'½',col:'c-sun',math:true,blurb:'Equal parts, number lines, comparing, adding.',levels:[
+  {id:'name',name:'Name It',grade:'Gr 3',blurb:'What part is shaded?',gen:F_NAME},
+  {id:'shade',name:'Shade It',grade:'Gr 3',blurb:'Tap parts to color the fraction',gen:F_SHADE},
+  {id:'line',name:'Number Line',grade:'Gr 3',blurb:'Tap where the fraction lives',gen:F_LINE},
+  {id:'cmp',name:'Bigger or Smaller',grade:'Gr 3',blurb:'Compare with <, > and =',gen:F_CMP},
+  {id:'eq',name:'Equal Fractions',grade:'Gr 3–4',blurb:'1/2 = 2/4 = 4/8',gen:F_EQ},
+  {id:'ops',name:'Add, Subtract, Mixed',grade:'Gr 4',blurb:'Same denominators and mixed numbers',gen:F_OPS},
+  {id:'boss',name:'Boss: The Falls',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'geo',name:'Shape Station',sub:'Geometry',icon:'△',col:'c-good',math:true,blurb:'Shapes, area, perimeter, angles, symmetry.',levels:[
+  {id:'shape',name:'Shape Names',grade:'Gr 3',blurb:'Quadrilaterals and polygons',gen:G_SHAPE},
+  {id:'area',name:'Area',grade:'Gr 3',blurb:'Space inside',gen:G_AREA},
+  {id:'per',name:'Perimeter',grade:'Gr 3',blurb:'Distance around',gen:G_PER},
+  {id:'ang',name:'Angles & Lines',grade:'Gr 4',blurb:'Acute, right, obtuse, parallel',gen:G_ANG},
+  {id:'sym',name:'Symmetry',grade:'Gr 4',blurb:'Fold it and match it',gen:G_SYM},
+  {id:'boss',name:'Boss: Station Master',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'sound',name:'Wave World',sub:'Science: Sound',icon:'∿',col:'c-ink',blurb:'Crests, troughs, pitch, volume, vibrations.',levels:SOUND.concat([{id:'master',name:'Boss: Sound Master',grade:'Gr 3',blurb:'Every sound question, mixed',boss:true}])}
+];
+WORLDS.forEach(w=>w.levels.forEach(l=>{l.count=l.boss?10:8;l.pass=l.boss?8:6}));
+
+const BADGES={
+ w_mult:{n:'Tower Champ',d:'Beat the Times Tower boss'},w_div:{n:'Canyon Crosser',d:'Beat the Divide Canyon boss'},
+ w_frac:{n:'Fraction Ace',d:'Beat the Fraction Falls boss'},w_geo:{n:'Shape Shifter',d:'Beat the Shape Station boss'},
+ w_sound:{n:'Wave Master',d:'Beat the Wave World boss'},
+ perfect:{n:'Perfect Run',d:'A whole level right on the first try'},combo5:{n:'Combo Crusher',d:'5 right in a row'},
+ combo10:{n:'Unstoppable',d:'10 right in a row'},fast:{n:'Lightning',d:'10 speed bonuses in boss rounds'},
+ ear:{n:'Golden Ears',d:'4 listening questions right'},lab:{n:'Lab Scientist',d:'Built and played a wave in the Wave Lab'},
+ explorer:{n:'Explorer',d:'A star in every world'},legend:{n:'Legend',d:'3 stars on every boss'}
+};
+const YES=['Nailed it!','Boom. Correct!','Big brain move!','Quazart approves!','Textbook!','You’re on fire!','Stellar!'];
+const NO=['Close! Read the tip below.','Tricky one. It comes back later.','Almost. Check the tip, then crush the next one.'];
+
+/* ================= audio ================= */
+let actx=null;
+function ensureAudio(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){actx=null}}if(actx&&actx.state==='suspended')actx.resume();return actx}
+function tone(f,g,dur,type,delay){const a=ensureAudio();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),v=a.createGain();o.type=type||'triangle';o.frequency.value=f;v.gain.setValueAtTime(0.0001,t);v.gain.exponentialRampToValueAtTime(Math.max(g,0.0002),t+0.03);v.gain.setValueAtTime(Math.max(g,0.0002),t+dur-0.08);v.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(v).connect(a.destination);o.start(t);o.stop(t+dur+0.02)}
+const sfx={good(){if(P.muted)return;tone(659,.18,.14);tone(988,.18,.22,'triangle',.11)},bad(){if(P.muted)return;tone(220,.15,.25,'sine');tone(185,.12,.3,'sine',.14)},level(){if(P.muted)return;[523,659,784,1047].forEach((f,i)=>tone(f,.18,.25,'triangle',i*.13))},badge(){if(P.muted)return;[784,1175].forEach((f,i)=>tone(f,.15,.3,'sine',i*.12))},zap(){if(P.muted)return;tone(1319,.12,.12,'square',.25)}};
+
+/* ================= canvas waves (sound world) ================= */
+function fit(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;const W=Math.round(w*dpr),H=Math.round(h*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);return{c,w,h}}
+function dot(c,x,y,r,col){c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()}
+function drawWave(cv,o){
+ const {c,w,h}=fit(cv);const x0=14,W=w-28,mid=h/2;const A=(o.amp==null?.8:o.amp)*(h/2-(o.pad||26));const ph=o.phase||0,cyc=o.cycles;
+ const yAt=x=>mid-A*Math.sin(2*Math.PI*cyc*(x-x0)/W+ph);
+ c.setLineDash([5,6]);c.strokeStyle=css('--muted');c.lineWidth=1.5;c.beginPath();c.moveTo(x0,mid);c.lineTo(x0+W,mid);c.stroke();c.setLineDash([]);
+ c.strokeStyle=o.color||css('--teal');c.lineWidth=o.lw||4;c.lineCap='round';c.lineJoin='round';c.beginPath();
+ for(let x=x0,first=true;x<=x0+W+0.01;x+=1.5){const y=yAt(x);if(first){c.moveTo(x,y);first=false}else c.lineTo(x,y)}c.stroke();
+ const crests=[],troughs=[],off=ph/(2*Math.PI);
+ for(let k=-3;k<cyc+3;k++){const cx=x0+W*((0.25-off+k)/cyc),tx=x0+W*((0.75-off+k)/cyc);if(cx>=x0-.5&&cx<=x0+W+.5)crests.push({x:cx,y:mid-A});if(tx>=x0-.5&&tx<=x0+W+.5)troughs.push({x:tx,y:mid+A})}
+ crests.sort((a,b)=>a.x-b.x);troughs.sort((a,b)=>a.x-b.x);
+ const g={c,w,h,x0,W,mid,A,crests,troughs};
+ if(o.reveal){c.font='700 13px '+css('--body');c.textAlign='center';
+  crests.forEach(p=>{dot(c,p.x,p.y,5,css('--good'));c.fillStyle=css('--ink');c.fillText('crest',p.x,Math.max(13,p.y-11))});
+  troughs.forEach(p=>{dot(c,p.x,p.y,5,css('--coral'));c.fillStyle=css('--ink');c.fillText('trough',p.x,Math.min(h-4,p.y+21))})}
+ if(o.after)o.after(g);
+ (o.marks||[]).forEach(m=>{c.lineWidth=3;c.strokeStyle=m.ok?css('--good'):css('--bad');c.beginPath();c.arc(m.x,m.y,13,0,Math.PI*2);c.stroke()});
+ return g}
+function arrow(c,x1,y1,x2,y2,col,label,lx,ly){
+ c.strokeStyle=col;c.fillStyle=col;c.lineWidth=2.5;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+ [[x1,y1,x2,y2],[x2,y2,x1,y1]].forEach(([ax,ay,bx,by])=>{const an=Math.atan2(ay-by,ax-bx);c.beginPath();c.moveTo(ax,ay);c.lineTo(ax-10*Math.cos(an-.45),ay-10*Math.sin(an-.45));c.lineTo(ax-10*Math.cos(an+.45),ay-10*Math.sin(an+.45));c.closePath();c.fill()});
+ if(label){dot(c,lx,ly,12,col);c.fillStyle=css('--onaccent');c.font='800 13px '+css('--body');c.textAlign='center';c.textBaseline='middle';c.fillText(label,lx,ly+.5);c.textBaseline='alphabetic'}}
+
+/* ================= Quazart ================= */
+const QZ='<circle class="glow" cx="60" cy="60" r="40"/><path class="jet" d="M54 42 L60 0 L66 42Z"/><path class="jet" d="M54 78 L60 120 L66 78Z"/><ellipse class="disk" cx="60" cy="62" rx="50" ry="12"/><circle class="core" cx="60" cy="60" r="25"/><path class="disk" d="M10 62 A50 12 0 0 0 110 62"/><circle class="eye" cx="51" cy="55" r="7"/><circle class="eye" cx="69" cy="55" r="7"/><circle class="pupil" cx="52" cy="56" r="3.5"/><circle class="pupil" cx="70" cy="56" r="3.5"/><path class="mouth" d="M52 66 Q60 73 68 66" style="stroke-width:3"/><path class="spark" d="M20 24 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="spark" d="M98 96 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z"/><path class="ring r1" d="M86 22 Q92 30 86 38"/><path class="ring r2" d="M94 16 Q103 30 94 44"/><path class="ring r3" d="M102 10 Q114 30 102 50"/>';
+document.querySelectorAll('.echo').forEach(e=>e.innerHTML=QZ);
+function mood(m){const e=$('#echoPlay');e.classList.remove('happy','sad');void e.offsetWidth;e.classList.add(m);setTimeout(()=>e.classList.remove(m),950)}
+
+/* ================= confetti / toast ================= */
+const fx=$('#fx');let parts=[];
+function confetti(n){if(RM)return;const cols=[css('--teal'),css('--coral'),css('--sun'),css('--good')];const w=innerWidth;for(let i=0;i<(n||70);i++)parts.push({x:w/2+(Math.random()-.5)*w*.4,y:innerHeight*.35,vx:(Math.random()-.5)*9,vy:-Math.random()*10-4,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:pick(cols),life:1})}
+function stepFx(){const {c}=fit(fx);parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life-=.012;c.save();c.globalAlpha=Math.max(p.life,0);c.translate(p.x,p.y);c.rotate(p.r);c.fillStyle=p.c;c.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);c.restore()});parts=parts.filter(p=>p.life>0&&p.y<innerHeight+40)}
+let toastT;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
+function award(id){if(P.badges.includes(id))return false;P.badges.push(id);save();sfx.badge();toast('Badge earned: '+BADGES[id].n);return true}
+const MEDAL='<svg viewBox="0 0 44 44" aria-hidden="true"><circle class="medal" cx="22" cy="22" r="20"/><path class="medal-wave" d="M8 22 Q13 12 18 22 T28 22 T38 22"/></svg>';
+
+/* ================= screens ================= */
+const screens=['home','world','play','done','lab','report'];
+function show(id){screens.forEach(s=>$('#'+s).hidden=s!==id);if(id!=='lab')labStop();if(id!=='play')kbHandler=null;if(id==='home')renderHome();if(id==='world')renderWorld();if(id==='report')renderReport();scrollTo(0,0)}
+const skey=(w,l)=>w.id+'.'+l.id;
+const starsOf=(w,l)=>P.stars[skey(w,l)]||0;
+const worldStars=w=>w.levels.reduce((a,l)=>a+starsOf(w,l),0);
+function unlocked(w,i){return i===0||starsOf(w,w.levels[i-1])>=1}
+function starStr(n){let s='';for(let i=0;i<3;i++)s+='<span class="'+(i<n?'on':'')+'">★</span>';return s}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function btn(cls,html,fn){const b=el('button',cls,html);b.type='button';b.onclick=fn;return b}
+let curW=0;
+function renderHome(){
+ $('#nameIn').value=P.name||'';
+ const tot=WORLDS.reduce((a,w)=>a+worldStars(w),0),max=WORLDS.reduce((a,w)=>a+w.levels.length*3,0);$('#totStars').textContent='★ '+tot+' / '+max;
+ const W=$('#worlds');W.innerHTML='';
+ WORLDS.forEach((w,i)=>{const s=worldStars(w),m=w.levels.length*3;const b=btn('world','<div class="wic '+w.col+'">'+w.icon+'</div><div class="wtx"><b>'+w.name+'</b><span>'+w.sub+' · '+w.levels.length+' levels · ★ '+s+'/'+m+'</span><div class="mini"><i style="width:'+(s/m*100)+'%"></i></div></div>',()=>{curW=i;show('world')});W.append(b)});
+ const B=$('#badges');B.innerHTML='';Object.entries(BADGES).forEach(([id,b])=>{B.append(el('div','badge'+(P.badges.includes(id)?'':' locked'),MEDAL+'<b>'+b.n+'</b><small>'+b.d+'</small>'))});
+ $('#badgeCount').textContent=P.badges.length+' of '+Object.keys(BADGES).length;
+ $('#themeBtn').textContent=effTheme()==='dark'?'Light mode':'Dark mode';$('#muteBtn').textContent='Sound effects: '+(P.muted?'off':'on');
+}
+function renderWorld(){const w=WORLDS[curW];$('#worldTitle').textContent=w.name;$('#worldBlurb').textContent=w.blurb;$('#worldStars').textContent='★ '+worldStars(w)+'/'+w.levels.length*3;
+ const L=$('#levels');L.innerHTML='';
+ w.levels.forEach((lv,i)=>{const open=unlocked(w,i);const b=btn('lvl'+(lv.boss?' boss':''),'<div class="num">'+(i+1)+'</div><div class="txt"><b>'+lv.name+'<span class="grade">'+lv.grade+'</span></b><span>'+(open?lv.blurb:'Locked. Get a star on '+w.levels[i-1].name+' first.')+'</span></div><div class="stars">'+starStr(starsOf(w,lv))+'</div>',()=>start(curW,i));b.disabled=!open;L.append(b)});
+ $('#labOpen').hidden=w.id!=='sound'}
+
+/* ================= game engine ================= */
+let S=null,kbHandler=null;
+document.addEventListener('keydown',e=>{if(kbHandler)kbHandler(e)});
+function genFor(w,lv){if(lv.gen){const q=lv.gen();q.src=lv.id;return q}const q=Object.assign({},pick(lv.bank));q.src=lv.id;return q}
+function buildQueue(w,lv){const out=[],seen=new Set();
+ if(lv.bank)return shuffle(lv.bank).slice(0,lv.count).map(q=>Object.assign({},q,{src:lv.id}));
+ const srcs=lv.boss?w.levels.filter(l=>!l.boss):[lv];let tries=0;
+ while(out.length<lv.count&&tries<200){tries++;const L=lv.boss?srcs[out.length%srcs.length]:lv;const q=genFor(w,L);const k=q.key||(q.q||'')+(q.eq||'')+(q.n||'')+'/'+(q.d||'')+(q.ans||'');if(seen.has(k))continue;seen.add(k);out.push(q)}
+ return lv.boss?shuffle(out):out}
+function start(wi,li){const w=WORLDS[wi],lv=w.levels[li];
+ const queue=(lv.boss&&w.id==='sound')?shuffle(SOUND.flatMap(l=>l.bank.map(q=>Object.assign({},q,{src:l.id})))).slice(0,lv.count):buildQueue(w,lv);
+ S={wi,li,w,lv,queue:queue.map(q=>Object.assign(q,{retry:false})),i:0,first:0,score:0,combo:0,locked:false,speed:!!(lv.boss&&w.math)};
+ show('play');$('#lvlTitle').textContent=w.name+' · '+lv.name;
+ $('#bubble').textContent='Quazart here! '+pick(['Let’s go, ','Brain on, ','Ready, '])+who()+'!'+(S.speed?' Fast answers earn lightning bonus points.':'');
+ showQ()}
+function hud(){$('#scoreBox').textContent=S.score+' pts';$('#barFill').style.width=(S.i/S.queue.length*100)+'%'}
+function showQ(){hud();S.locked=false;S.redraw=null;kbHandler=null;const q=S.queue[S.i];const card=$('#card');card.innerHTML='';$('#fb').hidden=true;
+ const tm=$('#timer');tm.hidden=!S.speed||q.retry;tm.classList.remove('run');void tm.offsetWidth;if(S.speed&&!q.retry)tm.classList.add('run');S.t0=performance.now();
+ if(q.retry)card.append(el('div','retry','Second chance'));
+ if(q.q)card.append(el('h2',null,q.q));
+ if(q.eq)card.append(el('div','eq',q.eq));
+ if(q.svg)card.append(el('div','vis',q.svg));
+ ({mc:rMC,tf:rTF,num:rNum,shade:rShade,line:rLine,tap:rTap,arrow:rArrow,listen:rListen,compare:rCompare})[q.t](q,card)}
+function optButtons(card,labels,correctIdx,cls){const wrap=el('div','opts'+(cls?' '+cls:''));const btns=labels.map((l,k)=>{const b=btn('opt',l,()=>{if(S.locked)return;const ok=k===correctIdx;btns.forEach(x=>x.disabled=true);b.classList.add(ok?'right':'wrong');btns[correctIdx].classList.add('right');answer(ok,labels[correctIdx])});wrap.append(b);return b});card.append(wrap);return btns}
+function rMC(q,card){let o=q.fixed||shuffle(q.a);const ci=o.indexOf(q.a[0]);const short=o.every(x=>x.replace(/<[^>]+>/g,'').length<=12);optButtons(card,o,ci,o.length===3?'three':short?'two':'')}
+function rTF(q,card){optButtons(card,['True','False'],q.a?0:1,'two')}
+function rNum(q,card){let v='';const d=el('div','kpd');const draw=()=>{d.innerHTML=(v||'<span class="cur">?</span>')+(q.unit?' <small>'+q.unit+'</small>':'');go.disabled=!v};
+ const kp=el('div','kp');const press=k=>{if(S.locked)return;if(k==='del')v=v.slice(0,-1);else if(k==='go'){if(v)submit();return}else if(v.length<5)v=(v==='0'?'':v)+k;draw()};
+ ['1','2','3','4','5','6','7','8','9','del','0','go'].forEach(k=>{const b=btn(k==='go'?'go':'',k==='del'?'⌫':k==='go'?'✓':k,()=>press(k));b.setAttribute('aria-label',k==='del'?'Delete':k==='go'?'Check answer':k);kp.append(b)});
+ const go=kp.lastChild;card.append(d,kp);draw();
+ const submit=()=>{const ok=parseInt(v,10)===q.ans;d.style.borderColor=ok?'var(--good)':'var(--bad)';kp.querySelectorAll('button').forEach(b=>b.disabled=true);answer(ok,String(q.ans)+(q.unit?' '+q.unit:''))};
+ kbHandler=e=>{if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==='Backspace')press('del');else if(e.key==='Enter')press('go')}}
+function rShade(q,card){card.append(el('h2',null,'Tap parts to shade '+frac(q.n,q.d)));
+ const box=el('div','vis');box.innerHTML=q.pie?svg(200,200,pieParts(0,q.d,true)):svg(380,70,barParts(0,q.d,10,10,360,50,true));card.append(box);
+ const count=el('p','note');const upd=()=>{const k=box.querySelectorAll('.part.on').length;count.textContent='Shaded: '+k+' of '+q.d;chk.disabled=k===0};
+ box.querySelectorAll('.part').forEach(p=>p.addEventListener('click',()=>{if(S.locked)return;p.classList.toggle('on');upd()}));
+ const chk=btn('next check','Check',()=>{if(S.locked)return;const k=box.querySelectorAll('.part.on').length;chk.disabled=true;answer(k===q.n,q.n+' part'+(q.n>1?'s':'')+' shaded')});
+ card.append(count,chk);upd()}
+function rLine(q,card){card.append(el('h2',null,'Tap where '+frac(q.n,q.d)+' goes on the number line'));
+ const x0=30,x1=370,step=(x1-x0)/q.d;const box=el('div','vis');card.append(box);let chosen=null;
+ const draw=()=>{let o='<rect x="0" y="20" width="400" height="80" fill="transparent"/><path class="s-l" d="M'+x0+' 60 L'+x1+' 60"/>';
+  for(let i=0;i<=q.d;i++){const x=x0+i*step;o+='<path class="s-l" style="stroke-width:'+(i%q.d===0?3:2)+'" d="M'+x+' '+(i%q.d===0?44:50)+' L'+x+' '+(i%q.d===0?76:70)+'"/>'}
+  o+='<text class="s-t" text-anchor="middle" x="'+x0+'" y="100">0</text><text class="s-t" text-anchor="middle" x="'+x1+'" y="100">1</text>';
+  if(chosen!==null){const ok=chosen===q.n;o+='<circle class="'+(ok?'s-ok':'s-no')+'" cx="'+(x0+chosen*step)+'" cy="60" r="10"/>';if(!ok)o+='<circle class="s-ok" cx="'+(x0+q.n*step)+'" cy="60" r="10"/>';o+='<text class="s-t" text-anchor="middle" x="'+(x0+q.n*step)+'" y="30">'+q.n+'/'+q.d+'</text>'}
+  box.innerHTML=svg(400,110,o);box.firstChild.style.cursor='pointer';
+  box.firstChild.addEventListener('click',e=>{if(S.locked)return;const r=box.firstChild.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*400;let k=Math.round((x-x0)/step);k=Math.max(0,Math.min(q.d,k));chosen=k;draw();answer(k===q.n,q.n+'/'+q.d+' is '+q.n+' jump'+(q.n>1?'s':'')+' from 0')})};
+ draw();card.append(el('p','note','Tap a tick mark.'))}
+/* --- sound-world renderers --- */
+function rTap(q,card){card.append(el('h2',null,'Tap a '+q.target.toUpperCase()+' on the wave.'));const cv=el('canvas','wave tap');card.append(cv);
+ const cycles=pick([2,2.5,3]);let marks=[],reveal=false,geo;const draw=()=>{geo=drawWave(cv,{cycles,amp:.85,marks,reveal})};S.redraw=draw;draw();
+ cv.addEventListener('click',e=>{if(S.locked)return;if(!geo)draw();const r=cv.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;const pts=q.target==='crest'?geo.crests:geo.troughs;const dx=Math.max(26,geo.W/cycles/5);
+  const ok=pts.some(p=>Math.abs(p.x-x)<dx&&Math.abs(p.y-y)<48);marks=[{x,y,ok}];reveal=true;draw();answer(ok,null)});card.append(el('p','note','Tap right on the wave line.'))}
+function rArrow(q,card){card.append(el('h2',null,'Which arrow shows the '+q.target.toUpperCase()+'?'));const cv=el('canvas','wave');cv.style.height='220px';card.append(cv);
+ const letters=shuffle(['A','B','C']);const map={wavelength:letters[0],amplitude:letters[1],decoy:letters[2]};let reveal=false;
+ const draw=()=>drawWave(cv,{cycles:2,amp:.8,pad:36,reveal,after:g=>{const col=css('--coral');const c1=g.crests[0],c2=g.crests[1],t1=g.troughs[0],t2=g.troughs[1];const top=g.mid-g.A,bot=g.mid+g.A;
+  arrow(g.c,c1.x,top-14,c2.x,top-14,col,map.wavelength,(c1.x+c2.x)/2,top-14);arrow(g.c,t1.x,g.mid,t1.x,bot,col,map.amplitude,t1.x+18,(g.mid+bot)/2);arrow(g.c,t2.x,top,t2.x,bot,col,map.decoy,t2.x-18,g.mid-18)}});
+ S.redraw=draw;requestAnimationFrame(draw);const btns=optButtons(card,['A','B','C'],['A','B','C'].indexOf(map[q.target]),'three');btns.forEach(b=>b.addEventListener('click',()=>{reveal=true;draw()}))}
+const PLAYSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
+function rListen(q,card){const asks={high:'Listen to both. Which sound has the HIGHER pitch?',low:'Listen to both. Which sound has the LOWER pitch?',freqHigh:'Listen to both. Which sound has the HIGHER frequency?',loud:'Listen to both. Which sound is LOUDER?',soft:'Listen to both. Which sound is SOFTER?'};
+ card.append(el('h2',null,asks[q.ask]));let A,B,correct;
+ if(q.ask==='loud'||q.ask==='soft'){const aBig=Math.random()<.5;A={f:440,g:aBig?.42:.06};B={f:440,g:aBig?.06:.42};correct=(q.ask==='loud')===aBig?0:1}
+ else{const [lo,hi]=pick([[262,784],[330,988],[294,880],[392,1175]]);const aHi=Math.random()<.5;A={f:aHi?hi:lo,g:.25};B={f:aHi?lo:hi,g:.25};correct=((q.ask!=='low')===aHi)?0:1}
+ S.pair=[A,B];const row=el('div','opts two');const heard=[false,false];
+ [A,B].forEach((s,k)=>{const b=btn('play',PLAYSVG+'Sound '+'AB'[k],()=>{tone(s.f,s.g,.9);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),900);heard[k]=true;if(heard[0]&&heard[1])btns.forEach(x=>{if(!S.locked)x.disabled=false})});row.append(b)});
+ card.append(row,el('p','note','Play both sounds, then pick.'));const btns=optButtons(card,['A','B'],correct,'two');btns.forEach(b=>b.disabled=true)}
+function rCompare(q,card){const asks={freqHigh:'Which wave has the HIGHER frequency?',pitchLow:'Which wave would sound LOWER?',longWave:'Which wave has the LONGER wavelength?',louder:'Which wave is LOUDER?',softer:'Which wave is SOFTER?'};
+ card.append(el('h2',null,asks[q.ask]));let a,b,correct;
+ if(q.ask==='louder'||q.ask==='softer'){const tallA=Math.random()<.5;a={cycles:3,amp:tallA?.9:.3};b={cycles:3,amp:tallA?.3:.9};correct=(q.ask==='louder')===tallA?0:1}
+ else{const [few,many]=pick([[1.5,4],[2,5],[1,3.5]]);const manyA=Math.random()<.5;a={cycles:manyA?many:few,amp:.75};b={cycles:manyA?few:many,amp:.75};correct=((q.ask==='freqHigh')===manyA)?0:1}
+ const grid=el('div','cmp');const cvs=[];const btns=[a,b].map((w,k)=>{const bt=btn('cmpbtn','Wave '+'AB'[k],()=>{if(S.locked)return;const ok=k===correct;btns.forEach(x=>x.disabled=true);bt.classList.add(ok?'right':'wrong');btns[correct].classList.add('right');answer(ok,'Wave '+'AB'[correct])});const cv=document.createElement('canvas');bt.prepend(cv);cvs.push([cv,w]);grid.append(bt);return bt});
+ card.append(grid);const draw=()=>cvs.forEach(([cv,w])=>drawWave(cv,{cycles:w.cycles,amp:w.amp,pad:10,lw:3}));S.redraw=draw;requestAnimationFrame(draw)}
+
+function stat(q,ok){const k=S.w.id+'.'+q.src;const s=P.stats[k]||(P.stats[k]={a:0,c:0});s.a++;if(ok)s.c++}
+function answer(ok,correctLabel){if(S.locked)return;S.locked=true;kbHandler=null;const q=S.queue[S.i];$('#timer').classList.remove('run');
+ let fast=false;
+ if(!q.retry)stat(q,ok);
+ if(ok){if(!q.retry){S.first++;S.combo++;S.score+=10+(S.combo>=3?5:0);
+   if(S.speed&&performance.now()-S.t0<8000){fast=true;S.score+=5;P.fast=(P.fast||0)+1;if(P.fast>=10)award('fast')}
+   if(q.t==='listen'){P.ear=(P.ear||0)+1;if(P.ear>=4)award('ear')}if(S.combo>=5)award('combo5');if(S.combo>=10)award('combo10')}else S.score+=3;
+  sfx.good();if(fast)sfx.zap();confetti(S.combo>=3?110:60);mood('happy');
+  $('#bubble').innerHTML=(fast?'Lightning fast! ':'')+pick(YES)+(S.combo>=2?'<span class="combo">Combo ×'+S.combo+'</span>':'')}
+ else{S.combo=0;if(!q.retry)S.queue.push(Object.assign({},q,{retry:true}));sfx.bad();mood('sad');$('#bubble').textContent=pick(NO)}
+ save();hud();
+ const fb=$('#fb');fb.className='fb '+(ok?'good':'bad');fb.innerHTML='';
+ fb.append(el('h3',null,ok?(fast?'Correct! +5 speed bonus':'Correct!'):'Not quite'));
+ if(!ok&&correctLabel&&q.t!=='listen')fb.append(el('p',null,'<b>Answer:</b> '+correctLabel));
+ fb.append(el('p',null,q.why));
+ if(q.t==='listen'&&S.pair){fb.append(el('p','note','Here is what those two sounds look like:'));const g=el('div','cmp');S.pair.forEach((s,k)=>{const box=el('div','cmpbtn','Sound '+'AB'[k]);const cv=document.createElement('canvas');box.prepend(cv);g.append(box);requestAnimationFrame(()=>drawWave(cv,{cycles:s.f/160,amp:Math.min(.95,s.g*2.2),pad:10,lw:2.5}))});fb.append(g)}
+ const nx=btn('next',S.i+1<S.queue.length?'Next →':'Finish level',()=>{S.i++;if(S.i<S.queue.length)showQ();else finish()});fb.append(nx);
+ fb.hidden=false;kbHandler=e=>{if(e.key==='Enter'){e.preventDefault();nx.click()}};
+ setTimeout(()=>{nx.focus({preventScroll:true});fb.scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest'})},50)}
+function finish(){const {w,lv}=S,n=lv.count,f=S.first;let stars=0;if(f>=lv.pass)stars=1;if(f>=n-1)stars=2;if(f===n)stars=3;
+ const k=skey(w,lv);if(stars>(P.stars[k]||0))P.stars[k]=stars;save();
+ const got=[];if(lv.boss&&stars>=1&&award('w_'+w.id))got.push('w_'+w.id);if(f===n&&award('perfect'))got.push('perfect');
+ if(WORLDS.every(W=>worldStars(W)>0)&&award('explorer'))got.push('explorer');
+ if(WORLDS.every(W=>W.levels.filter(l=>l.boss).every(l=>starsOf(W,l)===3))&&award('legend'))got.push('legend');
+ const card=$('#doneCard');card.innerHTML='';
+ card.append(el('div','bigstars',starStr(stars)));
+ card.append(el('h2',null,stars?(stars===3?'Perfect! ':'Level passed! ')+who():'So close, '+who()));
+ card.append(el('p',null,f+' of '+n+' right on the first try · '+S.score+' points'));
+ if(!stars)card.append(el('p','note','You need '+lv.pass+' first-try answers to pass. Every round makes you sharper.'));
+ got.forEach(id=>card.append(el('p',null,'<b>New badge:</b> '+BADGES[id].n)));
+ const row=el('div','row');row.style.justifyContent='center';
+ row.append(btn('ghost','Play again',()=>start(S.wi,S.li)));
+ if(stars&&S.li+1<w.levels.length)row.append(btn('big','Next level →',()=>start(S.wi,S.li+1)));
+ row.append(btn('ghost','Levels',()=>show('world')));card.append(row);
+ show('done');if(stars){sfx.level();confetti(160);setTimeout(()=>confetti(120),500)}}
+
+/* ================= report ================= */
+function renderReport(){const R=$('#rep');R.innerHTML='';const all=[];
+ WORLDS.forEach(w=>{const box=el('div','repw');box.append(el('h3',null,w.name+' <span class="grade">'+w.sub+'</span>'));
+  w.levels.filter(l=>!l.boss).forEach(l=>{const s=P.stats[w.id+'.'+l.id]||{a:0,c:0};const pct=s.a?Math.round(s.c/s.a*100):null;let pill;
+   if(s.a<5)pill='<span class="pill n">'+(s.a?'Need more':'Not started')+'</span>';else if(pct>=85)pill='<span class="pill g">Strong</span>';else if(pct>=60)pill='<span class="pill y">Getting there</span>';else pill='<span class="pill r">Needs work</span>';
+   if(s.a>=5)all.push({n:w.name+': '+l.name,pct});
+   box.append(el('div','repr','<span>'+l.name+' <span class="grade">'+l.grade+'</span></span><span class="n">'+(s.a?s.c+'/'+s.a+' · '+pct+'%':'—')+'</span>'+pill))});R.append(box)});
+ const F=$('#focus');const weak=all.filter(x=>x.pct<85).sort((a,b)=>a.pct-b.pct).slice(0,3);
+ F.innerHTML=weak.length?'<b>Practice next</b><ol>'+weak.map(x=>'<li>'+x.n+' ('+x.pct+'%)</li>').join('')+'</ol>':'<b>Practice next:</b> play a few levels and this fills in with the skills that need the most work.'}
+
+/* ================= lab ================= */
+let labOsc=null,labGain=null,labLabels=false,labPh=0;const labT={f:false,a:false,p:false};
+const lf=$('#labFreq'),la=$('#labAmp');
+const labHz=()=>Math.round(110*parseFloat(lf.value));
+function labText(){const hz=labHz(),a=parseFloat(la.value);$('#labFreqOut').textContent=hz+' Hz · '+(hz<300?'low':hz<600?'medium':'high')+' pitch';$('#labAmpOut').textContent=(a<.35?'soft':a<.7?'medium':'loud');$('#labPlay').innerHTML=labOsc?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>Stop':PLAYSVG+'Play my wave';$('#labPlay').classList.toggle('on',!!labOsc);$('#labLabels').textContent=labLabels?'Hide labels':'Show labels'}
+function labUpdate(){if(labOsc&&actx){labOsc.frequency.setTargetAtTime(labHz(),actx.currentTime,.03);labGain.gain.setTargetAtTime(parseFloat(la.value)*.3,actx.currentTime,.03)}labText();if(labT.f&&labT.a&&labT.p)award('lab')}
+function labStop(){if(labOsc){try{labGain.gain.setTargetAtTime(0.0001,actx.currentTime,.05);labOsc.stop(actx.currentTime+.2)}catch(e){}labOsc=null;labText()}}
+lf.oninput=()=>{labT.f=true;labUpdate()};la.oninput=()=>{labT.a=true;labUpdate()};
+$('#labPlay').onclick=()=>{if(labOsc){labStop();return}const a=ensureAudio();if(!a)return;labOsc=a.createOscillator();labGain=a.createGain();labOsc.type='sine';labOsc.frequency.value=labHz();labGain.gain.value=.0001;labOsc.connect(labGain).connect(a.destination);labOsc.start();labGain.gain.setTargetAtTime(parseFloat(la.value)*.3,a.currentTime,.05);labT.p=true;labUpdate()};
+$('#labLabels').onclick=()=>{labLabels=!labLabels;labText()};
+$('#labOpen').onclick=()=>{show('lab');labText()};$('#labBack').onclick=()=>show('world');
+function drawLab(){drawWave($('#labWave'),{cycles:parseFloat(lf.value),amp:parseFloat(la.value),phase:labPh,pad:34,reveal:labLabels,after:labLabels?(g=>{const col=css('--coral');g.c.fillStyle=css('--ink');g.c.font='700 12px '+css('--body');if(g.crests.length>1){const a=g.crests[0],b=g.crests[1];arrow(g.c,a.x,a.y-22,b.x,b.y-22,col);g.c.fillStyle=css('--ink');g.c.textAlign='center';g.c.fillText('wavelength',(a.x+b.x)/2,a.y-28)}const t=g.troughs[0];if(t&&g.A>14){arrow(g.c,t.x,g.mid,t.x,t.y,col);g.c.fillStyle=css('--ink');g.c.textAlign='left';g.c.fillText('amplitude',t.x+8,(g.mid+t.y)/2+4)}}):null})}
+
+/* ================= loop ================= */
+let last=0,heroPh=0;
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
+ if(!$('#home').hidden){if(!RM)heroPh-=dt*3;const cv=$('#heroWave');const {c,w,h}=fit(cv);[[css('--teal'),1,.8,4],[css('--coral'),2.2,.35,3],[css('--sun'),4,.2,2.5]].forEach(([col,f,a,lw],i)=>{c.strokeStyle=col;c.lineWidth=lw;c.lineCap='round';c.beginPath();for(let x=0;x<=w;x+=2){const y=h/2-a*(h/2-8)*Math.sin(2*Math.PI*f*x/w*1.5+heroPh*(1+i*.6));x?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()})}
+ if(!$('#lab').hidden){if(!RM)labPh-=2*Math.PI*.35*parseFloat(lf.value)*dt;drawLab()}
+ if(parts.length){stepFx();fx.dataset.dirty='1'}else if(fx.dataset.dirty==='1'){fit(fx);fx.dataset.dirty='0'}
+ requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{if(S&&S.redraw&&!$('#play').hidden)S.redraw()});
+
+/* ================= chrome ================= */
+function effTheme(){return P.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function applyTheme(){if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);else document.documentElement.removeAttribute('data-theme')}
+$('#themeBtn').onclick=()=>{P.theme=effTheme()==='dark'?'light':'dark';save();applyTheme();renderHome()};
+$('#muteBtn').onclick=()=>{P.muted=!P.muted;save();renderHome()};
+$('#nameIn').oninput=e=>{P.name=e.target.value.trim();save()};
+$('#quitBtn').onclick=()=>show('world');$('#worldBack').onclick=()=>show('home');
+$('#reportBtn').onclick=()=>show('report');$('#repBack').onclick=()=>show('home');
+$('#resetBtn').onclick=()=>{$('#confirmReset').hidden=false};$('#noReset').onclick=()=>{$('#confirmReset').hidden=true};
+$('#yesReset').onclick=()=>{P.stars={};P.badges=[];P.ear=0;P.fast=0;P.stats={};save();$('#confirmReset').hidden=true;renderHome();toast('Progress erased')};
+window.__QQ={WORLDS,genFor};
+applyTheme();renderHome();
+})();
+</script>
+</body>
+</html>
