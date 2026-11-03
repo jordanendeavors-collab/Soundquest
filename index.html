@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quazart's Quest</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}
+:root{
+  --bg:#e8f2f3; --surface:#ffffff; --ink:#12313a; --muted:#52707a; --line:#c6dbdf;
+  --teal:#0e7a85; --tealsoft:#d6ecef; --coral:#df5139; --sun:#f0a91a;
+  --good:#1d8549; --goodsoft:#dcf2e4; --bad:#bf3a2a; --badsoft:#fbe3df; --onaccent:#ffffff;
+  --display: ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --body: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono: ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1c21; --surface:#12282e; --ink:#e3f0f1; --muted:#97b3b9; --line:#244148;
+  --teal:#4bc0ca; --tealsoft:#163840; --coral:#ff7a5e; --sun:#ffc84a;
+  --good:#4fd18a; --goodsoft:#123a28; --bad:#ff7a6a; --badsoft:#3e1d1a; --onaccent:#0b1c21; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1c21; --surface:#12282e; --ink:#e3f0f1; --muted:#97b3b9; --line:#244148;
+  --teal:#4bc0ca; --tealsoft:#163840; --coral:#ff7a5e; --sun:#ffc84a;
+  --good:#4fd18a; --goodsoft:#123a28; --bad:#ff7a6a; --badsoft:#3e1d1a; --onaccent:#0b1c21; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app{max-width:640px;margin:0 auto;padding-block:14px 40px;display:flex;flex-direction:column;gap:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:.9rem}
+.chip:hover{border-color:var(--teal)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+/* hero */
+.hero{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:10px}
+.hero h1{font-size:clamp(2rem,8vw,2.9rem);letter-spacing:-.5px;color:var(--teal)}
+.hero h1 span{color:var(--coral)}
+.hero p{margin:0;color:var(--muted)}
+#heroWave{width:100%;height:90px;display:block;border-radius:14px;background:var(--tealsoft)}
+.namebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.namebox label{font-weight:700}
+.namebox input{font:inherit;font-weight:700;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);width:10em}
+.sect{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sect h2{font-size:1.3rem}
+.sect small{color:var(--muted)}
+.levels{display:grid;gap:10px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;min-height:70px}
+.lvl:hover:not([disabled]){border-color:var(--teal);transform:translateY(-1px)}
+.lvl[disabled]{opacity:.5;cursor:not-allowed}
+.lvl .num{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:var(--onaccent);font-family:var(--display);font-weight:800;font-size:1.2rem}
+.lvl.boss .num{background:var(--coral)}
+.lvl .txt{flex:1;min-width:0}
+.lvl b{font-family:var(--display);font-size:1.12rem;display:block}
+.lvl span{color:var(--muted);font-size:.88rem}
+.stars{flex:none;font-size:1.25rem;letter-spacing:1px;color:var(--line)}
+.stars .on{color:var(--sun)}
+.labbtn{border:2px dashed var(--teal);background:var(--tealsoft);border-radius:18px;padding:14px;text-align:left;display:flex;gap:12px;align-items:center}
+.labbtn b{font-family:var(--display);font-size:1.12rem;display:block}
+.labbtn span{color:var(--muted);font-size:.88rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.badge{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.badge svg{width:44px;height:44px}
+.badge b{font-size:.9rem;font-family:var(--display)}
+.badge small{color:var(--muted);font-size:.75rem;line-height:1.3}
+.badge.locked{opacity:.45}
+.badge.locked .medal{fill:var(--line)}
+.medal{fill:var(--sun)}
+.medal-wave{stroke:var(--ink);fill:none;stroke-width:3;stroke-linecap:round}
+/* play */
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hud .title{font-family:var(--display);font-weight:800;font-size:1.05rem;flex:1;min-width:0}
+.score{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:4px 10px}
+.bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--sun));transition:width .4s}
+.echoRow{display:flex;align-items:center;gap:12px}
+.echo{width:84px;height:84px;flex:none}
+.echo{overflow:visible}
+.echo .core{fill:var(--teal)}
+.echo .glow{fill:var(--sun);opacity:.22;animation:pulse 2.4s ease-in-out infinite}
+.echo .jet{fill:var(--sun);transform-origin:60px 60px}
+.echo .disk{stroke:var(--coral);fill:none;stroke-width:5;stroke-linecap:round}
+.echo .spark{fill:var(--sun)}
+.echo.happy .jet{animation:flare .8s ease}
+.echo.happy .glow{opacity:.45}
+.echo.sad .glow{opacity:.06}
+@keyframes pulse{0%,100%{opacity:.16}50%{opacity:.34}}
+@keyframes flare{0%,100%{transform:scaleY(1)}40%{transform:scaleY(1.35)}}
+.echo .eye{fill:var(--surface)}
+.echo .pupil{fill:var(--ink)}
+.echo .mouth{stroke:var(--surface);stroke-width:4;fill:none;stroke-linecap:round}
+.echo .ring{stroke:var(--coral);stroke-width:4;fill:none;stroke-linecap:round;opacity:0}
+.echo.happy{animation:hop .7s ease}
+.echo.happy .ring{animation:ring .9s ease-out}
+.echo.happy .r2{animation-delay:.12s}.echo.happy .r3{animation-delay:.24s}
+.echo.sad{animation:wob .6s ease}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-16px) rotate(-6deg)}65%{transform:translateY(0) rotate(4deg)}}
+@keyframes ring{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(14px)}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}}
+.bubble{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:600;flex:1;min-width:0}
+.combo{display:inline-block;background:var(--coral);color:var(--onaccent);border-radius:999px;padding:2px 10px;font-weight:800;font-size:.85rem;margin-left:6px}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:14px}
+.card h2{font-size:1.35rem}
+.retry{font-size:.8rem;font-weight:800;color:var(--coral);text-transform:uppercase;letter-spacing:.08em}
+.opts{display:grid;gap:10px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:56px;border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:10px 14px;font-family:var(--display);font-weight:700;font-size:1.1rem;text-align:left}
+.opts.two .opt,.opts.three .opt{text-align:center}
+.opt:hover:not([disabled]){border-color:var(--teal)}
+.opt[disabled]{cursor:default}
+.opt.right{background:var(--goodsoft);border-color:var(--good)}
+.opt.wrong{background:var(--badsoft);border-color:var(--bad)}
+canvas.wave{width:100%;height:200px;display:block;background:var(--tealsoft);border-radius:14px;touch-action:manipulation}
+canvas.tap{cursor:crosshair}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmpbtn{border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:8px;display:grid;gap:6px;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.cmpbtn:hover:not([disabled]){border-color:var(--teal)}
+.cmpbtn canvas{width:100%;height:110px;display:block;background:var(--tealsoft);border-radius:10px}
+.cmpbtn.right{border-color:var(--good);background:var(--goodsoft)}
+.cmpbtn.wrong{border-color:var(--bad);background:var(--badsoft)}
+.play{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;border:2px solid var(--teal);background:var(--tealsoft);border-radius:14px;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.play.on{background:var(--teal);color:var(--onaccent)}
+.play svg{width:22px;height:22px;fill:currentColor}
+.note{color:var(--muted);font-size:.9rem;margin:0}
+.fb{border-radius:18px;padding:14px 16px;display:grid;gap:8px;border:2px solid}
+.fb.good{background:var(--goodsoft);border-color:var(--good)}
+.fb.bad{background:var(--badsoft);border-color:var(--bad)}
+.fb h3{font-size:1.2rem}
+.fb p{margin:0}
+.next{justify-self:start;background:var(--teal);color:var(--onaccent);border:0;border-radius:14px;padding:12px 22px;font-family:var(--display);font-weight:800;font-size:1.1rem}
+.big{background:var(--teal);color:var(--onaccent);border:0;border-radius:14px;padding:12px 22px;font-family:var(--display);font-weight:800;font-size:1.05rem}
+.ghost{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 18px;font-family:var(--display);font-weight:700}
+/* done */
+.done{text-align:center;justify-items:center}
+.done .bigstars{font-size:3.2rem;letter-spacing:6px;color:var(--line)}
+.done .bigstars .on{color:var(--sun);display:inline-block;animation:pop .5s ease both}
+.done .bigstars .on:nth-child(2){animation-delay:.2s}.done .bigstars .on:nth-child(3){animation-delay:.4s}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+/* lab */
+.ctrl{display:grid;gap:4px}
+.ctrl label{font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ctrl label span{font-family:var(--mono);color:var(--teal);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);height:32px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-weight:700;z-index:30;max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:20;width:100%;height:100%}
+@media (max-width:420px){.opts.three{grid-template-columns:repeat(3,1fr)}.opt{font-size:1rem}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- Quazart's Quest additions ---- */
+.worlds{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.world{display:flex;gap:14px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:20px;padding:14px;min-height:92px}
+.world:hover{border-color:var(--teal);transform:translateY(-1px)}
+.world .wic{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:1.9rem;color:var(--onaccent)}
+.world .wtx{flex:1;min-width:0;display:grid;gap:4px}
+.world b{font-family:var(--display);font-size:1.15rem}
+.world span{color:var(--muted);font-size:.86rem}
+.mini{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.mini i{display:block;height:100%;background:var(--sun)}
+.c-teal{background:var(--teal)}.c-coral{background:var(--coral)}.c-sun{background:var(--sun)}.c-good{background:var(--good)}.c-ink{background:var(--ink)}
+.grade{display:inline-block;font-size:.7rem;font-weight:800;border:1.5px solid var(--line);border-radius:6px;padding:0 6px;margin-left:6px;color:var(--muted);vertical-align:middle;letter-spacing:.04em}
+.vis{display:flex;justify-content:center}
+.vis svg{width:100%;max-width:440px;height:auto;display:block}
+.s-a{fill:var(--teal)}.s-b{fill:var(--coral)}.s-c{fill:var(--sun)}
+.s-e{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.s-fill{fill:var(--tealsoft);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.s-l{stroke:var(--ink);stroke-width:3;fill:none;stroke-linecap:round}
+.s-d{stroke:var(--coral);stroke-width:3;stroke-dasharray:8 6;fill:none}
+.s-g{stroke:var(--teal);stroke-width:3;fill:none}
+.s-t{fill:var(--ink);font:700 17px var(--body)}
+.s-big{fill:var(--ink);font:800 120px var(--body)}
+.s-ok{fill:var(--good)}.s-no{fill:var(--bad)}
+.part{fill:var(--surface);stroke:var(--ink);stroke-width:2;cursor:pointer}
+.part.on{fill:var(--coral)}
+.part:hover{fill:var(--tealsoft)}.part.on:hover{fill:var(--coral)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-variant-numeric:tabular-nums;margin:0 2px}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 3px 3px}
+.frac>span:last-child{padding:3px 3px 0}
+.eq{font-family:var(--display);font-size:clamp(1.8rem,8vw,2.4rem);font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.kpd{font-family:var(--mono);font-size:2rem;font-weight:700;text-align:center;border:2px solid var(--line);border-radius:14px;padding:6px 12px;background:var(--bg);min-height:62px;display:flex;align-items:center;justify-content:center;gap:10px;font-variant-numeric:tabular-nums}
+.kpd small{font-family:var(--body);font-size:1rem;color:var(--muted);font-weight:600}
+.kpd .cur{color:var(--muted)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kp button{min-height:56px;border:2px solid var(--line);background:var(--bg);border-radius:14px;font-family:var(--display);font-weight:800;font-size:1.4rem}
+.kp button:hover:not([disabled]){border-color:var(--teal)}
+.kp .go{background:var(--teal);color:var(--onaccent);border-color:var(--teal)}
+.kp button[disabled]{opacity:.45;cursor:default}
+.timer{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--sun)}
+.timer.run i{animation:drain 8s linear forwards}
+@keyframes drain{to{width:0}}
+.check{justify-self:start}
+.rep{display:grid;gap:14px}
+.repw{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:8px}
+.repw h3{font-size:1.1rem}
+.repr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;font-size:.92rem;border-top:1px solid var(--line);padding-top:6px}
+.repr .n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.pill{font-size:.75rem;font-weight:800;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.pill.g{background:var(--goodsoft);color:var(--good)}.pill.y{background:var(--tealsoft);color:var(--ink);outline:2px solid var(--sun)}.pill.r{background:var(--badsoft);color:var(--bad)}.pill.n{background:var(--bg);color:var(--muted)}
+.focus{background:var(--tealsoft);border-radius:16px;padding:12px 14px}
+.focus ol{margin:6px 0 0;padding-left:1.2em}
+.oops{background:var(--surface);border-left:5px solid var(--bad);border-radius:10px;padding:10px 12px}
+.steps{background:var(--surface);border-radius:12px;padding:10px 14px}
+.steps ol{margin:6px 0 0;padding-left:1.3em;display:grid;gap:4px}
+.steps li::marker{font-weight:800;color:var(--teal)}
+/* ---- v3: belts, pad, arcade ---- */
+:root{--slime:#5fae2e;--gob:#8aa83a;--troll:#8a5bd6;--pink:#e8679a;--gas:#b9dc6a;--hat:#3b4bb8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--slime:#7fd04a;--gob:#a8c855;--troll:#a57ef0;--pink:#ff86b4;--gas:#9ec24f;--hat:#6f7ff0}}
+:root[data-theme="dark"]{--slime:#7fd04a;--gob:#a8c855;--troll:#a57ef0;--pink:#ff86b4;--gas:#9ec24f;--hat:#6f7ff0}
+.c-slime{background:var(--slime)}
+.rankrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.beltCard{display:flex;gap:12px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:12px 14px}
+.beltCard svg{width:110px;flex:none}
+.beltCard .wtx,.arcTile .wtx{display:grid;gap:4px;flex:1;min-width:0}
+.beltCard b{font-family:var(--display);font-size:1.15rem}.beltCard span{color:var(--muted);font-size:.86rem}
+.arcTile{border-color:var(--pink);border-style:dashed}
+.aart{flex:none;width:64px}.aart svg{width:100%;height:auto;display:block}.aart.big{width:120px;margin:0 auto}
+.beltUp{display:grid;justify-items:center;gap:4px}.beltUp svg{width:200px}
+.passline{background:var(--tealsoft);border-radius:12px;padding:8px 12px}
+.txt{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);width:100%;max-width:420px}
+#parent label{font-weight:700}
+/* answer pad */
+.apad{display:grid;gap:10px}
+.modeTog{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);border-radius:14px;padding:4px}
+.modeTog button{display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:transparent;border-radius:10px;min-height:42px;font-family:var(--display);font-weight:800;color:var(--muted)}
+.modeTog button svg{width:18px;height:18px}
+.modeTog button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+canvas.pad{width:100%;height:170px;display:block;background:var(--bg);border:2px dashed var(--teal);border-radius:14px;touch-action:none;cursor:crosshair}
+.penBox{display:grid;gap:8px}
+.penCtl{display:grid;grid-template-columns:repeat(3,auto) 1fr;gap:8px}
+.penCtl .big{justify-self:end}
+.eq.stacked{display:flex;justify-content:center}
+table.stack{font-family:var(--mono);font-size:clamp(2rem,9vw,2.6rem);font-weight:700;border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.stack td{text-align:right;padding:0 4px;line-height:1.15}
+table.stack tr.op td{border-bottom:4px solid var(--ink)}
+table.stack tr.ans td{color:var(--muted)}
+/* arcade */
+.arcHead{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--pink);border-radius:16px;padding:12px 14px;font-family:var(--display);font-size:1.1rem}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.agrid.locked{opacity:.5;pointer-events:none}
+.agame-tile{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:12px}
+.agame-tile:hover{border-color:var(--pink)}
+.agame-tile b{font-family:var(--display);font-size:1.1rem}
+.agame-tile p{margin:4px 0;color:var(--muted);font-size:.86rem}.agame-tile small{color:var(--muted)}
+a.big{text-decoration:none;text-align:center;justify-self:start}
+a.dis{opacity:.5;pointer-events:none}
+.a-slime{fill:var(--slime)}.a-gob{fill:var(--gob)}.a-troll{fill:var(--troll)}.a-wing{fill:var(--coral)}.a-eye{fill:#fff;stroke:#1a1a1a;stroke-width:1.5}.a-pupil{fill:#1a1a1a}
+.a-line{stroke:#1a1a1a;stroke-width:3;fill:none;stroke-linecap:round}.a-tooth{fill:#fff;stroke:#1a1a1a;stroke-width:1}.a-nose{fill:var(--pink)}.a-hair{stroke:var(--ink);stroke-width:3;fill:none}
+.a-hat{fill:var(--hat)}.a-star{fill:var(--sun)}.a-face{fill:#f2c9a0}.a-beard{fill:#eceff1;stroke:#9aa;stroke-width:1}.a-mouth{fill:#7a2b2b}
+.a-cush{fill:var(--pink);stroke:#1a1a1a;stroke-width:2}.a-shine{fill:#fff;opacity:.5}.a-gas{fill:var(--gas);opacity:.85}
+.puff{position:absolute;width:70px;left:30%;top:10px;pointer-events:none;animation:puff 1.3s ease-out forwards}
+.puff.big{width:120px;left:40%;top:30%}
+@keyframes puff{0%{opacity:0;transform:scale(.3)}20%{opacity:1}100%{opacity:0;transform:scale(1.6) translateY(-30px)}}
+.track{position:relative;height:96px;background:var(--tealsoft);border-radius:16px;overflow:hidden}
+.track .finish{position:absolute;right:8px;top:8px;bottom:8px;width:10px;background:repeating-linear-gradient(var(--ink) 0 8px,var(--surface) 8px 16px);border-radius:3px}
+.racer{position:absolute;top:6px;width:70px;transition:left .3s}.racer.gob{top:46px;width:60px}
+.cloudbtn{border-radius:999px;text-align:center}
+.bridgeScene{position:relative;display:grid;gap:10px;justify-items:center;background:var(--tealsoft);border-radius:18px;padding:12px;overflow:hidden}
+.bridges{display:flex;gap:8px}.bridges span{width:44px;height:14px;border-radius:4px;background:var(--line)}
+.bridges span.here{background:var(--sun)}.bridges span.done{background:var(--good)}
+.trollBox{width:120px}.bridgeScene .bubble{width:100%}
+.wizBox{width:84px;flex:none}
+.caul{display:flex;gap:4px;align-items:flex-end;justify-content:center;flex-wrap:wrap;position:relative;background:var(--surface);border:3px solid var(--ink);border-radius:0 0 40px 40px;padding:18px 14px 18px;min-height:120px}
+.caul .seg{width:34px;height:70px;border-radius:6px;background:var(--bg);border:2px dashed var(--line)}
+.caul .seg.tgt{border-color:var(--sun)}
+.caul .seg.on{background:var(--slime);border-style:solid;border-color:var(--slime)}
+.caulLbl{flex-basis:100%;text-align:center;font-family:var(--display);font-size:1.2rem;margin-top:8px}
+.bottles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bottle{display:grid;justify-items:center;gap:2px;border:2px solid var(--line);background:var(--surface);border-radius:16px 16px 12px 12px;padding:10px 6px;font-family:var(--display);font-size:1.3rem}
+.bottle .liq{width:28px;height:30px;border-radius:6px 6px 10px 10px;background:var(--troll);border:2px solid var(--ink)}
+.bottle small{font-family:var(--body);font-size:.75rem;color:var(--muted)}
+.cush3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:end}
+.cushCard{display:grid;gap:6px;justify-items:center;text-align:center;font-size:.9rem}
+.cushArt{width:80px;transform-origin:bottom center}
+.cushArt.squish svg{animation:squish .5s ease}
+@keyframes squish{40%{transform:scale(1.15,.6)}100%{transform:scale(1)}}
+.cushCard button{width:100%;padding:8px 4px;font-size:.9rem}
+.slimeBox{width:70px;flex:none}.slimeBox.wiggle{animation:hop .7s ease}
+.pen{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;background:var(--line);padding:3px;border-radius:12px}
+.pen .cell{aspect-ratio:1;border:0;border-radius:4px;background:var(--surface);padding:0;min-width:0}
+.pen .cell.in{background:var(--slime)}.pen .cell.corner{background:var(--sun)}
+@media (max-width:420px){.penCtl{grid-template-columns:repeat(3,1fr)}.penCtl .big{grid-column:1/-1;justify-self:stretch}.cush3{gap:6px}.cushArt{width:60px}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="app">
+
+  <!-- HUB -->
+  <section id="home" style="display:grid;gap:16px">
+    <div class="topbar">
+      <div class="row"><button class="chip" id="themeBtn" type="button">Dark mode</button><button class="chip" id="muteBtn" type="button">Sound effects: on</button></div>
+      <div class="row"><button class="chip" id="reportBtn" type="button">Grown-up report</button><button class="chip" id="resetBtn" type="button">Reset</button></div>
+    </div>
+    <div class="hero">
+      <div class="echoRow">
+        <svg class="echo" viewBox="0 0 120 120" aria-hidden="true"></svg>
+        <h1>Quazart's <span>Quest</span></h1>
+      </div>
+      <canvas id="heroWave"></canvas>
+      <p>Pick a world. Win stars to unlock harder levels, from Grade 3 up through Grade 4.</p>
+      <div class="namebox"><label for="nameIn">Player</label><input id="nameIn" maxlength="16" autocomplete="off"><span class="score" id="totStars"></span></div>
+      <div id="confirmReset" hidden class="fb bad"><p>Erase all stars, badges and report data?</p><div class="row"><button class="big" id="yesReset" type="button">Erase</button><button class="ghost" id="noReset" type="button">Keep them</button></div></div>
+    </div>
+    <div class="rankrow"><div class="beltCard" id="beltCard"></div><button class="world arcTile" id="arcBtn" type="button"></button></div>
+    <div class="sect"><h2>Worlds</h2></div>
+    <div class="worlds" id="worlds"></div>
+    <div class="sect"><h2>Badges</h2><small id="badgeCount"></small></div>
+    <div class="badges" id="badges"></div>
+  </section>
+
+  <!-- WORLD -->
+  <section id="world" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="worldBack" type="button">← Worlds</button><div class="title" id="worldTitle"></div><div class="score" id="worldStars"></div></div>
+    <p class="note" id="worldBlurb"></p>
+    <div class="levels" id="levels"></div>
+    <button class="labbtn" id="labOpen" type="button" hidden><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 20 Q9 4 15 20 T27 20 T39 20" fill="none" stroke="var(--teal)" stroke-width="4" stroke-linecap="round"/></svg><div><b>Wave Lab</b><span>Make your own wave. Change frequency and amplitude, then hear it.</span></div></button>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden style="display:grid;gap:14px">
+    <div class="hud">
+      <button class="chip" id="quitBtn" type="button">← Levels</button>
+      <div class="title" id="lvlTitle"></div>
+      <div class="score" id="scoreBox">0 pts</div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="timer" id="timer" hidden><i></i></div>
+    <div class="echoRow">
+      <svg class="echo" id="echoPlay" viewBox="0 0 120 120" aria-hidden="true"></svg>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <div class="card" id="card"></div>
+    <div class="fb" id="fb" hidden></div>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" hidden><div class="card done" id="doneCard"></div></section>
+
+  <!-- LAB -->
+  <section id="lab" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="labBack" type="button">← Levels</button><div class="title">Wave Lab</div></div>
+    <div class="card">
+      <canvas class="wave" id="labWave" style="height:220px"></canvas>
+      <div class="ctrl"><label for="labFreq">Frequency (how many crests) <span id="labFreqOut"></span></label><input type="range" id="labFreq" min="1" max="8" step="0.5" value="3"></div>
+      <div class="ctrl"><label for="labAmp">Amplitude (how tall) <span id="labAmpOut"></span></label><input type="range" id="labAmp" min="0.1" max="1" step="0.05" value="0.6"></div>
+      <div class="row"><button class="play" id="labPlay" type="button" style="flex:1"></button><button class="ghost" id="labLabels" type="button">Show labels</button></div>
+      <p class="note">Slide frequency up: crests squeeze together and the pitch climbs. Slide amplitude up: the wave grows taller and gets louder. Turn the volume down before you start.</p>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="report" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="repBack" type="button">← Worlds</button><div class="title">Grown-up report</div></div>
+    <p class="note">First-try accuracy on each skill. Second-chance answers don't count. Skills show a rating after 5 questions.</p>
+    <div id="parent" class="repw"></div>
+    <div id="focus" class="focus"></div>
+    <div class="rep" id="rep"></div>
+  </section>
+  <!-- ARCADE -->
+  <section id="arcade" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="arcBack" type="button">← Worlds</button><div class="title">Goofball Arcade</div></div>
+    <div id="arcBody" style="display:grid;gap:14px"></div>
+  </section>
+  <section id="agame" hidden style="display:grid;gap:14px">
+    <div class="hud"><button class="chip" id="agBack" type="button">← Arcade</button><div class="title" id="agTitle"></div><div class="score" id="agClock"></div></div>
+    <div id="ag" style="display:grid;gap:14px"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* ================= handwriting recognizer ($P point-cloud + per-kid training) ================= */
+const HW=(function(){
+ const NP=32;
+ function arc(cx,cy,rx,ry,a0,a1,n){n=n||24;const o=[];for(let i=0;i<=n;i++){const a=(a0+(a1-a0)*i/n)*Math.PI/180;o.push([cx+rx*Math.cos(a),cy+ry*Math.sin(a)])}return o}
+ function line(...p){const o=[];for(let i=0;i<p.length-1;i++){const [x0,y0]=p[i],[x1,y1]=p[i+1];for(let k=0;k<8;k++)o.push([x0+(x1-x0)*k/8,y0+(y1-y0)*k/8])}o.push(p[p.length-1]);return o}
+ const BASE={
+  '0':[[arc(50,50,30,45,-90,270)],[arc(50,50,30,45,-90,-450)],[arc(50,50,22,45,-80,280)]],
+  '1':[[line([50,5],[50,95])],[line([33,22],[50,5],[50,95])],[line([33,22],[50,5],[50,95]),line([35,95],[65,95])]],
+  '2':[[arc(50,30,26,24,-165,25).concat(line([72,42],[20,95],[82,95]))],[arc(48,28,24,22,-180,0).concat(line([72,30],[20,95],[80,95]))]],
+  '3':[[arc(48,28,25,22,-150,90).concat(arc(48,72,27,23,-90,150))],[line([22,6],[75,6],[45,42]).concat(arc(48,70,27,25,-100,150))]],
+  '4':[[line([58,5],[15,65],[85,65]),line([66,32],[66,95])],[line([20,5],[20,58],[80,58]),line([70,5],[70,95])],[line([66,95],[66,5],[15,65],[85,65])]],
+  '5':[[line([75,6],[26,6]),line([26,6],[23,46]).concat(arc(48,69,28,25,-150,150))],[line([78,6],[26,6],[23,46]).concat(arc(48,69,28,25,-150,150))],[line([75,6],[26,6]),line([26,6],[24,45],[55,40],[78,58],[76,84],[50,96],[24,88])],[line([78,6],[26,6],[24,45],[55,40],[78,58],[76,84],[50,96],[24,88])],[line([26,6],[24,45]).concat(arc(46,68,28,26,-120,160)),line([28,6],[78,8])]],
+  '6':[[arc(55,52,33,46,-60,-180).concat(arc(50,72,27,23,180,-180))],[line([65,5],[30,50]).concat(arc(50,72,27,23,200,-160))]],
+  '7':[[line([15,8],[85,8],[40,95])],[line([15,8],[85,8],[40,95]),line([32,52],[72,52])],[line([15,20],[15,8],[85,8],[45,95])]],
+  '8':[[arc(50,27,21,22,-90,270),arc(50,72,26,23,-90,270)],[arc(50,27,21,22,0,-180).concat(arc(50,72,26,23,-90,270)).concat(arc(50,27,21,22,180,0))]],
+  '9':[[arc(48,30,25,25,0,360).concat(line([73,30],[68,95]))],[arc(48,30,25,25,0,-360).concat(line([73,30],[70,95]))],[arc(48,30,25,25,10,370).concat(arc(40,60,33,35,0,100,10))]]
+ };
+ function shear(strokes,k){return strokes.map(s=>s.map(([x,y])=>[x+k*(50-y),y]))}
+ function toCloud(strokes){const pts=[];strokes.forEach((s,i)=>s.forEach(([x,y])=>pts.push({x,y,id:i})));return normalize(resample(pts,NP))}
+ function pathLen(p){let d=0;for(let i=1;i<p.length;i++)if(p[i].id===p[i-1].id)d+=Math.hypot(p[i].x-p[i-1].x,p[i].y-p[i-1].y);return d}
+ function resample(points,n){points=points.map(p=>({x:p.x,y:p.y,id:p.id}));const I=pathLen(points)/(n-1);let D=0;const out=[points[0]];
+  if(I===0){while(out.length<n)out.push(points[0]);return out}
+  for(let i=1;i<points.length;i++){if(points[i].id===points[i-1].id){const d=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);
+   if(D+d>=I&&d>0){const t=(I-D)/d;const q={x:points[i-1].x+t*(points[i].x-points[i-1].x),y:points[i-1].y+t*(points[i].y-points[i-1].y),id:points[i].id};out.push(q);points.splice(i,0,q);D=0}else D+=d}}
+  while(out.length<n)out.push(points[points.length-1]);return out.slice(0,n)}
+ function normalize(p){let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;p.forEach(q=>{x0=Math.min(x0,q.x);x1=Math.max(x1,q.x);y0=Math.min(y0,q.y);y1=Math.max(y1,q.y)});
+  const s=Math.max(x1-x0,y1-y0)||1;let cx=0,cy=0;const o=p.map(q=>({x:(q.x-x0)/s,y:(q.y-y0)/s}));o.forEach(q=>{cx+=q.x;cy+=q.y});cx/=o.length;cy/=o.length;return o.map(q=>({x:q.x-cx,y:q.y-cy}))}
+ function cloudDist(a,b,start){const n=a.length,used=new Array(n).fill(false);let sum=0,i=start;do{let min=Infinity,idx=-1;for(let j=0;j<n;j++)if(!used[j]){const d=Math.hypot(a[i].x-b[j].x,a[i].y-b[j].y);if(d<min){min=d;idx=j}}used[idx]=true;const w=1-((i-start+n)%n)/n;sum+=w*min;i=(i+1)%n}while(i!==start);return sum}
+ function match(a,b){const n=a.length,step=Math.floor(Math.sqrt(n));let m=Infinity;for(let i=0;i<n;i+=step)m=Math.min(m,cloudDist(a,b,i),cloudDist(b,a,i));return m}
+ const T=[];
+ Object.entries(BASE).forEach(([d,vs])=>vs.forEach(v=>[-.18,0,.18].forEach(k=>T.push({d,c:toCloud(shear(v,k))}))));
+ let user=[];
+ function setUser(list){user=(list||[]).map(u=>({d:u.d,c:u.c}))}
+ function classify(strokes){
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;strokes.forEach(s=>s.forEach(([x,y])=>{x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}));
+  const w=x1-x0,h=y1-y0;if(h>0&&w/h<.28&&strokes.length===1)return '1';
+  const c=toCloud(strokes);let best=null,bd=Infinity;T.forEach(t=>{const d=match(c,t.c);if(d<bd){bd=d;best=t.d}});
+  user.forEach(t=>{const d=match(c,t.c)*0.85;if(d<bd){bd=d;best=t.d}});return best}
+ function segment(strokes){
+  const boxes=strokes.filter(s=>s.length>1).map(s=>{let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;s.forEach(([x,y])=>{x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)});return{s,x0,x1,y0,y1}});
+  if(!boxes.length)return[];const H=Math.max(...boxes.map(b=>b.y1-b.y0),20);
+  boxes.sort((a,b)=>a.x0-b.x0);const groups=[];
+  boxes.forEach(b=>{const g=groups[groups.length-1];if(g){const ov=Math.min(g.x1,b.x1)-Math.max(g.x0,b.x0);const mw=Math.max(Math.min(g.x1-g.x0,b.x1-b.x0),H*.12);if(ov>mw*.25){g.st.push(b.s);g.x0=Math.min(g.x0,b.x0);g.x1=Math.max(g.x1,b.x1);return}}groups.push({st:[b.s],x0:b.x0,x1:b.x1})});
+  return groups.map(g=>g.st)}
+ function read(strokes){const groups=segment(strokes);return{groups,digits:groups.map(classify)}}
+ function learn(strokes,d){return{d,c:toCloud(strokes)}}
+ return{read,learn,setUser,classify,BASE,shear};
+})();
+(function(){
+const KEY='quazartQuest.v1';
+const sget=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const sset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let P=sget(KEY);
+if(!P){P={name:'Sylas',stars:{},badges:[],ear:0,fast:0,stats:{},theme:null,muted:false};
+ const old=sget('soundWaveQuest.v1');
+ if(old){P.name=old.name||P.name;P.theme=old.theme||null;P.muted=!!old.muted;P.ear=old.ear||0;
+  Object.entries(old.stars||{}).forEach(([k,v])=>P.stars['sound.'+k]=v);
+  (old.badges||[]).forEach(b=>{if(['ear','lab','perfect','combo5'].includes(b))P.badges.push(b);if(b==='master')P.badges.push('w_sound')})}}
+P=Object.assign({name:'Sylas',stars:{},badges:[],ear:0,fast:0,stats:{},theme:null,muted:false,wins:0,passes:1,passesEarned:0,arcadeEnd:0,inputMode:'pen',hw:[],best:{},rewardUrl:''},P);
+const save=()=>sset(KEY,P);
+const $=s=>document.querySelector(s);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const who=()=>P.name||'Sylas';
+const frac=(n,d)=>'<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';
+function opts(correct,cands){const s=[correct];shuffle(cands).forEach(c=>{if(s.length<4&&!s.includes(c))s.push(c)});return s}
+function numOpts(ans,cands){return opts(String(ans),cands.filter(c=>c>=0&&c!==ans).map(String))}
+
+/* ================= SVG builders ================= */
+const svg=(w,h,inner)=>'<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
+function arraySvg(r,c){const s=38;let o='';for(let i=0;i<r;i++)for(let j=0;j<c;j++)o+='<circle class="s-a" cx="'+(14+s/2+j*s)+'" cy="'+(14+s/2+i*s)+'" r="13"/>';return svg(c*s+28,r*s+28,o)}
+function groupsSvg(g,e){const per=Math.min(g,5),rows=Math.ceil(g/5),S=96;let o='';for(let k=0;k<g;k++){const gx=S/2+(k%5)*S+4,gy=S/2+Math.floor(k/5)*S+4;o+='<circle class="s-e" cx="'+gx+'" cy="'+gy+'" r="42"/>';const cols=Math.ceil(Math.sqrt(e)),rws=Math.ceil(e/cols),sp=18;for(let i=0;i<e;i++){const cx=gx-(cols-1)*sp/2+(i%cols)*sp,cy=gy-(rws-1)*sp/2+Math.floor(i/cols)*sp;o+='<circle class="s-b" cx="'+cx+'" cy="'+cy+'" r="7"/>'}}return svg(per*S+8,rows*S+8,o)}
+function dotsSvg(n){const per=Math.min(n,10),rows=Math.ceil(n/10),s=34;let o='';for(let i=0;i<n;i++)o+='<circle class="s-c" cx="'+(20+(i%10)*s)+'" cy="'+(20+Math.floor(i/10)*s)+'" r="12"/>';return svg(per*s+6,rows*s+6,o)}
+function barParts(n,d,x,y,w,h,cls){let o='';const pw=w/d;for(let i=0;i<d;i++)o+='<rect '+(cls?'data-i="'+i+'" class="part'+(i<n?' on':'')+'"':'class="'+(i<n?'s-b':'s-e')+'"')+' x="'+(x+i*pw)+'" y="'+y+'" width="'+pw+'" height="'+h+'"/>';return o}
+function barSvg(n,d){return svg(380,70,barParts(n,d,10,10,360,50))}
+function wedge(cx,cy,r,a0,a1){const p=a=>[cx+r*Math.sin(a),cy-r*Math.cos(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);return 'M'+cx+' '+cy+' L'+x0.toFixed(2)+' '+y0.toFixed(2)+' A'+r+' '+r+' 0 '+((a1-a0)>Math.PI?1:0)+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)+' Z'}
+function pieParts(n,d,cls){let o='';for(let i=0;i<d;i++){const a0=i/d*2*Math.PI,a1=(i+1)/d*2*Math.PI;o+='<path '+(cls?'data-i="'+i+'" class="part'+(i<n?' on':'')+'"':'class="'+(i<n?'s-b':'s-e')+'"')+' d="'+wedge(100,100,88,a0,a1)+'"/>'}return o}
+function pieSvg(n,d){return svg(200,200,pieParts(n,d))}
+function twoBars(a,b){return svg(440,150,'<text class="s-t" x="8" y="48">'+a[0]+'/'+a[1]+'</text>'+barParts(a[0],a[1],70,15,360,48)+'<text class="s-t" x="8" y="118">'+b[0]+'/'+b[1]+'</text>'+barParts(b[0],b[1],70,85,360,48))}
+const SHAPES={
+ square:{p:[[60,20],[160,20],[160,120],[60,120]],sides:4,sym:4,is:['square','rectangle','rhombus','parallelogram','quadrilateral']},
+ rectangle:{p:[[20,30],[200,30],[200,110],[20,110]],sides:4,sym:2,is:['rectangle','parallelogram','quadrilateral']},
+ rhombus:{p:[[80,20],[180,20],[120,100],[20,100]],sides:4,sym:0,is:['rhombus','parallelogram','quadrilateral'],w:210},
+ parallelogram:{p:[[60,25],[200,25],[160,115],[20,115]],sides:4,sym:0,is:['parallelogram','quadrilateral']},
+ trapezoid:{p:[[70,25],[150,25],[200,115],[20,115]],sides:4,sym:1,is:['trapezoid','quadrilateral']},
+ triangle:{p:[[110,12],[195,125],[25,125]],sides:3,sym:1,is:['triangle']},
+ 'right triangle':{p:[[40,15],[40,125],[190,125]],sides:3,sym:0,is:['right triangle','triangle']},
+ pentagon:{reg:5,sides:5,sym:5,is:['pentagon']},hexagon:{reg:6,sides:6,sym:6,is:['hexagon']},octagon:{reg:8,sides:8,sym:8,is:['octagon']},
+ 'equilateral triangle':{reg:3,sides:3,sym:3,is:['equilateral triangle','triangle']}
+};
+const NAMES=['square','rectangle','rhombus','parallelogram','trapezoid','triangle','pentagon','hexagon','octagon'];
+function shapePts(k){const s=SHAPES[k];if(s.p)return s.p;const pts=[];for(let i=0;i<s.reg;i++){const a=-Math.PI/2+i*2*Math.PI/s.reg+(s.reg%2?0:Math.PI/s.reg);pts.push([110+62*Math.cos(a),72+62*Math.sin(a)])}return pts}
+function shapeSvg(k,extra){return svg(220,140,'<polygon class="s-fill" points="'+shapePts(k).map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')+'"/>'+(extra||''))}
+function gridSvg(w,h){const u=34;let o='';for(let i=0;i<h;i++)for(let j=0;j<w;j++)o+='<rect class="s-fill" x="'+(6+j*u)+'" y="'+(6+i*u)+'" width="'+u+'" height="'+u+'"/>';return svg(w*u+12,h*u+12,o)}
+function rectSvg(w,h,unit){const sc=Math.min(240/w,120/h),W=w*sc,H=h*sc;return svg(W+120,H+70,'<rect class="s-fill" x="60" y="34" width="'+W+'" height="'+H+'"/><text class="s-t" text-anchor="middle" x="'+(60+W/2)+'" y="24">'+w+' '+unit+'</text><text class="s-t" x="'+(66+W)+'" y="'+(40+H/2)+'">'+h+' '+unit+'</text>')}
+function angleSvg(deg){const cx=150,cy=150,L=125,a=deg*Math.PI/180;const x=cx+L*Math.cos(a),y=cy-L*Math.sin(a);let mark;if(deg===90)mark='<path class="s-l" style="stroke-width:2" d="M'+(cx+22)+' '+cy+' L'+(cx+22)+' '+(cy-22)+' L'+cx+' '+(cy-22)+'"/>';else{const r=32;mark='<path class="s-g" d="M'+(cx+r)+' '+cy+' A'+r+' '+r+' 0 0 0 '+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy-r*Math.sin(a)).toFixed(1)+'"/>'}
+ return svg(300,165,'<path class="s-l" d="M'+cx+' '+cy+' L'+(cx+L)+' '+cy+' M'+cx+' '+cy+' L'+x.toFixed(1)+' '+y.toFixed(1)+'"/>'+mark+'<circle class="s-b" cx="'+cx+'" cy="'+cy+'" r="5"/>')}
+function linesSvg(k){let d;if(k==='parallel')d='M20 50 L280 30 M20 120 L280 100';else if(k==='perpendicular')d='M30 80 L270 80 M150 10 L150 150';else d='M30 140 L270 30 M30 40 L270 120';return svg(300,160,'<path class="s-l" d="'+d+'"/>')}
+function letterSvg(ch){return svg(220,140,'<text class="s-big" text-anchor="middle" x="110" y="118">'+ch+'</text>')}
+
+/* ================= SOUND world content ================= */
+const PITCH_WHY='The higher sound vibrates more times every second. More vibrations = higher frequency = higher pitch.';
+const LOUD_WHY='The louder sound makes taller waves. Bigger amplitude = louder volume.';
+const SOUND=[
+ {id:'parts',name:'Wave Parts',grade:'Gr 3',blurb:'Crest, trough, wavelength, amplitude',bank:[
+  {t:'mc',q:'Sound is a form of ____ that you can hear. It travels in waves.',a:['energy','water','color','metal'],why:'Sound is energy. It moves out from whatever made it, in waves.'},
+  {t:'mc',q:'A change that carries energy from one place to another is a ____.',a:['wave','crest','trough','pitch'],why:'A wave carries energy. Ocean waves carry it across water. Sound waves carry it through air.'},
+  {t:'mc',q:'The HIGH point of a wave is called the ____.',a:['crest','trough','amplitude','frequency'],why:'Crest = top. Think of the crest of a hill.'},
+  {t:'mc',q:'The LOW point of a wave is called the ____.',a:['trough','crest','wavelength','medium'],why:'Trough = bottom. A trough is a low dip in the ground.'},
+  {t:'tap',target:'crest',why:'Crests are the tops of the wave, the highest points.'},
+  {t:'tap',target:'trough',why:'Troughs are the bottoms of the wave, the lowest points.'},
+  {t:'arrow',target:'wavelength',why:'Wavelength goes sideways: from one crest to the very next crest.'},
+  {t:'arrow',target:'amplitude',why:'Amplitude goes up or down: from the dashed resting line to a crest or a trough.'},
+  {t:'mc',q:'The distance from one crest to the NEXT crest is the ____.',a:['wavelength','frequency','amplitude','volume'],why:'Wave-LENGTH is a length. You could measure it with a ruler, crest to crest.'},
+  {t:'mc',q:'Amplitude is the distance from the ____ to a crest or trough.',a:['resting line in the middle','next crest','bottom of the page','speaker'],why:'Amplitude starts at the middle resting line and goes up to a crest, or down to a trough.'},
+  {t:'tf',q:'A trough is the top of a wave.',a:false,why:'False. The trough is the bottom. The crest is the top.'},
+  {t:'tf',q:'Wavelength is measured from crest to crest.',a:true,why:'True. Crest to the next crest, or trough to the next trough.'}]},
+ {id:'pitch',name:'Frequency & Pitch',grade:'Gr 3',blurb:'How often waves pass, and high vs low',bank:[
+  {t:'mc',q:'The number of crests that pass by in a certain amount of time is called ____.',a:['frequency','wavelength','amplitude','volume'],why:'FREQUENCY tells how FREQUENTLY crests pass by. Lots of crests each second = high frequency.'},
+  {t:'mc',q:'Pitch is how ____ a sound is.',a:['high or low','loud or soft','long or short','hot or cold'],why:'Pitch is high or low, like a bird chirp (high) or a tuba (low).'},
+  {t:'tf',q:'A sound with a high frequency has a high pitch.',a:true,why:'True. More vibrations each second make a higher pitch.'},
+  {t:'tf',q:'A big tuba plays higher notes than a tiny flute.',a:false,why:'False. Big, long things vibrate slowly and sound low. Small things vibrate fast and sound high.'},
+  {t:'listen',ask:'high',why:PITCH_WHY},{t:'listen',ask:'low',why:PITCH_WHY},{t:'listen',ask:'freqHigh',why:PITCH_WHY},
+  {t:'compare',ask:'freqHigh',why:'Count the crests. More crests packed in = higher frequency.'},
+  {t:'compare',ask:'pitchLow',why:'Fewer crests = lower frequency = lower pitch.'},
+  {t:'compare',ask:'longWave',why:'A long wavelength means the crests are far apart.'},
+  {t:'mc',q:'If MORE crests pass by every second, the frequency gets ____.',a:['higher','lower','quieter','the same'],why:'More crests per second means a higher frequency and a higher pitch.'},
+  {t:'mc',q:'Which sound has the HIGHEST pitch?',a:['a bird chirping','a lion roaring','a big drum','thunder'],why:'A bird’s tiny voice box vibrates super fast, so its chirp is high.'},
+  {t:'mc',q:'Frequency is counted in hertz. One hertz means one wave every ____.',a:['second','minute','hour','mile'],why:'1 hertz = 1 wave each second. The note A that orchestras tune to is 440 hertz: 440 waves every second!'},
+  {t:'tf',q:'When waves get closer together (shorter wavelength), the frequency goes up.',a:true,why:'True. Squeeze the waves closer and more of them pass by each second.'}]},
+ {id:'volume',name:'Volume & Amplitude',grade:'Gr 3',blurb:'Loud vs soft, tall vs short waves',bank:[
+  {t:'mc',q:'____ is how loud or soft a sound is.',a:['Volume','Pitch','Frequency','Wave'],why:'Volume = loud or soft. Pitch = high or low. Two different things.'},
+  {t:'mc',q:'A wave with a BIG amplitude sounds ____.',a:['louder','softer','higher','lower'],why:'Taller waves carry more energy, so they sound louder.'},
+  {t:'listen',ask:'loud',why:LOUD_WHY},{t:'listen',ask:'soft',why:LOUD_WHY},
+  {t:'compare',ask:'louder',why:'Taller wave = bigger amplitude = louder.'},
+  {t:'compare',ask:'softer',why:'Shorter wave = smaller amplitude = softer.'},
+  {t:'tf',q:'Volume and pitch mean the same thing.',a:false,why:'False. Volume is loud vs soft. Pitch is high vs low. A sound can be high AND quiet.'},
+  {t:'tf',q:'A whisper makes waves with a small amplitude.',a:true,why:'True. Soft sounds have small, short waves.'},
+  {t:'mc',q:'How do you make a drum sound LOUDER?',a:['hit it harder','hit it softer','paint it red','use a smaller drum'],why:'Hitting harder makes the drum skin move farther, so the wave gets taller (bigger amplitude).'},
+  {t:'mc',q:'Two waves have the same number of crests, but one is much TALLER. What is different?',a:['amplitude (volume)','frequency','pitch','wavelength'],why:'Same number of crests means same frequency and pitch. Taller means bigger amplitude, so louder.'},
+  {t:'tf',q:'You can turn up the volume without changing the pitch.',a:true,why:'True. Turning up the radio makes the song louder, but the notes stay the same.'}]},
+ {id:'matter',name:'Sound on the Move',grade:'Gr 3',blurb:'Vibrations, mediums, solids vs space',bank:[
+  {t:'mc',q:'Sound is made when matter ____.',a:['vibrates','freezes','melts','glows'],why:'Every sound starts with something vibrating.'},
+  {t:'mc',q:'Vibrating means ____.',a:['moving back and forth quickly','standing very still','getting hot','changing color'],why:'Vibrating is moving back and forth fast. Touch your throat while you hum and feel it.'},
+  {t:'mc',q:'The matter that sound travels through is called the ____.',a:['medium','amplitude','pitch','volume'],why:'The medium is the stuff sound travels through: a solid, a liquid, or a gas like air.'},
+  {t:'mc',q:'Sound CANNOT travel through ____.',a:['empty space','a solid','a liquid','a gas'],why:'Empty space has no matter to vibrate, so sound has nothing to travel through.'},
+  {t:'mc',q:'Sound waves move FASTEST through ____.',a:['solids','liquids','gases','empty space'],why:'In solids the particles are packed tight, so they pass the vibration along fastest.'},
+  {t:'mc',q:'Sound moves SLOWEST through ____.',a:['gases, like air','solids, like steel','liquids, like water','wood'],why:'Gas particles are spread far apart, so the vibration takes longer to pass along.'},
+  {t:'tf',q:'All sounds are caused by vibrations.',a:true,why:'True. No vibration, no sound.'},
+  {t:'tf',q:'The sound from a piano comes from strings vibrating inside it.',a:true,why:'True. Each key makes a little hammer hit a string, and the string vibrates.'},
+  {t:'tf',q:'Astronauts can hear each other yell in outer space without radios.',a:false,why:'False. Space is empty, with no air to carry sound. That is why astronauts use radios.'},
+  {t:'tf',q:'Water is a medium that sound can travel through.',a:true,why:'True. Whales and dolphins call to each other through water.'},
+  {t:'mc',q:'Put your ear on a table and tap the other end. Why is the tap so clear?',a:['sound travels well through solids','the table is magic','your ear gets bigger','tables are hollow'],why:'Solids carry sound fast and strong, so the tap comes through loud and clear.'}]}
+];
+
+/* ================= helpers for wrong-answer coaching ================= */
+function mcq(o){const a=[o.correct],wrong={};shuffle(o.dist).forEach(([l,r])=>{if(a.length<4&&l!==o.correct&&!a.includes(l)){a.push(l);wrong[l]=r}});return Object.assign({t:'mc'},o,{a,wrong})}
+function skip(by,times){const s=[];for(let i=1;i<=times;i++)s.push(by*i);return s.join(', ')}
+const rev=v=>String(v).split('').reverse().join('');
+function multDiag(x,y,ans){return v=>{
+ if(v===x+y)return 'You ADDED '+x+' + '+y+'. The × sign means equal groups, so it’s '+x+' groups of '+y+'.';
+ if(v===ans+y||v===ans-y)return 'You were one group off. '+v+' is '+(v/y)+' × '+y+'. Count your skip-count jumps again.';
+ if(v===ans+x||v===ans-x)return 'You were one group off. '+v+' is '+x+' × '+(v/x)+'. Count your skip-count jumps again.';
+ if(ans>9&&rev(v)===String(ans))return 'You flipped the digits. It’s '+ans+', not '+v+'.';
+ if(Math.abs(v-ans)===10)return 'So close! You were off by 10. Recheck the tens.';
+ return null}}
+function checkDiv(n,b){return v=>'Check it: '+v+' × '+b+' = '+v*b+(v*b>n?', which is MORE than '+n+'.':', which is LESS than '+n+'.')}
+
+/* ================= MULTIPLY ================= */
+const TIPS={1:'Anything times 1 stays the same.',2:'Double it.',3:'Count by 3s: 3, 6, 9, 12…',4:'Double it, then double again.',5:'Count by 5s. Answers end in 0 or 5.',6:'Do ×5, then add one more group.',7:'Split it: ×5 plus ×2.',8:'Double, double, double.',9:'Do ×10, then take away one group.',10:'Put a zero on the end.'};
+function fact(set){const a=pick(set),b=ri(1,10);const [x,y]=Math.random()<.5?[a,b]:[b,a];const ans=x*y;
+ return{t:'num',eq:x+' × '+y+' = ?',ans,key:x+'x'+y,why:x+' × '+y+' = '+ans+'. Tip for '+a+'s: '+TIPS[a],diag:multDiag(x,y,ans),
+  steps:['Read it as "'+x+' groups of '+y+'."','Skip count by '+y+', '+x+' time'+(x>1?'s':'')+': '+skip(y,x)+'.','Shortcut for '+a+'s: '+TIPS[a],'So '+x+' × '+y+' = '+ans+'.']}}
+const M_ARR=()=>{const r=ri(2,5),c=ri(2,6),v=ri(0,2),ans=r*c;
+ if(v===0)return{t:'num',q:'How many dots in all?',svg:arraySvg(r,c),ans,why:r+' rows of '+c+' is '+r+' × '+c+' = '+ans+'.',
+  diag:x=>x===r+c?'You added the rows and the columns. Arrays multiply: rows × how many in each row.':(x===ans-c||x===ans+c)?'You missed or added a whole row. Count the rows again: there are '+r+'.':(x===ans-r||x===ans+r)?'You missed or added a column. Each row has '+c+'.':null,
+  steps:['Count the rows going down: '+r+'.','Count the dots in ONE row: '+c+'.','Rows × dots in each row: '+r+' × '+c+' = '+ans+'.']};
+ if(v===1)return mcq({q:'Which multiplication matches this array?',svg:arraySvg(r,c),correct:r+' × '+c,dist:[[r+' + '+c,'That adds. An array is rows TIMES how many in each row.'],[(r+1)+' × '+c,'Count the rows again. There are '+r+', not '+(r+1)+'.'],[r+' × '+(c+1),'Count across one row again. Each row has '+c+'.'],[(r-1)+' × '+c,'You missed a row. There are '+r+' rows.']],why:r+' rows with '+c+' in each row is '+r+' × '+c+'.',steps:['Count the rows: '+r+'.','Count one row: '+c+'.','Write it as rows × row size: '+r+' × '+c+'.']});
+ const g=ri(2,5),e=ri(2,5);return{t:'num',q:g+' bags with '+e+' marbles in each. How many marbles?',svg:groupsSvg(g,e),ans:g*e,why:g+' equal groups of '+e+' is '+g+' × '+e+' = '+g*e+'.',diag:multDiag(g,e,g*e),
+  steps:['How many bags (groups)? '+g+'.','How many in each bag? '+e+'.','Equal groups means multiply: '+g+' × '+e+'.','Skip count by '+e+': '+skip(e,g)+'. Total: '+g*e+'.']}};
+const M_WORD=()=>{const a=ri(3,9),b=ri(3,9);const t=pick([
+ [a+' rows of chairs, '+b+' chairs in each row. How many chairs?','rows','chairs in each row'],
+ [who()+' reads '+b+' pages a day for '+a+' days. How many pages?','days','pages each day'],
+ [a+' packs of gum with '+b+' pieces each. How many pieces?','packs','pieces in each pack'],
+ ['A spider has 8 legs. How many legs on '+a+' spiders?','spiders','legs on each spider',8]]);const bb=t[3]||b,ans=a*bb;
+ return{t:'num',q:t[0],ans,why:a+' groups of '+bb+' → '+a+' × '+bb+' = '+ans+'.',diag:v=>v===a+bb?'You added. When every group has the SAME amount, multiply.':multDiag(a,bb,ans)(v),
+  steps:['Find the number of groups: '+a+' '+t[1]+'.','Find how many in each group: '+bb+' '+t[2]+'.','Same amount in every group → multiply: '+a+' × '+bb+' = '+ans+'.']}};
+const M_MISS=()=>{const a=ri(2,10),b=ri(2,10),p=a*b;return{t:'num',eq:'? × '+b+' = '+p,ans:a,why:a+' × '+b+' = '+p+'.',
+ diag:v=>v===p-b?'You subtracted. The question is: how many groups of '+b+' make '+p+'?':v===p+b?'You added. Think: how many groups of '+b+' make '+p+'?':'Check it: '+v+' × '+b+' = '+v*b+', not '+p+'.',
+ steps:['Ask: how many groups of '+b+' make '+p+'?','Skip count by '+b+' until you hit '+p+': '+skip(b,a)+'.','Count your jumps: '+a+'. So ? = '+a+'.']}};
+const M_BIG=()=>{const v=ri(0,3);
+ if(v===0){const k=ri(2,9)*10,b=ri(2,9),s=k/10,ans=k*b;return{t:'num',eq:k+' × '+b+' = ?',ans,why:s+' × '+b+' = '+s*b+', then add a zero: '+ans+'.',
+  diag:x=>x===s*b?'You forgot the zero. '+k+' is '+s+' TENS, so the answer is '+s*b+' tens = '+ans+'.':x===s*b*100?'Too many zeros. Only one zero, from the 10 in '+k+'.':multDiag(k,b,ans)(x),
+  steps:[k+' is '+s+' tens.',s+' × '+b+' = '+s*b+'.','So '+s+' tens × '+b+' = '+s*b+' tens = '+ans+'.']}}
+ if(v===1){const k=ri(1,5)*100,b=ri(2,6),s=k/100,ans=k*b;return{t:'num',eq:k+' × '+b+' = ?',ans,why:s+' × '+b+' = '+s*b+', then add two zeros: '+ans+'.',
+  diag:x=>(x===s*b||x===s*b*10)?'Count your zeros. '+k+' is '+s+' HUNDREDS, so add two zeros: '+ans+'.':null,
+  steps:[k+' is '+s+' hundred'+(s>1?'s':'')+'.',s+' × '+b+' = '+s*b+'.','So the answer is '+s*b+' hundreds = '+ans+'.']}}
+ if(v===2){const a=ri(12,49),b=ri(2,6),t=Math.floor(a/10)*10,o=a%10,ans=a*b;return{t:'num',eq:a+' × '+b+' = ?',ans,why:'('+t+' × '+b+') + ('+o+' × '+b+') = '+t*b+' + '+o*b+' = '+ans+'.',
+  diag:x=>x===t*b+o?'You multiplied the tens but forgot to multiply the ones. '+o+' × '+b+' = '+o*b+'.':x===t*b?'You only did the tens part. Add the ones part: '+o+' × '+b+' = '+o*b+'.':x===o*b?'You only did the ones part. Add the tens part: '+t+' × '+b+' = '+t*b+'.':Number(String(t/10*b)+String(o*b))===x?'You wrote the two pieces side by side. ADD them instead: '+t*b+' + '+o*b+' = '+ans+'.':x===a+b?'You added. The × sign means '+b+' groups of '+a+'.':null,
+  steps:['Break '+a+' into tens and ones: '+t+' + '+o+'.','Tens: '+t+' × '+b+' = '+t*b+'.','Ones: '+o+' × '+b+' = '+o*b+'.','Add the pieces: '+t*b+' + '+o*b+' = '+ans+'.']}}
+ const a=ri(11,19),b=ri(11,14),e=b-10,ans=a*b;return{t:'num',eq:a+' × '+b+' = ?',ans,why:a+' × 10 + '+a+' × '+e+' = '+a*10+' + '+a*e+' = '+ans+'.',
+  diag:x=>x===a*10||x===a*e?'You only did half of it. Split '+b+' into 10 + '+e+' and do BOTH parts.':x===a*10+e?'Multiply the '+e+' by '+a+' too: '+a+' × '+e+' = '+a*e+'.':null,
+  steps:['Split '+b+' into 10 + '+e+'.',a+' × 10 = '+a*10+'.',a+' × '+e+' = '+a*e+'.','Add them: '+a*10+' + '+a*e+' = '+ans+'.']}};
+
+/* ================= DIVIDE ================= */
+const D_SHARE=()=>{const b=ri(2,5),q=ri(2,6),n=b*q;const base={t:'num',svg:dotsSvg(n),ans:q,
+ diag:v=>v===n-b?'You took away '+b+'. Dividing means splitting into equal groups.':v===b?'That’s the number of plates. The question asks how many go on EACH one.':v===n?'That’s all the cookies. Split them up.':checkDiv(n,b)(v)};
+ return pick([Object.assign({q:'Split '+n+' cookies equally onto '+b+' plates. How many on each plate?',why:n+' ÷ '+b+' = '+q+' because '+b+' × '+q+' = '+n+'.',
+  steps:['Deal the cookies one at a time onto the '+b+' plates.','Each round around the plates uses '+b+' cookies.','You can go around '+q+' times before they run out ('+skip(b,q)+').','So each plate gets '+q+'. '+n+' ÷ '+b+' = '+q+'.']},base),
+  Object.assign({q:'How many groups of '+b+' can you make from '+n+' cookies?',why:'You get '+q+' groups. '+n+' ÷ '+b+' = '+q+'.',
+  steps:['Circle '+b+' cookies at a time.','Count as you go: '+skip(b,q)+'.','You made '+q+' groups. '+n+' ÷ '+b+' = '+q+'.']},base)])};
+const D_FAM=()=>{const a=ri(2,9),b=ri(2,9),p=a*b;
+ if(Math.random()<.5)return{t:'num',q:'If '+a+' × '+b+' = '+p+', then…',eq:p+' ÷ '+b+' = ?',ans:a,why:'Same fact family: '+a+' × '+b+' = '+p+', so '+p+' ÷ '+b+' = '+a+'.',
+  diag:v=>v===b?'That’s the number you divide BY. The answer is the OTHER number in the fact.':v===p*b?'You multiplied. Division goes backwards.':checkDiv(p,b)(v),
+  steps:['The fact uses three numbers: '+a+', '+b+', '+p+'.','Division starts with the big one: '+p+' ÷ '+b+'.','The missing number is the one left over: '+a+'.']};
+ return mcq({q:'Which is in the same fact family as '+a+' × '+b+' = '+p+'?',correct:p+' ÷ '+b+' = '+a,dist:[[p+' − '+b+' = '+(p-b),'Fact families use × and ÷ only, not − .'],[a+' + '+b+' = '+(a+b),'Fact families use × and ÷ only, not + .'],[(p+2)+' ÷ 2 = '+((p+2)/2),'That uses different numbers. The family is '+a+', '+b+' and '+p+'.']],why:'A fact family uses the same three numbers: '+a+', '+b+' and '+p+'.',
+  steps:['Find the three numbers: '+a+', '+b+', '+p+'.','The family is: '+a+' × '+b+', '+b+' × '+a+', '+p+' ÷ '+b+', '+p+' ÷ '+a+'.','Pick the one that uses only those numbers.']})};
+const D_FACT=()=>{const b=ri(2,10),q=ri(1,10),n=b*q;return{t:'num',eq:n+' ÷ '+b+' = ?',ans:q,key:n+'/'+b,why:b+' × '+q+' = '+n+', so '+n+' ÷ '+b+' = '+q+'.',
+ diag:v=>v===n-b?'You subtracted. Division asks how many groups of '+b+' fit in '+n+'.':v===n*b?'You multiplied. Division goes backwards.':v===n+b?'You added. Division asks how many groups of '+b+' fit in '+n+'.':checkDiv(n,b)(v),
+ steps:['Flip it into multiplication: '+b+' × ? = '+n+'.','Skip count by '+b+' to '+n+': '+skip(b,q)+'.','That’s '+q+' jumps, so '+n+' ÷ '+b+' = '+q+'.']}};
+const D_REM=()=>{const b=ri(3,9),q=ri(2,9),r=ri(1,b-1),n=b*q+r;
+ if(Math.random()<.2){const d=ri(3,6);return mcq({q:'When you divide by '+d+', which remainder is IMPOSSIBLE?',correct:String(d),dist:[[String(d-1),'A remainder of '+(d-1)+' IS possible. It’s smaller than '+d+'.'],['1','A remainder of 1 IS possible. It’s smaller than '+d+'.'],['2','A remainder of 2 IS possible. It’s smaller than '+d+'.']],why:'The remainder must be smaller than the number you divide by.',
+  steps:['A remainder is what’s left after making as many groups of '+d+' as you can.','If '+d+' were left, you could make one MORE group.','So the remainder is always less than '+d+'.']})}
+ const r2=r+1<b?r+1:r-1;
+ return mcq({eq:n+' ÷ '+b+' = ?',correct:q+' R'+r,dist:[[(q+1)+' R'+r,(q+1)+' groups of '+b+' is '+b*(q+1)+', which is MORE than '+n+'.'],[q+' R'+r2,'Subtract carefully: '+n+' − '+b*q+' = '+r+', not '+r2+'.'],[(q-1)+' R'+(r+b),'Your leftover ('+(r+b)+') is bigger than '+b+', so you could make one more group.'],[q+' R0','There IS a leftover: '+b+' × '+q+' = '+b*q+', and that’s less than '+n+'.']],why:b+' × '+q+' = '+b*q+'. '+n+' − '+b*q+' = '+r+' left over.',
+  steps:['Find the biggest '+b+'s fact that fits in '+n+': '+b+' × '+q+' = '+b*q+'.','Subtract: '+n+' − '+b*q+' = '+r+'.',r+' is less than '+b+', so it’s the remainder.','Answer: '+q+' R'+r+'.']})};
+const D_WORD=()=>{const b=ri(3,6),q=ri(3,8),r=ri(1,b-1),v=ri(0,2);
+ if(v===0){const n=b*q;return{t:'num',q:n+' students sit '+b+' at each table. How many tables do they fill?',ans:q,why:n+' ÷ '+b+' = '+q+' tables.',diag:x=>x===n-b?'You subtracted. Ask how many groups of '+b+' fit in '+n+'.':checkDiv(n,b)(x),steps:['Each table takes '+b+' students.','How many groups of '+b+' in '+n+'? '+skip(b,q)+'.','That’s '+q+' tables.']}}
+ const n=b*q+r;
+ if(v===1)return{t:'num',q:n+' kids need rides. Each car holds '+b+'. How many cars do they need?',ans:q+1,why:n+' ÷ '+b+' = '+q+' R'+r+', so you need '+(q+1)+' cars.',
+  diag:x=>x===q?q+' cars only carries '+b*q+' kids. That leaves '+r+' kid'+(r>1?'s':'')+' standing on the sidewalk! They need one more car.':x===r?'That’s how many kids are left over, not how many cars.':null,
+  steps:[n+' ÷ '+b+' = '+q+' R'+r+'.',q+' full cars carry '+b*q+' kids.','The '+r+' leftover kid'+(r>1?'s':'')+' still need'+(r>1?'':'s')+' a ride, so add one more car.','Answer: '+(q+1)+' cars.']};
+ return{t:'num',q:n+' stickers are shared equally by '+b+' kids. How many stickers are LEFT OVER?',ans:r,why:n+' ÷ '+b+' = '+q+' R'+r+'.',
+  diag:x=>x===q?q+' is how many stickers each kid GETS. The question asks what’s LEFT OVER.':x===b?'That’s the number of kids.':null,
+  steps:['Give each kid one sticker at a time.','Each kid gets '+q+' (that uses '+b*q+' stickers).',n+' − '+b*q+' = '+r+' left that can’t be shared fairly.','Answer: '+r+'.']}};
+const D_BIG=()=>{const b=ri(2,9);let q=Math.random()<.35?ri(2,9)*10:ri(11,99);while(b*q>999)q=Math.floor(q/2);const n=b*q,t=Math.floor(q/10)*10,o=q%10;
+ return{t:'num',eq:n+' ÷ '+b+' = ?',ans:q,why:b+' × '+q+' = '+n+'.',
+  diag:x=>(o===0&&x===q/10)?'You forgot the zero. '+n+' ÷ '+b+' is '+q/10+' TENS = '+q+'.':(o>0&&(x===t||x===o))?'You only did one piece. Divide BOTH pieces and add them.':checkDiv(n,b)(x),
+  steps:o===0?[n+' is '+n/10+' tens.',n/10+' ÷ '+b+' = '+q/10+'.','So '+n+' ÷ '+b+' = '+q/10+' tens = '+q+'.']:['Split '+n+' into easy pieces: '+t*b+' + '+o*b+'.',t*b+' ÷ '+b+' = '+t+'.',o*b+' ÷ '+b+' = '+o+'.','Add: '+t+' + '+o+' = '+q+'.']}};
+
+/* ================= FRACTIONS ================= */
+const F_NAME=()=>{const d=pick([2,3,4,6,8]),n=ri(1,d-1);const pie=Math.random()<.5;
+ if(Math.random()<.15)return mcq({q:'Which fraction equals ONE whole?',correct:frac(d,d),dist:[[frac(1,d),'That’s just ONE piece. A whole means ALL '+d+' pieces.'],[frac(0,d),'0/'+d+' means zero pieces, nothing at all.'],[frac(1,d+1),'That’s one small piece, not a whole.']],why:'When the top and bottom match, it’s 1 whole.',steps:['The bottom tells how many pieces make the whole: '+d+'.','A whole means you have ALL of them: '+d+' out of '+d+'.','So '+d+'/'+d+' = 1.']});
+ return mcq({q:'What fraction is shaded?',svg:pie?pieSvg(n,d):barSvg(n,d),correct:frac(n,d),dist:[[frac(d-n,d),'That counts the parts that are NOT shaded. Count the colored ones.'],[frac(n,d+1),'Count ALL the parts again. There are '+d+'.'],[frac(d,n),'Upside down! Top = shaded parts, bottom = all the parts.'],[frac(Math.min(n+1,d),d),'Count the shaded parts again. There are '+n+'.']],why:n+' of the '+d+' equal parts are shaded.',
+  steps:['Count ALL the equal parts: '+d+'. That’s the bottom number.','Count the SHADED parts: '+n+'. That’s the top number.','So the fraction is '+n+'/'+d+'.']})};
+const F_SHADE=()=>{const d=pick([2,3,4,5,6,8]),n=ri(1,d-1);return{t:'shade',n,d,pie:Math.random()<.4,why:n+'/'+d+' means '+n+' out of '+d+' equal parts.',steps:['The bottom number ('+d+') is how many equal parts there are.','The top number ('+n+') is how many to shade.','Shade exactly '+n+' part'+(n>1?'s':'')+'.']}};
+const F_LINE=()=>{const d=pick([2,3,4,6,8]),n=ri(1,d-1);return{t:'line',n,d,why:'Count '+n+' jump'+(n>1?'s':'')+' from 0.',steps:['The space from 0 to 1 is cut into '+d+' equal jumps.','Each jump is 1/'+d+'.','Put your finger on 0 and count '+n+' jump'+(n>1?'s':'')+' (spaces, not lines).','You land on '+n+'/'+d+'.']}};
+const F_CMP=()=>{let a,b,why,steps;if(Math.random()<.55){const d=pick([3,4,5,6,8]);let x=ri(1,d-1),y=ri(1,d-1);if(x===y)y=x===1?2:x-1;a=[x,d];b=[y,d];why='Same size pieces, so compare the tops.';steps=['Both fractions have '+d+' on the bottom, so the pieces are the SAME size.','Compare the tops: '+x+' and '+y+'.','More pieces = bigger fraction.']}
+ else{const n=ri(1,3);let d1=pick([3,4,6,8]),d2=pick([2,3,4,6,8].filter(v=>v!==d1&&v>n));if(d1<=n)d1=n+2;a=[n,d1];b=[n,d2];why='Smaller bottom number = bigger pieces.';steps=['Both have '+n+' on top, so you have the same NUMBER of pieces.','Now compare piece SIZE. Cutting into '+Math.min(d1,d2)+' makes bigger pieces than cutting into '+Math.max(d1,d2)+'.','Bigger pieces = bigger fraction. Look at the bars to see it.']}
+ const va=a[0]/a[1],vb=b[0]/b[1],ans=va>vb?'>':va<vb?'<':'=';const big=va>vb?a:b;
+ const msg=s=>s==='='?'They aren’t equal. Look at the bars: one is longer.':'The open mouth faces the BIGGER fraction. '+big[0]+'/'+big[1]+' is bigger.';
+ const q={t:'mc',q:'Which sign makes it true?',eq:frac(a[0],a[1])+' ? '+frac(b[0],b[1]),svg:twoBars(a,b),a:[ans].concat(['<','>','='].filter(s=>s!==ans)),fixed:['<','>','='],why,steps,wrong:{}};['<','>','='].forEach(s=>{if(s!==ans)q.wrong[s]=msg(s)});return q};
+const F_EQ=()=>{const [n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[2,5],[1,5]]),k=ri(2,4);
+ if(Math.random()<.5)return{t:'num',eq:frac(n,d)+' = '+frac('?',d*k),svg:twoBars([n,d],[n*k,d*k]),ans:n*k,why:'Multiply top and bottom by '+k+'.',
+  diag:v=>v===n+(d*k-d)?'You ADDED to the top. To keep fractions equal, MULTIPLY top and bottom by the same number.':v===n?'The bottom changed, so the top has to change too.':v===d*k?'That’s the bottom number. Find the top.':null,
+  steps:['How did the bottom change? '+d+' × '+k+' = '+d*k+'.','Do the SAME thing to the top: '+n+' × '+k+' = '+n*k+'.','So '+n+'/'+d+' = '+n*k+'/'+d*k+'. Same amount, cut into smaller pieces.']};
+ return mcq({q:'Which fraction is EQUAL to '+n+'/'+d+'?',correct:frac(n*k,d*k),dist:[[frac(n+1,d+1),'Adding 1 to the top and bottom changes the size. Multiply instead.'],[frac(n*k,d),'You only changed the top. Change BOTH by the same number.'],[frac(n,d*k),'You only changed the bottom. Change BOTH by the same number.'],[frac(n+k,d+k),'Adding the same number doesn’t keep it equal. Multiply instead.']],why:n+'/'+d+' = '+n*k+'/'+d*k+'.',
+  steps:['Pick a number to multiply by, like '+k+'.','Top: '+n+' × '+k+' = '+n*k+'.','Bottom: '+d+' × '+k+' = '+d*k+'.','So '+n+'/'+d+' = '+n*k+'/'+d*k+'.']})};
+const F_OPS=()=>{const v=ri(0,3),d=pick([3,4,5,6,8,10,12]);
+ if(v===0){const a=ri(1,d-2),b=ri(1,d-a),s=a+b;return mcq({eq:frac(a,d)+' + '+frac(b,d)+' = ?',correct:frac(s,d),dist:[[frac(s,d*2),'Don’t add the bottoms! The pieces are still '+d+'ths. Only the tops get added.'],[frac(s+1,d),'Recount: '+a+' + '+b+' = '+s+'.'],[frac(Math.max(s-1,1),d),'Recount: '+a+' + '+b+' = '+s+'.']],why:'Add the tops, keep the bottom.',
+  steps:['The bottoms match ('+d+'), so the pieces are the same size.','Add the tops: '+a+' + '+b+' = '+s+'.','KEEP the bottom: '+d+'.','Answer: '+s+'/'+d+'.']})}
+ if(v===1){const a=ri(2,d-1),b=ri(1,a-1),s=a-b;return mcq({eq:frac(a,d)+' − '+frac(b,d)+' = ?',correct:frac(s,d),dist:[[frac(a+b,d),'You added. The sign says subtract.'],[frac(s,d*2),'Don’t change the bottom. The pieces stay '+d+'ths.'],[frac(s+1,d),'Recount: '+a+' − '+b+' = '+s+'.'],[frac(s,1),'Keep the bottom number '+d+'.']],why:'Subtract the tops, keep the bottom.',
+  steps:['The bottoms match ('+d+').','Subtract the tops: '+a+' − '+b+' = '+s+'.','KEEP the bottom: '+d+'.','Answer: '+s+'/'+d+'.']})}
+ if(v===2){const w=ri(1,3),n=ri(1,d-1),ans=w*d+n;return{t:'num',eq:w+' '+frac(n,d)+' = '+frac('?',d),ans,why:w+' whole = '+w*d+'/'+d+', plus '+n+' more.',
+  diag:x=>x===w+n?'You added the whole number to the top. Each whole is '+d+' pieces, not 1.':x===w*d?'You forgot the extra '+n+' piece'+(n>1?'s':'')+'.':x===w*n?'Each whole is '+d+' pieces. Multiply the whole number by '+d+'.':null,
+  steps:['Each whole is cut into '+d+' pieces, so 1 whole = '+d+'/'+d+'.',w+' whole'+(w>1?'s':'')+' = '+w+' × '+d+' = '+w*d+' pieces.','Add the extra '+n+': '+w*d+' + '+n+' = '+ans+'.','So it’s '+ans+'/'+d+'.']}}
+ const k=ri(2,6),dd=pick([3,4,5,6,8]);return{t:'num',eq:k+' × '+frac(1,dd)+' = '+frac('?',dd),ans:k,why:k+' pieces of 1/'+dd+' = '+k+'/'+dd+'.',
+  diag:x=>x===k*dd?'The bottom stays '+dd+'. You only count how many pieces: '+k+'.':x===1?'You have '+k+' groups of that piece, not 1.':null,
+  steps:[k+' × 1/'+dd+' means '+k+' groups of 1/'+dd+'.','That’s 1/'+dd+' + 1/'+dd+' … '+k+' times.',k+' pieces of size 1/'+dd+' = '+k+'/'+dd+'.']}};
+
+/* ================= GEOMETRY ================= */
+const DEF={square:'4 equal sides AND 4 square corners',rectangle:'4 square corners',rhombus:'4 equal sides',parallelogram:'2 pairs of parallel sides',trapezoid:'exactly 1 pair of parallel sides',triangle:'3 sides',pentagon:'5 sides',hexagon:'6 sides',octagon:'8 sides'};
+const G_SHAPE=()=>{const v=ri(0,3);
+ if(v===0){const k=pick(NAMES);return mcq({q:'What is the name of this shape?',svg:shapeSvg(k),correct:k,dist:NAMES.filter(n=>!SHAPES[k].is.includes(n)).map(n=>[n,'A '+n+' has '+DEF[n]+'. This shape doesn’t.']),why:'A '+k+' has '+DEF[k]+'.',
+  steps:['Count the sides: '+SHAPES[k].sides+'.',SHAPES[k].sides===4?'Look for square corners and parallel sides.':'The number of sides gives the name.','A '+k+' has '+DEF[k]+'.']})}
+ if(v===1){const k=pick(['triangle','pentagon','hexagon','octagon','trapezoid']);return{t:'num',q:'How many sides does this shape have?',svg:shapeSvg(k),ans:SHAPES[k].sides,why:'A '+k+' has '+SHAPES[k].sides+' sides.',
+  diag:x=>'Easy to lose your place. Put your finger on one side and count all the way around.',
+  steps:['Put your finger on one side and call it 1.','Move around the shape, counting each side.','Stop when you get back to the start: '+SHAPES[k].sides+' sides.']}}
+ const tf=pick([['A square is also a rectangle.',true,'True! A rectangle needs 4 square corners. A square has them, plus equal sides.'],['Every rectangle is a square.',false,'False. A long, skinny rectangle does not have 4 equal sides.'],['A rhombus has 4 equal sides.',true,'True. That is what makes it a rhombus.'],['A trapezoid has 5 sides.',false,'False. A trapezoid is a quadrilateral, so it has 4 sides.'],['All quadrilaterals have 4 sides.',true,'True. "Quad" means four.'],['A triangle can have 2 right angles.',false,'False. Two right angles would use up all the turning, so the sides could never meet.']]);
+ return{t:'tf',q:tf[0],a:tf[1],why:tf[2]}};
+const AREA_DIAG=(w,h)=>x=>x===2*(w+h)?'That’s the PERIMETER (distance around). Area counts the squares INSIDE.':x===w+h?'You added the two sides. Area = length × width.':multDiag(w,h,w*h)(x);
+const G_AREA=()=>{const v=ri(0,2),w=ri(2,7),h=ri(2,5);
+ if(v===0)return{t:'num',q:'What is the area of this rectangle?',svg:gridSvg(w,h),unit:'sq units',ans:w*h,why:h+' rows of '+w+' = '+w*h+' square units.',diag:AREA_DIAG(w,h),
+  steps:['Area = how many squares cover the inside.','Count the squares in one row: '+w+'.','Count the rows: '+h+'.','Rows × squares per row: '+h+' × '+w+' = '+w*h+' square units.']};
+ if(v===1){const W=ri(3,12),H=ri(2,9);return{t:'num',q:'A garden is '+W+' feet long and '+H+' feet wide. What is its area?',svg:rectSvg(W,H,'ft'),unit:'sq ft',ans:W*H,why:W+' × '+H+' = '+W*H+' square feet.',diag:AREA_DIAG(W,H),
+  steps:['Area = length × width.','Length = '+W+' ft, width = '+H+' ft.',W+' × '+H+' = '+W*H+' square feet.']}}
+ const A=w*h;return{t:'num',q:'A rectangle has an area of '+A+' square units. One side is '+w+'. How long is the other side?',unit:'units',ans:h,why:A+' ÷ '+w+' = '+h+'.',
+  diag:x=>x===A-w?'You subtracted. Area is length × width, so divide to go backwards.':'Check it: '+w+' × '+x+' = '+w*x+', not '+A+'.',
+  steps:['Area = side × side, so '+w+' × ? = '+A+'.','Go backwards with division: '+A+' ÷ '+w+'.','Skip count by '+w+': '+skip(w,h)+'. That’s '+h+'.']}};
+const G_PER=()=>{const v=ri(0,3);
+ if(v===0){const w=ri(3,12),h=ri(2,9),p=2*(w+h);return{t:'num',q:'What is the perimeter?',svg:rectSvg(w,h,'cm'),unit:'cm',ans:p,why:w+' + '+h+' + '+w+' + '+h+' = '+p+' cm.',
+  diag:x=>x===w*h?'That’s the AREA. Perimeter is the distance AROUND: add all 4 sides.':x===w+h?'You only added 2 sides. A rectangle has 4. The other two match these.':null,
+  steps:['Perimeter = walk all the way around and add every side.','A rectangle has 2 long sides ('+w+') and 2 short sides ('+h+').',w+' + '+h+' + '+w+' + '+h+' = '+p+' cm.']}}
+ if(v===1){const s=ri(2,12);return{t:'num',q:'A square has sides of '+s+' inches. What is its perimeter?',svg:rectSvg(s,s,'in'),unit:'in',ans:4*s,why:s+' × 4 = '+4*s+'.',
+  diag:x=>x===s*s?'That’s the AREA. Perimeter adds the 4 sides.':x===s?'That’s just one side. A square has 4 equal sides.':x===2*s?'That’s only 2 sides. A square has 4.':null,
+  steps:['A square has 4 sides that are all the same.','Each side is '+s+' in.',s+' + '+s+' + '+s+' + '+s+' = '+4*s+' in (or '+s+' × 4).']}}
+ if(v===2){const w=ri(4,12),h=ri(2,8),p=2*(w+h);return{t:'num',q:'A rectangle has a perimeter of '+p+' m. Its length is '+w+' m. What is its width?',unit:'m',ans:h,why:'('+p+' − '+2*w+') ÷ 2 = '+h+'.',
+  diag:x=>x===p-2*w?'That’s BOTH widths together. Split it in half.':x===p-w?'There are TWO lengths. Take away '+w+' twice.':null,
+  steps:['There are 2 lengths: '+w+' + '+w+' = '+2*w+'.','Take them away: '+p+' − '+2*w+' = '+(p-2*w)+'.','That’s 2 widths, so split it: '+(p-2*w)+' ÷ 2 = '+h+' m.']}}
+ return pick([mcq({q:'You are putting a FENCE around a yard. What are you measuring?',correct:'perimeter',dist:[['area','Area is the space INSIDE, like grass. A fence goes AROUND.'],['volume','Volume is how much fits inside a box. Fences go around.'],['angle','An angle is a corner. A fence goes all the way around.']],why:'A fence goes AROUND the edge.',steps:['Ask: am I going AROUND, or covering the INSIDE?','A fence goes around.','Distance around = perimeter.']}),
+  mcq({q:'You are covering a floor with carpet. What are you measuring?',correct:'area',dist:[['perimeter','Perimeter is the edge, like a baseboard. Carpet covers the inside.'],['length','Length is only one side. Carpet covers the whole floor.'],['angle','An angle is a corner. Carpet covers the whole floor.']],why:'Carpet covers the space INSIDE.',steps:['Ask: am I going AROUND, or covering the INSIDE?','Carpet covers the inside.','Space inside = area.']})])};
+const ANGDEF={acute:'less than a square corner (under 90°)',right:'exactly a square corner (90°)',obtuse:'wider than a square corner (over 90°)',straight:'a flat line (180°)'};
+const LINEDEF={parallel:'never cross, like train tracks',perpendicular:'cross and make square corners',intersecting:'cross, but not at a square corner',curved:'bend. These are straight'};
+const G_ANG=()=>{const v=ri(0,3);
+ if(v<=1){const deg=pick([30,45,60,90,90,120,135,150,180]);const ans=deg<90?'acute':deg===90?'right':deg<180?'obtuse':'straight';
+  return mcq({q:'What kind of angle is this?',svg:angleSvg(deg),correct:ans,dist:['acute','right','obtuse','straight'].filter(x=>x!==ans).map(x=>[x,'A '+x+' angle is '+ANGDEF[x]+'. This one is '+ANGDEF[ans]+'.']),why:'This angle is '+ANGDEF[ans]+'.',
+   steps:['Hold up the corner of a piece of paper. That’s a right angle (90°).','Line the paper corner up with the bottom line.','Smaller than the paper corner = acute. Exactly = right. Wider = obtuse. Flat = straight.','This one is '+ans+'.']})}
+ if(v===2){const k=pick(['parallel','perpendicular','intersecting']);return mcq({q:'What kind of lines are these?',svg:linesSvg(k),correct:k,dist:['parallel','perpendicular','intersecting','curved'].filter(x=>x!==k).map(x=>[x,x[0].toUpperCase()+x.slice(1)+' lines '+LINEDEF[x]+'.']),why:k[0].toUpperCase()+k.slice(1)+' lines '+LINEDEF[k]+'.',
+  steps:['Do the lines ever cross? If never, they’re parallel.','If they cross, is it a square corner? Yes = perpendicular.','Crossing without a square corner = intersecting.']})}
+ return pick([{t:'num',q:'How many degrees is a right angle?',ans:90,why:'A right angle is 90°, a quarter turn.',diag:x=>x===180?'180° is a straight line. A right angle is half of that.':null,steps:['A full turn is 360°.','A right angle is a quarter turn.','360 ÷ 4 = 90°.']},
+  {t:'num',q:'How many degrees is a straight angle?',ans:180,why:'A straight line is 180°, a half turn.',diag:x=>x===90?'90° is a square corner. A straight line is TWO of those.':null,steps:['A full turn is 360°.','A straight line is a half turn.','360 ÷ 2 = 180°.']},
+  {t:'num',q:'How many right angles does a rectangle have?',ans:4,why:'All 4 corners are right angles.',diag:x=>'Count every corner. All of them are square corners.',steps:['A rectangle has 4 corners.','Every corner is a square corner.','So 4 right angles.']},
+  {t:'num',q:'How many degrees in a full turn?',ans:360,why:'A full turn is 360°.',diag:x=>x===180?'180° is only half a turn.':null,steps:['A right angle is 90°.','Four right angles make a full turn.','90 × 4 = 360°.']}])};
+const G_SYM=()=>{const v=ri(0,2);const st=['Imagine folding the shape on a line.','If both halves land EXACTLY on each other, that line counts.','Try up-down, side-to-side and corner-to-corner folds, and count the ones that work.'];
+ if(v===0){const k=pick(['square','rectangle','equilateral triangle','hexagon','pentagon','parallelogram','trapezoid']);const s=SHAPES[k].sym;return{t:'num',q:'How many lines of symmetry does this shape have?',svg:shapeSvg(k),ans:s,why:'A '+k+' has '+s+' line'+(s===1?'':'s')+' of symmetry.',
+  diag:x=>(k==='rectangle'&&x===4)?'The corner-to-corner folds DON’T work on a rectangle. Fold paper and the flaps stick out.':(k==='square'&&x===2)?'Don’t forget the corner-to-corner folds. On a square, they work too!':(k==='parallelogram'&&x>0)?'It looks balanced, but no fold makes the halves land on each other. Try it with paper.':null,steps:st.concat(['This '+k+' has '+s+'.'])}}
+ if(v===1){const [ch,n]=pick([['A',1],['H',2],['X',2],['F',0],['E',1],['T',1],['Z',0],['M',1],['L',0]]);return{t:'num',q:'How many lines of symmetry does this letter have?',svg:letterSvg(ch),ans:n,why:ch+' has '+n+' line'+(n===1?'':'s')+' of symmetry.',diag:x=>n===0?'Try folding '+ch+' every way. No fold makes the halves match.':null,steps:st.concat([ch+' has '+n+'.'])}}
+ const diag=Math.random()<.5;const ext=diag?'<path class="s-d" d="M20 30 L200 110"/>':'<path class="s-d" d="M110 15 L110 125"/>';
+ return{t:'tf',q:'Is the dashed line a line of symmetry?',svg:shapeSvg('rectangle',ext),a:!diag,why:diag?'No! Fold a rectangle on its diagonal and the corners stick out.':'Yes. Fold on that line and both halves match.',steps:diag?['Fold a paper rectangle corner to corner.','The two flaps don’t line up. The corners stick out.','So a diagonal is NOT a line of symmetry for a rectangle.']:null}};
+
+/* ================= sound vocabulary for coaching ================= */
+const TERMS={crest:'the TOP of a wave',trough:'the BOTTOM of a wave',wavelength:'the distance from one crest to the NEXT crest',amplitude:'how tall the wave is, from the middle line to a crest',frequency:'how many waves pass by each second',volume:'how loud or soft a sound is',pitch:'how high or low a sound is',medium:'the stuff sound travels through',wave:'something that carries energy from place to place',energy:'the power to make things happen'};
+
+/* ================= PLUS-MINUS SWAMP (add / subtract / place value) ================= */
+const cm=n=>Number(n).toLocaleString('en-US');
+const PLACES=['ones','tens','hundreds','thousands','ten-thousands','hundred-thousands'];
+const digs=n=>String(n).split('').reverse().map(Number);
+function noCarryAdd(a,b){const A=digs(a),B=digs(b);let s='';for(let i=0;i<Math.max(A.length,B.length);i++)s=(((A[i]||0)+(B[i]||0))%10)+s;return Number(s)}
+function flipSub(a,b){const A=digs(a),B=digs(b);let s='';for(let i=0;i<A.length;i++)s=Math.abs((A[i]||0)-(B[i]||0))+s;return Number(s)}
+function addSteps(a,b){const A=digs(a),B=digs(b),L=Math.max(A.length,B.length);const st=['Line the numbers up by place value: ones under ones, tens under tens.'];let c=0;
+ for(let i=0;i<L;i++){const x=A[i]||0,y=B[i]||0,s=x+y+c;const P=PLACES[i][0].toUpperCase()+PLACES[i].slice(1);
+  st.push(P+': '+x+' + '+y+(c?' + 1 (carried)':'')+' = '+s+(s>=10?'. Write '+(s%10)+', carry 1 to the '+PLACES[i+1]+'.':'. Write '+s+'.'));c=s>=10?1:0}
+ if(c)st.push('Bring the carried 1 down to the front.');st.push('Answer: '+cm(a+b)+'.');return st}
+function subSteps(a,b){const A=digs(a),B=digs(b);const st=['Line the numbers up by place value. Start with the ones.'];let br=0;
+ for(let i=0;i<A.length;i++){const top=A[i]-br,y=B[i]||0;const P=PLACES[i][0].toUpperCase()+PLACES[i].slice(1);
+  if(i>=B.length&&br===0){st.push(P+': bring down '+A[i]+'.');continue}
+  if(top<y){const nb=top+10;st.push(P+': '+(br?'after lending 1, the top is '+top+'. ':'')+(top<0?'It has nothing left, so it borrows too and becomes 9. ':top+' is less than '+y+', so borrow 1 from the '+PLACES[i+1]+'. ')+(top<0?'9':nb)+' − '+y+' = '+(nb-y)+'.');br=1}
+  else{st.push(P+': '+(br?'after lending 1, the top is '+top+'. ':'')+top+' − '+y+' = '+(top-y)+'.');br=0}}
+ st.push('Answer: '+cm(a-b)+'. Check it: '+cm(a-b)+' + '+cm(b)+' = '+cm(a)+'.');return st}
+function addDiag(a,b){const s=a+b;return v=>v===noCarryAdd(a,b)?'You forgot to carry. When a column adds up to 10 or more, write the ones digit and carry 1 to the next column.':v===a-b||v===b-a?'You subtracted. The sign says ADD.':Math.abs(v-s)%10===0&&Math.abs(v-s)<=1000&&v!==s?'You were off by '+cm(Math.abs(v-s))+'. One column slipped. Check your carries.':null}
+function subDiag(a,b){const d=a-b;return v=>v===flipSub(a,b)?'In a column where the top digit was SMALLER, you subtracted the top from the bottom. You can’t flip it. Borrow from the next column instead.':v===a+b?'You added. The sign says SUBTRACT.':v-d===10||v-d===100||v-d===1000?'You borrowed but forgot to take 1 away from the column you borrowed from.':'Check it: '+cm(v)+' + '+cm(b)+' = '+cm(v+b)+(v+b>a?', which is MORE than ':', which is LESS than ')+cm(a)+'.'}
+const SWAMPY=['stinky socks','slime balls','frog burps','mud pies','toad toots','goblin boogers','swamp bubbles','moldy muffins'];
+const A_ADD=()=>{let a=ri(100,699),b=ri(100,899-a+100);if(a+b>999)b=999-a;if(Math.random()<.4){const s=pick(SWAMPY);return{t:'num',q:'The swamp goblin has '+a+' '+s+'. He finds '+b+' more. How many '+s+' now?',eq:a+' + '+b+' = ?',ans:a+b,why:a+' + '+b+' = '+(a+b)+'.',diag:addDiag(a,b),steps:addSteps(a,b)}}
+ return{t:'num',eq:a+' + '+b+' = ?',ans:a+b,why:a+' + '+b+' = '+(a+b)+'.',diag:addDiag(a,b),steps:addSteps(a,b)}};
+const A_SUB=()=>{const a=Math.random()<.3?ri(2,9)*100:ri(200,999),b=ri(100,a-10);if(Math.random()<.4){const s=pick(SWAMPY);return{t:'num',q:'A troll had '+a+' '+s+'. He sneezed and lost '+b+'. How many are left?',eq:a+' − '+b+' = ?',ans:a-b,why:a+' − '+b+' = '+(a-b)+'.',diag:subDiag(a,b),steps:subSteps(a,b)}}
+ return{t:'num',eq:a+' − '+b+' = ?',ans:a-b,why:a+' − '+b+' = '+(a-b)+'.',diag:subDiag(a,b),steps:subSteps(a,b)}};
+const A_ROUND=()=>{const to=pick([10,100]);let n=ri(101,989);if(n%to===0)n+=3;const lo=Math.floor(n/to)*to,hi=lo+to,ans=(n-lo)>=to/2?hi:lo,other=ans===hi?lo:hi;const dig=to===10?n%10:Math.floor(n/10)%10;const pl=to===10?'ones':'tens';
+ const d=[[String(other),'Look at the '+pl+' digit: '+dig+'. '+(dig>=5?'5 or more rounds UP.':'4 or less rounds DOWN.')],[String(to===10?Math.round(n/100)*100:Math.round(n/10)*10),'That rounds to the wrong place. This asks for the nearest '+to+'.'],[String(n),'That’s the number itself. Rounding moves it to the nearest '+to+'.']];
+ return mcq({q:'Round '+n+' to the nearest '+to+'.',correct:String(ans),dist:d,why:n+' is between '+lo+' and '+hi+'. It’s closer to '+ans+'.',steps:['Find the two '+to+'s it’s between: '+lo+' and '+hi+'.','Look at the digit to the right of the place you’re rounding to: the '+pl+' digit is '+dig+'.',dig>=5?'5 or more → round UP to '+hi+'.':'4 or less → round DOWN to '+lo+'.']})};
+const A_PV=()=>{const len=ri(4,6);let s='';for(let i=0;i<len;i++)s+=String(i===0?ri(1,9):ri(0,9));const pos=ri(0,len-1),dg=Number(s[len-1-pos]);let n=Number(s);if(dg===0){return A_PV()}
+ const val=dg*Math.pow(10,pos);const ds=[];for(let p=0;p<Math.min(6,len+1);p++)if(p!==pos)ds.push([cm(dg*Math.pow(10,p)),'That would be the '+dg+' in the '+PLACES[p]+' place. Here it’s in the '+PLACES[pos]+' place.']);
+ return mcq({q:'What is the VALUE of the '+dg+' in '+cm(n)+'?',correct:cm(val),dist:ds,why:'The '+dg+' is in the '+PLACES[pos]+' place, so it’s worth '+cm(val)+'.',steps:['Start at the right and name each place: ones, tens, hundreds, thousands…','The '+dg+' sits in the '+PLACES[pos]+' place.','Its value is '+dg+' × '+cm(Math.pow(10,pos))+' = '+cm(val)+'.']})};
+const A_BIG=()=>{if(Math.random()<.5){const a=ri(1000,8999),b=ri(100,9999-a);return{t:'num',eq:a+' + '+b+' = ?',ans:a+b,why:cm(a)+' + '+cm(b)+' = '+cm(a+b)+'.',diag:addDiag(a,b),steps:addSteps(a,b)}}
+ const a=ri(2000,9999),b=ri(100,a-100);return{t:'num',eq:a+' − '+b+' = ?',ans:a-b,why:cm(a)+' − '+cm(b)+' = '+cm(a-b)+'.',diag:subDiag(a,b),steps:subSteps(a,b)}};
+const A_TWO=()=>{const a=ri(120,480),b=ri(20,a-50),c=ri(30,300),s=pick(SWAMPY),who2=pick(['Burpy the wizard','Sir Toots-a-Lot','Grandma Goblin','The Mud Queen']);const ans=a-b+c;
+ return{t:'num',q:who2+' had '+a+' '+s+'. '+b+' rolled away, then '+c+' more showed up. How many now?',ans,why:a+' − '+b+' = '+(a-b)+', then + '+c+' = '+ans+'.',
+  diag:v=>v===a-b?'You did step 1 but forgot step 2. Then '+c+' more showed up!':v===a+c?'You forgot that '+b+' rolled away.':v===a+b+c?'Rolling away means LESS. Subtract the '+b+'.':v===a-b-c?'Showing up means MORE. Add the '+c+'.':null,
+  steps:['Step 1, some rolled away (subtract): '+a+' − '+b+' = '+(a-b)+'.','Step 2, more showed up (add): '+(a-b)+' + '+c+' = '+ans+'.','Answer: '+ans+'.']}};
+
+/* ================= worlds ================= */
+const WORLDS=[
+ {id:'swamp',name:'Plus-Minus Swamp',sub:'Add & Subtract',icon:'±',col:'c-slime',math:true,blurb:'Carry, borrow, round, and figure out what each digit is worth.',levels:[
+  {id:'add',name:'Swamp Sums',grade:'Gr 3',blurb:'Add within 1,000 with carrying',gen:A_ADD},
+  {id:'sub',name:'Troll Take-Aways',grade:'Gr 3',blurb:'Subtract within 1,000 with borrowing',gen:A_SUB},
+  {id:'round',name:'Round the Frogs',grade:'Gr 3',blurb:'Round to the nearest 10 or 100',gen:A_ROUND},
+  {id:'two',name:'Two-Step Stories',grade:'Gr 3',blurb:'Add and subtract in one problem',gen:A_TWO},
+  {id:'pv',name:'Place Value Palace',grade:'Gr 4',blurb:'What is each digit worth?',gen:A_PV},
+  {id:'big',name:'Big Swamp Math',grade:'Gr 4',blurb:'4-digit adding and subtracting',gen:A_BIG},
+  {id:'boss',name:'Boss: Mud Monster',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'mult',name:'Times Tower',sub:'Multiplication',icon:'×',col:'c-coral',math:true,blurb:'Climb from equal groups to big multiplication.',levels:[
+  {id:'arr',name:'Groups & Arrays',grade:'Gr 3',blurb:'See multiplication as rows and groups',gen:M_ARR},
+  {id:'f1',name:'Facts: 2, 5, 10',grade:'Gr 3',blurb:'The easy-skip-count facts',gen:()=>fact([2,5,10])},
+  {id:'f2',name:'Facts: 3, 4, 6',grade:'Gr 3',blurb:'Doubles and add-a-group',gen:()=>fact([3,4,6])},
+  {id:'f3',name:'Facts: 7, 8, 9',grade:'Gr 3',blurb:'The tough ones',gen:()=>fact([7,8,9])},
+  {id:'mix',name:'Missing Numbers & Stories',grade:'Gr 3',blurb:'? × 6 = 42 and word problems',gen:()=>Math.random()<.5?M_MISS():M_WORD()},
+  {id:'big',name:'Big Multiplication',grade:'Gr 4',blurb:'Tens, hundreds, 2-digit × 1-digit',gen:M_BIG},
+  {id:'boss',name:'Boss: Tower Top',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'div',name:'Divide Canyon',sub:'Division',icon:'÷',col:'c-teal',math:true,blurb:'Fair shares, fact families, remainders.',levels:[
+  {id:'share',name:'Fair Share',grade:'Gr 3',blurb:'Split things into equal groups',gen:D_SHARE},
+  {id:'fam',name:'Fact Families',grade:'Gr 3',blurb:'Use multiplication to divide',gen:D_FAM},
+  {id:'facts',name:'Division Facts',grade:'Gr 3',blurb:'Divide within 100',gen:D_FACT},
+  {id:'word',name:'Story Problems',grade:'Gr 3–4',blurb:'What does the leftover mean?',gen:D_WORD},
+  {id:'rem',name:'Remainders',grade:'Gr 4',blurb:'17 ÷ 5 = 3 R2',gen:D_REM},
+  {id:'big',name:'Big Division',grade:'Gr 4',blurb:'Up to 3-digit ÷ 1-digit',gen:D_BIG},
+  {id:'boss',name:'Boss: Canyon Crossing',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'frac',name:'Fraction Falls',sub:'Fractions',icon:'½',col:'c-sun',math:true,blurb:'Equal parts, number lines, comparing, adding.',levels:[
+  {id:'name',name:'Name It',grade:'Gr 3',blurb:'What part is shaded?',gen:F_NAME},
+  {id:'shade',name:'Shade It',grade:'Gr 3',blurb:'Tap parts to color the fraction',gen:F_SHADE},
+  {id:'line',name:'Number Line',grade:'Gr 3',blurb:'Tap where the fraction lives',gen:F_LINE},
+  {id:'cmp',name:'Bigger or Smaller',grade:'Gr 3',blurb:'Compare with <, > and =',gen:F_CMP},
+  {id:'eq',name:'Equal Fractions',grade:'Gr 3–4',blurb:'1/2 = 2/4 = 4/8',gen:F_EQ},
+  {id:'ops',name:'Add, Subtract, Mixed',grade:'Gr 4',blurb:'Same denominators and mixed numbers',gen:F_OPS},
+  {id:'boss',name:'Boss: The Falls',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'geo',name:'Shape Station',sub:'Geometry',icon:'△',col:'c-good',math:true,blurb:'Shapes, area, perimeter, angles, symmetry.',levels:[
+  {id:'shape',name:'Shape Names',grade:'Gr 3',blurb:'Quadrilaterals and polygons',gen:G_SHAPE},
+  {id:'area',name:'Area',grade:'Gr 3',blurb:'Space inside',gen:G_AREA},
+  {id:'per',name:'Perimeter',grade:'Gr 3',blurb:'Distance around',gen:G_PER},
+  {id:'ang',name:'Angles & Lines',grade:'Gr 4',blurb:'Acute, right, obtuse, parallel',gen:G_ANG},
+  {id:'sym',name:'Symmetry',grade:'Gr 4',blurb:'Fold it and match it',gen:G_SYM},
+  {id:'boss',name:'Boss: Station Master',grade:'Gr 3–4',blurb:'Everything, with a speed bonus',boss:true}]},
+ {id:'sound',name:'Wave World',sub:'Science: Sound',icon:'∿',col:'c-ink',blurb:'Crests, troughs, pitch, volume, vibrations.',levels:SOUND.concat([{id:'master',name:'Boss: Sound Master',grade:'Gr 3',blurb:'Every sound question, mixed',boss:true}])}
+];
+WORLDS.forEach(w=>w.levels.forEach(l=>{l.count=l.boss?10:8;l.pass=l.boss?8:6}));
+
+const BADGES={
+ w_mult:{n:'Tower Champ',d:'Beat the Times Tower boss'},w_div:{n:'Canyon Crosser',d:'Beat the Divide Canyon boss'},
+ w_swamp:{n:'Swamp Master',d:'Beat the Plus-Minus Swamp boss'},black:{n:'Black Belt',d:'Reached the top rank'},
+ w_frac:{n:'Fraction Ace',d:'Beat the Fraction Falls boss'},w_geo:{n:'Shape Shifter',d:'Beat the Shape Station boss'},
+ w_sound:{n:'Wave Master',d:'Beat the Wave World boss'},
+ perfect:{n:'Perfect Run',d:'A whole level right on the first try'},combo5:{n:'Combo Crusher',d:'5 right in a row'},
+ combo10:{n:'Unstoppable',d:'10 right in a row'},fast:{n:'Lightning',d:'10 speed bonuses in boss rounds'},
+ ear:{n:'Golden Ears',d:'4 listening questions right'},lab:{n:'Lab Scientist',d:'Built and played a wave in the Wave Lab'},
+ explorer:{n:'Explorer',d:'A star in every world'},legend:{n:'Legend',d:'3 stars on every boss'}
+};
+const YES=['Nailed it!','Boom. Correct!','Big brain move!','Quazart approves!','Textbook!','You’re on fire!','Stellar!'];
+const NO=['Close! Read the tip below.','Tricky one. It comes back later.','Almost. Check the tip, then crush the next one.'];
+
+/* ================= audio ================= */
+let actx=null;
+function ensureAudio(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){actx=null}}if(actx&&actx.state==='suspended')actx.resume();return actx}
+function tone(f,g,dur,type,delay){const a=ensureAudio();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),v=a.createGain();o.type=type||'triangle';o.frequency.value=f;v.gain.setValueAtTime(0.0001,t);v.gain.exponentialRampToValueAtTime(Math.max(g,0.0002),t+0.03);v.gain.setValueAtTime(Math.max(g,0.0002),t+dur-0.08);v.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(v).connect(a.destination);o.start(t);o.stop(t+dur+0.02)}
+const sfx={good(){if(P.muted)return;tone(659,.18,.14);tone(988,.18,.22,'triangle',.11)},bad(){if(P.muted)return;tone(220,.15,.25,'sine');tone(185,.12,.3,'sine',.14)},level(){if(P.muted)return;[523,659,784,1047].forEach((f,i)=>tone(f,.18,.25,'triangle',i*.13))},badge(){if(P.muted)return;[784,1175].forEach((f,i)=>tone(f,.15,.3,'sine',i*.12))},zap(){if(P.muted)return;tone(1319,.12,.12,'square',.25)}};
+
+/* ================= canvas waves (sound world) ================= */
+function fit(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;const W=Math.round(w*dpr),H=Math.round(h*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);return{c,w,h}}
+function dot(c,x,y,r,col){c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()}
+function drawWave(cv,o){
+ const {c,w,h}=fit(cv);const x0=14,W=w-28,mid=h/2;const A=(o.amp==null?.8:o.amp)*(h/2-(o.pad||26));const ph=o.phase||0,cyc=o.cycles;
+ const yAt=x=>mid-A*Math.sin(2*Math.PI*cyc*(x-x0)/W+ph);
+ c.setLineDash([5,6]);c.strokeStyle=css('--muted');c.lineWidth=1.5;c.beginPath();c.moveTo(x0,mid);c.lineTo(x0+W,mid);c.stroke();c.setLineDash([]);
+ c.strokeStyle=o.color||css('--teal');c.lineWidth=o.lw||4;c.lineCap='round';c.lineJoin='round';c.beginPath();
+ for(let x=x0,first=true;x<=x0+W+0.01;x+=1.5){const y=yAt(x);if(first){c.moveTo(x,y);first=false}else c.lineTo(x,y)}c.stroke();
+ const crests=[],troughs=[],off=ph/(2*Math.PI);
+ for(let k=-3;k<cyc+3;k++){const cx=x0+W*((0.25-off+k)/cyc),tx=x0+W*((0.75-off+k)/cyc);if(cx>=x0-.5&&cx<=x0+W+.5)crests.push({x:cx,y:mid-A});if(tx>=x0-.5&&tx<=x0+W+.5)troughs.push({x:tx,y:mid+A})}
+ crests.sort((a,b)=>a.x-b.x);troughs.sort((a,b)=>a.x-b.x);
+ const g={c,w,h,x0,W,mid,A,crests,troughs};
+ if(o.reveal){c.font='700 13px '+css('--body');c.textAlign='center';
+  crests.forEach(p=>{dot(c,p.x,p.y,5,css('--good'));c.fillStyle=css('--ink');c.fillText('crest',p.x,Math.max(13,p.y-11))});
+  troughs.forEach(p=>{dot(c,p.x,p.y,5,css('--coral'));c.fillStyle=css('--ink');c.fillText('trough',p.x,Math.min(h-4,p.y+21))})}
+ if(o.after)o.after(g);
+ (o.marks||[]).forEach(m=>{c.lineWidth=3;c.strokeStyle=m.ok?css('--good'):css('--bad');c.beginPath();c.arc(m.x,m.y,13,0,Math.PI*2);c.stroke()});
+ return g}
+function arrow(c,x1,y1,x2,y2,col,label,lx,ly){
+ c.strokeStyle=col;c.fillStyle=col;c.lineWidth=2.5;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+ [[x1,y1,x2,y2],[x2,y2,x1,y1]].forEach(([ax,ay,bx,by])=>{const an=Math.atan2(ay-by,ax-bx);c.beginPath();c.moveTo(ax,ay);c.lineTo(ax-10*Math.cos(an-.45),ay-10*Math.sin(an-.45));c.lineTo(ax-10*Math.cos(an+.45),ay-10*Math.sin(an+.45));c.closePath();c.fill()});
+ if(label){dot(c,lx,ly,12,col);c.fillStyle=css('--onaccent');c.font='800 13px '+css('--body');c.textAlign='center';c.textBaseline='middle';c.fillText(label,lx,ly+.5);c.textBaseline='alphabetic'}}
+
+/* ================= Quazart ================= */
+const QZ='<circle class="glow" cx="60" cy="60" r="40"/><path class="jet" d="M54 42 L60 0 L66 42Z"/><path class="jet" d="M54 78 L60 120 L66 78Z"/><ellipse class="disk" cx="60" cy="62" rx="50" ry="12"/><circle class="core" cx="60" cy="60" r="25"/><path class="disk" d="M10 62 A50 12 0 0 0 110 62"/><circle class="eye" cx="51" cy="55" r="7"/><circle class="eye" cx="69" cy="55" r="7"/><circle class="pupil" cx="52" cy="56" r="3.5"/><circle class="pupil" cx="70" cy="56" r="3.5"/><path class="mouth" d="M52 66 Q60 73 68 66" style="stroke-width:3"/><path class="spark" d="M20 24 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="spark" d="M98 96 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z"/><path class="ring r1" d="M86 22 Q92 30 86 38"/><path class="ring r2" d="M94 16 Q103 30 94 44"/><path class="ring r3" d="M102 10 Q114 30 102 50"/>';
+document.querySelectorAll('.echo').forEach(e=>e.innerHTML=QZ);
+function mood(m){const e=$('#echoPlay');e.classList.remove('happy','sad');void e.offsetWidth;e.classList.add(m);setTimeout(()=>e.classList.remove(m),950)}
+
+/* ================= confetti / toast ================= */
+const fx=$('#fx');let parts=[];
+function confetti(n){if(RM)return;const cols=[css('--teal'),css('--coral'),css('--sun'),css('--good')];const w=innerWidth;for(let i=0;i<(n||70);i++)parts.push({x:w/2+(Math.random()-.5)*w*.4,y:innerHeight*.35,vx:(Math.random()-.5)*9,vy:-Math.random()*10-4,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:pick(cols),life:1})}
+function stepFx(){const {c}=fit(fx);parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life-=.012;c.save();c.globalAlpha=Math.max(p.life,0);c.translate(p.x,p.y);c.rotate(p.r);c.fillStyle=p.c;c.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);c.restore()});parts=parts.filter(p=>p.life>0&&p.y<innerHeight+40)}
+let toastT;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
+function award(id){if(P.badges.includes(id))return false;P.badges.push(id);save();sfx.badge();toast('Badge earned: '+BADGES[id].n);return true}
+const MEDAL='<svg viewBox="0 0 44 44" aria-hidden="true"><circle class="medal" cx="22" cy="22" r="20"/><path class="medal-wave" d="M8 22 Q13 12 18 22 T28 22 T38 22"/></svg>';
+
+/* ================= screens ================= */
+const screens=['home','world','play','done','lab','report','arcade','agame'];
+function show(id){screens.forEach(s=>$('#'+s).hidden=s!==id);if(id!=='lab')labStop();if(id!=='play')kbHandler=null;if(id==='home')renderHome();if(id==='world')renderWorld();if(id==='report')renderReport();if(id==='arcade')renderArcade();if(id!=='agame'&&agCleanup){agCleanup();agCleanup=null}scrollTo(0,0)}
+const skey=(w,l)=>w.id+'.'+l.id;
+const starsOf=(w,l)=>P.stars[skey(w,l)]||0;
+const worldStars=w=>w.levels.reduce((a,l)=>a+starsOf(w,l),0);
+function unlocked(w,i){return i===0||starsOf(w,w.levels[i-1])>=1}
+function starStr(n){let s='';for(let i=0;i<3;i++)s+='<span class="'+(i<n?'on':'')+'">★</span>';return s}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function btn(cls,html,fn){const b=el('button',cls,html);b.type='button';b.onclick=fn;return b}
+let curW=0;
+function renderHome(){
+ $('#nameIn').value=P.name||'';
+ const tot=WORLDS.reduce((a,w)=>a+worldStars(w),0),max=WORLDS.reduce((a,w)=>a+w.levels.length*3,0);$('#totStars').textContent='★ '+tot+' / '+max;
+ const W=$('#worlds');W.innerHTML='';
+ WORLDS.forEach((w,i)=>{const s=worldStars(w),m=w.levels.length*3;const b=btn('world','<div class="wic '+w.col+'">'+w.icon+'</div><div class="wtx"><b>'+w.name+'</b><span>'+w.sub+' · '+w.levels.length+' levels · ★ '+s+'/'+m+'</span><div class="mini"><i style="width:'+(s/m*100)+'%"></i></div></div>',()=>{curW=i;show('world')});W.append(b)});
+ const B=$('#badges');B.innerHTML='';Object.entries(BADGES).forEach(([id,b])=>{B.append(el('div','badge'+(P.badges.includes(id)?'':' locked'),MEDAL+'<b>'+b.n+'</b><small>'+b.d+'</small>'))});
+ $('#badgeCount').textContent=P.badges.length+' of '+Object.keys(BADGES).length;
+ const bi=beltIdx(),ts=totalStars(),mx=maxStars();const nxt=bi<8?Math.ceil(BELT_AT[bi+1]*mx):null;const lo=Math.ceil(BELT_AT[bi]*mx);
+ $('#beltCard').innerHTML=beltSvg(bi)+'<div class="wtx"><b>'+BELTS[bi][0]+' Belt</b><span>'+(nxt?(nxt-ts)+' more ★ to '+BELTS[bi+1][0]+' Belt':'Top rank. Quazart bows to you.')+'</span><div class="mini"><i style="width:'+(nxt?((ts-lo)/(nxt-lo)*100):100)+'%"></i></div></div>';
+ const al=arcadeLeft();$('#arcBtn').innerHTML='<div class="aart">'+ART.dragon+'</div><div class="wtx"><b>Goofball Arcade</b><span>'+(al>0?'Open · '+mmss(al)+' left':(P.passes||0)?(P.passes+' Play Pass'+(P.passes>1?'es':'')+' ready'):'Locked · '+(P.wins%PASS_EVERY)+'/'+PASS_EVERY+' wins to next pass')+'</span><div class="mini"><i style="width:'+((P.wins%PASS_EVERY)/PASS_EVERY*100)+'%"></i></div></div>';
+ $('#themeBtn').textContent=effTheme()==='dark'?'Light mode':'Dark mode';$('#muteBtn').textContent='Sound effects: '+(P.muted?'off':'on');
+}
+function renderWorld(){const w=WORLDS[curW];$('#worldTitle').textContent=w.name;$('#worldBlurb').textContent=w.blurb;$('#worldStars').textContent='★ '+worldStars(w)+'/'+w.levels.length*3;
+ const L=$('#levels');L.innerHTML='';
+ w.levels.forEach((lv,i)=>{const open=unlocked(w,i);const b=btn('lvl'+(lv.boss?' boss':''),'<div class="num">'+(i+1)+'</div><div class="txt"><b>'+lv.name+'<span class="grade">'+lv.grade+'</span></b><span>'+(open?lv.blurb:'Locked. Get a star on '+w.levels[i-1].name+' first.')+'</span></div><div class="stars">'+starStr(starsOf(w,lv))+'</div>',()=>start(curW,i));b.disabled=!open;L.append(b)});
+ $('#labOpen').hidden=w.id!=='sound'}
+
+/* ================= game engine ================= */
+let S=null,kbHandler=null;
+document.addEventListener('keydown',e=>{if(kbHandler)kbHandler(e)});
+function genFor(w,lv){if(lv.gen){const q=lv.gen();q.src=lv.id;return q}const q=Object.assign({},pick(lv.bank));q.src=lv.id;return q}
+function buildQueue(w,lv){const out=[],seen=new Set();
+ if(lv.bank)return shuffle(lv.bank).slice(0,lv.count).map(q=>Object.assign({},q,{src:lv.id}));
+ const srcs=lv.boss?w.levels.filter(l=>!l.boss):[lv];let tries=0;
+ while(out.length<lv.count&&tries<200){tries++;const L=lv.boss?srcs[out.length%srcs.length]:lv;const q=genFor(w,L);const k=q.key||(q.q||'')+(q.eq||'')+(q.n||'')+'/'+(q.d||'')+(q.ans||'');if(seen.has(k))continue;seen.add(k);out.push(q)}
+ return lv.boss?shuffle(out):out}
+function start(wi,li){const w=WORLDS[wi],lv=w.levels[li];
+ const queue=(lv.boss&&w.id==='sound')?shuffle(SOUND.flatMap(l=>l.bank.map(q=>Object.assign({},q,{src:l.id})))).slice(0,lv.count):buildQueue(w,lv);
+ S={wi,li,w,lv,queue:queue.map(q=>Object.assign(q,{retry:false})),i:0,first:0,score:0,combo:0,locked:false,speed:!!(lv.boss&&w.math)};
+ show('play');$('#lvlTitle').textContent=w.name+' · '+lv.name;
+ $('#bubble').textContent='Quazart here! '+pick(['Let’s go, ','Brain on, ','Ready, '])+who()+'!'+(S.speed?' Fast answers earn lightning bonus points.':'');
+ showQ()}
+function hud(){$('#scoreBox').textContent=S.score+' pts';$('#barFill').style.width=(S.i/S.queue.length*100)+'%'}
+function showQ(){hud();S.locked=false;S.redraw=null;kbHandler=null;const q=S.queue[S.i];const card=$('#card');card.innerHTML='';$('#fb').hidden=true;
+ const tm=$('#timer');tm.hidden=!S.speed||q.retry;tm.classList.remove('run');void tm.offsetWidth;if(S.speed&&!q.retry)tm.classList.add('run');S.t0=performance.now();
+ if(q.retry)card.append(el('div','retry','Second chance'));
+ if(q.q)card.append(el('h2',null,q.q));
+ if(q.eq)card.append(el('div','eq',q.eq));
+ if(q.svg)card.append(el('div','vis',q.svg));
+ ({mc:rMC,tf:rTF,num:rNum,shade:rShade,line:rLine,tap:rTap,arrow:rArrow,listen:rListen,compare:rCompare})[q.t](q,card)}
+function termReason(l){const t=l.replace(/<[^>]+>/g,'').toLowerCase().trim();return TERMS[t]?'You picked "'+t+'". '+t[0].toUpperCase()+t.slice(1)+' means '+TERMS[t]+'. That\u2019s not what this question is asking about.':null}
+function optButtons(card,labels,correctIdx,cls,q){const wrap=el('div','opts'+(cls?' '+cls:''));const btns=labels.map((l,k)=>{const b=btn('opt',l,()=>{if(S.locked)return;const ok=k===correctIdx;btns.forEach(x=>x.disabled=true);b.classList.add(ok?'right':'wrong');btns[correctIdx].classList.add('right');answer(ok,labels[correctIdx],ok?null:{you:l,reason:(q&&q.wrong&&q.wrong[l])||termReason(l)})});wrap.append(b);return b});card.append(wrap);return btns}
+function rMC(q,card){let o=q.fixed||shuffle(q.a);const ci=o.indexOf(q.a[0]);const short=o.every(x=>x.replace(/<[^>]+>/g,'').length<=12);optButtons(card,o,ci,o.length===3?'three':short?'two':'',q)}
+function rTF(q,card){optButtons(card,['True','False'],q.a?0:1,'two',q)}
+const PENI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-5L16 4l4 4L9 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const KEYI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h4v4H4zM10 5h4v4h-4zM16 5h4v4h-4zM4 11h4v4H4zM10 11h4v4h-4zM16 11h4v4h-4zM10 17h4v4h-4z" fill="currentColor"/></svg>';
+function answerPad(card,o){const max=o.max||6;let v='',mode=P.inputMode||'pen',fix=null,strokes=[],groups=[],locked=false,cur=null,tmr=null;
+ const wrap=el('div','apad');const tog=el('div','modeTog');const bPen=btn('',PENI+'Write it',()=>setMode('pen')),bKey=btn('',KEYI+'Keypad',()=>setMode('keys'));tog.append(bPen,bKey);
+ const disp=el('div','kpd');const penBox=el('div','penBox');const cv=document.createElement('canvas');cv.className='pad';cv.setAttribute('aria-label','Write your answer here');penBox.append(cv);
+ const penCtl=el('div','penCtl');const bGoP=btn('big','Check ✓',()=>go());penCtl.append(btn('ghost','Undo',()=>{strokes.pop();redraw();recog()}),btn('ghost','Clear',()=>{strokes=[];redraw();recog()}),btn('ghost','Fix it',()=>{if(!v)return;fix={groups:groups.slice()};setMode('keys',true);toast('Type what you meant. Quazart will learn your writing.')}),bGoP);penBox.append(penCtl);
+ const kp=el('div','kp');const press=k=>{if(locked)return;if(k==='del')v=v.slice(0,-1);else if(k==='go'){go();return}else if(v.length<max)v=(v==='0'?'':v)+k;draw()};
+ ['1','2','3','4','5','6','7','8','9','del','0','go'].forEach(k=>{const b=btn(k==='go'?'go':'',k==='del'?'⌫':k==='go'?'✓':k,()=>press(k));b.setAttribute('aria-label',k==='del'?'Delete':k==='go'?'Check answer':k);kp.append(b)});
+ wrap.append(tog,disp,penBox,kp);card.append(wrap);
+ function draw(){const u=o.unit?' <small>'+o.unit+'</small>':'';if(mode==='pen'&&!fix)disp.innerHTML=v?'<small>I read:</small> '+v+u:'<small>Write your answer in the box</small>';else disp.innerHTML=(v||'<span class="cur">?</span>')+u;kp.lastChild.disabled=!v||locked;bGoP.disabled=!v||locked}
+ function redraw(){const {c,w,h}=fit(cv);c.strokeStyle=css('--line');c.setLineDash([6,8]);c.lineWidth=2;c.beginPath();c.moveTo(10,h*.82);c.lineTo(w-10,h*.82);c.stroke();c.setLineDash([]);c.strokeStyle=css('--ink');c.lineWidth=5;c.lineCap='round';c.lineJoin='round';strokes.forEach(s=>{c.beginPath();s.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));if(s.length===1)c.lineTo(s[0][0]+.1,s[0][1]);c.stroke()})}
+ function recog(){if(!strokes.length){v='';groups=[];draw();return}const r=HW.read(strokes);groups=r.groups;v=r.digits.join('').slice(0,max);draw()}
+ const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+ cv.addEventListener('pointerdown',e=>{if(locked)return;e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}cur=[pt(e)];strokes.push(cur);clearTimeout(tmr);redraw()});
+ cv.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();cur.push(pt(e));redraw()});
+ const up=()=>{if(!cur)return;cur=null;clearTimeout(tmr);tmr=setTimeout(recog,250)};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('pointerleave',up);
+ function setMode(m,isFix){mode=m;if(!isFix){fix=null;P.inputMode=m;save()}bPen.classList.toggle('on',m==='pen');bKey.classList.toggle('on',m==='keys');penBox.hidden=m!=='pen';kp.hidden=m!=='keys';if(m==='pen')requestAnimationFrame(redraw);if(o.onMode)o.onMode(m);draw()}
+ function go(){if(!v||locked)return;if(fix&&fix.groups.length===v.length){fix.groups.forEach((g,i)=>P.hw.push(HW.learn(g,v[i])));const byD={};P.hw=P.hw.reverse().filter(t=>{byD[t.d]=(byD[t.d]||0)+1;return byD[t.d]<=12}).reverse();HW.setUser(P.hw);save();toast('Got it! Quazart learned your handwriting.')}
+  o.onSubmit(parseInt(v,10),api)}
+ const api={reset(){v='';strokes=[];groups=[];fix=null;locked=false;disp.style.borderColor='';setMode(P.inputMode||'pen',true);redraw();draw()},mark(ok){locked=true;disp.style.borderColor=ok?'var(--good)':'var(--bad)';wrap.querySelectorAll('button').forEach(b=>b.disabled=true)},lock(){locked=true}};
+ kbHandler=e=>{if(/^[0-9]$/.test(e.key)){if(mode==='pen')setMode('keys',true);press(e.key)}else if(e.key==='Backspace')press('del');else if(e.key==='Enter')press('go')};
+ setMode(mode,true);return api}
+function stackHTML(a,op,b){return '<table class="stack"><tr><td></td><td>'+a+'</td></tr><tr class="op"><td>'+op+'</td><td>'+b+'</td></tr><tr class="ans"><td></td><td>?</td></tr></table>'}
+function rNum(q,card){const eqEl=card.querySelector('.eq');const orig=eqEl?eqEl.innerHTML:null;const m=q.eq&&/^([\d,]+) ([×+−]) ([\d,]+) = \?$/.exec(q.eq);
+ const lay=mode=>{if(!eqEl||!m)return;if(mode==='pen'){eqEl.innerHTML=stackHTML(m[1],m[2],m[3]);eqEl.classList.add('stacked')}else{eqEl.innerHTML=orig;eqEl.classList.remove('stacked')}};
+ answerPad(card,{unit:q.unit,onMode:lay,onSubmit:(n,pad)=>{if(S.locked)return;const ok=n===q.ans;pad.mark(ok);let why=null;if(!ok){why=q.diag?q.diag(n):null;if(!why)why=(n>q.ans?'Your answer is too big.':'Your answer is too small.')+' Follow the steps below to see where it slipped.'}answer(ok,String(q.ans)+(q.unit?' '+q.unit:''),ok?null:{you:n+(q.unit?' '+q.unit:''),reason:why})}})}
+function rShade(q,card){card.append(el('h2',null,'Tap parts to shade '+frac(q.n,q.d)));
+ const box=el('div','vis');box.innerHTML=q.pie?svg(200,200,pieParts(0,q.d,true)):svg(380,70,barParts(0,q.d,10,10,360,50,true));card.append(box);
+ const count=el('p','note');const upd=()=>{const k=box.querySelectorAll('.part.on').length;count.textContent='Shaded: '+k+' of '+q.d;chk.disabled=k===0};
+ box.querySelectorAll('.part').forEach(p=>p.addEventListener('click',()=>{if(S.locked)return;p.classList.toggle('on');upd()}));
+ const chk=btn('next check','Check',()=>{if(S.locked)return;const k=box.querySelectorAll('.part.on').length;chk.disabled=true;const n=q.n,d=q.d;const why=k===d?'You shaded ALL '+d+' parts. That\u2019s '+d+'/'+d+', one whole. The top number says shade only '+n+'.':(k===d-n&&k!==n)?'You shaded the parts that should stay white. The TOP number ('+n+') tells how many to color.':k>n?'You shaded '+k+'. That\u2019s too many. The top number says '+n+'.':'You shaded '+k+'. That\u2019s not enough. The top number says '+n+'.';answer(k===n,n+' part'+(n>1?'s':'')+' shaded',k===n?null:{you:k+' of '+d+' parts shaded',reason:why})});
+ card.append(count,chk);upd()}
+function rLine(q,card){card.append(el('h2',null,'Tap where '+frac(q.n,q.d)+' goes on the number line'));
+ const x0=30,x1=370,step=(x1-x0)/q.d;const box=el('div','vis');card.append(box);let chosen=null;
+ const draw=()=>{let o='<rect x="0" y="20" width="400" height="80" fill="transparent"/><path class="s-l" d="M'+x0+' 60 L'+x1+' 60"/>';
+  for(let i=0;i<=q.d;i++){const x=x0+i*step;o+='<path class="s-l" style="stroke-width:'+(i%q.d===0?3:2)+'" d="M'+x+' '+(i%q.d===0?44:50)+' L'+x+' '+(i%q.d===0?76:70)+'"/>'}
+  o+='<text class="s-t" text-anchor="middle" x="'+x0+'" y="100">0</text><text class="s-t" text-anchor="middle" x="'+x1+'" y="100">1</text>';
+  if(chosen!==null){const ok=chosen===q.n;o+='<circle class="'+(ok?'s-ok':'s-no')+'" cx="'+(x0+chosen*step)+'" cy="60" r="10"/>';if(!ok)o+='<circle class="s-ok" cx="'+(x0+q.n*step)+'" cy="60" r="10"/>';o+='<text class="s-t" text-anchor="middle" x="'+(x0+q.n*step)+'" y="30">'+q.n+'/'+q.d+'</text>'}
+  box.innerHTML=svg(400,110,o);box.firstChild.style.cursor='pointer';
+  box.firstChild.addEventListener('click',e=>{if(S.locked)return;const r=box.firstChild.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*400;let k=Math.round((x-x0)/step);k=Math.max(0,Math.min(q.d,k));chosen=k;draw();const n=q.n,d=q.d;const why=k===0?'That\u2019s 0, the starting point. Count jumps from there.':k===d?'That\u2019s 1 whole, the end of the line.':k===n+1?'You counted the 0 tick as a jump. Count the SPACES between ticks, not the lines.':k===d-n?'You counted from the 1 end. Always start counting at 0.':'You landed on '+k+'/'+d+'. Count again from 0.';answer(k===n,n+'/'+d+' is '+n+' jump'+(n>1?'s':'')+' from 0',k===n?null:{you:k+'/'+d,reason:why})})};
+ draw();card.append(el('p','note','Tap a tick mark.'))}
+/* --- sound-world renderers --- */
+function rTap(q,card){card.append(el('h2',null,'Tap a '+q.target.toUpperCase()+' on the wave.'));const cv=el('canvas','wave tap');card.append(cv);
+ const cycles=pick([2,2.5,3]);let marks=[],reveal=false,geo;const draw=()=>{geo=drawWave(cv,{cycles,amp:.85,marks,reveal})};S.redraw=draw;draw();
+ cv.addEventListener('click',e=>{if(S.locked)return;if(!geo)draw();const r=cv.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;const pts=q.target==='crest'?geo.crests:geo.troughs;const dx=Math.max(26,geo.W/cycles/5);
+  const ok=pts.some(p=>Math.abs(p.x-x)<dx&&Math.abs(p.y-y)<48);const other=q.target==='crest'?geo.troughs:geo.crests;const nearOther=other.some(p=>Math.abs(p.x-x)<dx&&Math.abs(p.y-y)<48);const why=nearOther?(q.target==='crest'?'That\u2019s a TROUGH, the bottom. Crests are the tops, the highest points.':'That\u2019s a CREST, the top. Troughs are the bottoms, the lowest points.'):Math.abs(y-geo.mid)<25?'That\u2019s near the middle resting line. Go all the way to the '+(q.target==='crest'?'top':'bottom')+' of a bump.':'Not quite on one. Look for the very '+(q.target==='crest'?'highest':'lowest')+' points; the green and orange dots show them now.';marks=[{x,y,ok}];reveal=true;draw();answer(ok,null,ok?null:{reason:why})});card.append(el('p','note','Tap right on the wave line.'))}
+function rArrow(q,card){card.append(el('h2',null,'Which arrow shows the '+q.target.toUpperCase()+'?'));const cv=el('canvas','wave');cv.style.height='220px';card.append(cv);
+ const letters=shuffle(['A','B','C']);const map={wavelength:letters[0],amplitude:letters[1],decoy:letters[2]};let reveal=false;
+ const draw=()=>drawWave(cv,{cycles:2,amp:.8,pad:36,reveal,after:g=>{if(g.crests.length<2||g.troughs.length<2)return;const col=css('--coral');const c1=g.crests[0],c2=g.crests[1],t1=g.troughs[0],t2=g.troughs[1];const top=g.mid-g.A,bot=g.mid+g.A;
+  arrow(g.c,c1.x,top-14,c2.x,top-14,col,map.wavelength,(c1.x+c2.x)/2,top-14);arrow(g.c,t1.x,g.mid,t1.x,bot,col,map.amplitude,t1.x+18,(g.mid+bot)/2);arrow(g.c,t2.x,top,t2.x,bot,col,map.decoy,t2.x-18,g.mid-18)}});
+ S.redraw=draw;requestAnimationFrame(draw);const AR={decoy:'That arrow goes from the top all the way to the bottom. That\u2019s TWICE the amplitude. Amplitude starts at the dashed middle line.',amplitude:'That arrow goes up and down from the middle line: that\u2019s AMPLITUDE (height). Wavelength goes SIDEWAYS, crest to crest.',wavelength:'That arrow goes sideways from crest to crest: that\u2019s WAVELENGTH. Amplitude goes UP or DOWN from the middle line.'};q.wrong={};Object.entries(map).forEach(([k,L])=>{if(k!==q.target)q.wrong[L]=AR[k]});const btns=optButtons(card,['A','B','C'],['A','B','C'].indexOf(map[q.target]),'three',q);btns.forEach(b=>b.addEventListener('click',()=>{reveal=true;draw()}))}
+const PLAYSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
+function rListen(q,card){const asks={high:'Listen to both. Which sound has the HIGHER pitch?',low:'Listen to both. Which sound has the LOWER pitch?',freqHigh:'Listen to both. Which sound has the HIGHER frequency?',loud:'Listen to both. Which sound is LOUDER?',soft:'Listen to both. Which sound is SOFTER?'};
+ card.append(el('h2',null,asks[q.ask]));let A,B,correct;
+ if(q.ask==='loud'||q.ask==='soft'){const aBig=Math.random()<.5;A={f:440,g:aBig?.42:.06};B={f:440,g:aBig?.06:.42};correct=(q.ask==='loud')===aBig?0:1}
+ else{const [lo,hi]=pick([[262,784],[330,988],[294,880],[392,1175]]);const aHi=Math.random()<.5;A={f:aHi?hi:lo,g:.25};B={f:aHi?lo:hi,g:.25};correct=((q.ask!=='low')===aHi)?0:1}
+ S.pair=[A,B];const row=el('div','opts two');const heard=[false,false];
+ [A,B].forEach((s,k)=>{const b=btn('play',PLAYSVG+'Sound '+'AB'[k],()=>{tone(s.f,s.g,.9);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),900);heard[k]=true;if(heard[0]&&heard[1])btns.forEach(x=>{if(!S.locked)x.disabled=false})});row.append(b)});
+ card.append(row,el('p','note','Play both sounds, then pick.'));const LR={high:'You picked the LOWER sound. Play both again and listen for the squeakier one.',freqHigh:'You picked the LOWER sound. Higher frequency sounds higher and squeakier.',low:'You picked the HIGHER sound. Low sounds are deep, like a big drum.',loud:'You picked the QUIETER sound. Listen for the one that\u2019s stronger.',soft:'You picked the LOUDER sound. Soft sounds are quiet, like a whisper.'};q.wrong={};q.wrong['AB'[1-correct]]=LR[q.ask];const btns=optButtons(card,['A','B'],correct,'two',q);btns.forEach(b=>b.disabled=true)}
+function rCompare(q,card){const asks={freqHigh:'Which wave has the HIGHER frequency?',pitchLow:'Which wave would sound LOWER?',longWave:'Which wave has the LONGER wavelength?',louder:'Which wave is LOUDER?',softer:'Which wave is SOFTER?'};
+ card.append(el('h2',null,asks[q.ask]));let a,b,correct;
+ if(q.ask==='louder'||q.ask==='softer'){const tallA=Math.random()<.5;a={cycles:3,amp:tallA?.9:.3};b={cycles:3,amp:tallA?.3:.9};correct=(q.ask==='louder')===tallA?0:1}
+ else{const [few,many]=pick([[1.5,4],[2,5],[1,3.5]]);const manyA=Math.random()<.5;a={cycles:manyA?many:few,amp:.75};b={cycles:manyA?few:many,amp:.75};correct=((q.ask==='freqHigh')===manyA)?0:1}
+ const grid=el('div','cmp');const cvs=[];const btns=[a,b].map((w,k)=>{const bt=btn('cmpbtn','Wave '+'AB'[k],()=>{if(S.locked)return;const ok=k===correct;btns.forEach(x=>x.disabled=true);bt.classList.add(ok?'right':'wrong');btns[correct].classList.add('right');const CR={freqHigh:'That wave has FEWER crests packed in, so its frequency is lower.',pitchLow:'That wave has MORE crests packed in, so it sounds higher.',longWave:'That wave\u2019s crests are close together, so its wavelength is SHORT.',louder:'That wave is shorter, so it\u2019s softer.',softer:'That wave is taller, so it\u2019s louder.'};answer(ok,'Wave '+'AB'[correct],ok?null:{you:'Wave '+'AB'[k],reason:CR[q.ask]})});const cv=document.createElement('canvas');bt.prepend(cv);cvs.push([cv,w]);grid.append(bt);return bt});
+ card.append(grid);const draw=()=>cvs.forEach(([cv,w])=>drawWave(cv,{cycles:w.cycles,amp:w.amp,pad:10,lw:3}));S.redraw=draw;requestAnimationFrame(draw)}
+
+function stat(q,ok){const k=S.w.id+'.'+q.src;const s=P.stats[k]||(P.stats[k]={a:0,c:0});s.a++;if(ok)s.c++}
+function answer(ok,correctLabel,info){if(S.locked)return;S.locked=true;kbHandler=null;const q=S.queue[S.i];$('#timer').classList.remove('run');
+ let fast=false;
+ if(!q.retry)stat(q,ok);
+ if(ok){if(!q.retry){S.first++;S.combo++;S.score+=10+(S.combo>=3?5:0);
+   if(S.speed&&performance.now()-S.t0<8000){fast=true;S.score+=5;P.fast=(P.fast||0)+1;if(P.fast>=10)award('fast')}
+   if(q.t==='listen'){P.ear=(P.ear||0)+1;if(P.ear>=4)award('ear')}if(S.combo>=5)award('combo5');if(S.combo>=10)award('combo10')}else S.score+=3;
+  sfx.good();if(fast)sfx.zap();confetti(S.combo>=3?110:60);mood('happy');
+  $('#bubble').innerHTML=(fast?'Lightning fast! ':'')+pick(YES)+(S.combo>=2?'<span class="combo">Combo ×'+S.combo+'</span>':'')}
+ else{S.combo=0;if(!q.retry)S.queue.push(Object.assign({},q,{retry:true}));sfx.bad();mood('sad');$('#bubble').textContent=pick(NO)}
+ save();hud();
+ const fb=$('#fb');fb.className='fb '+(ok?'good':'bad');fb.innerHTML='';
+ fb.append(el('h3',null,ok?(fast?'Correct! +5 speed bonus':'Correct!'):'Not quite'));
+ if(ok)fb.append(el('p',null,q.why));
+ else{
+  if(info&&info.you)fb.append(el('p',null,'You answered: <b>'+info.you+'</b>'));
+  if(info&&info.reason)fb.append(el('div','oops','<b>What went wrong:</b> '+info.reason));
+  if(correctLabel&&q.t!=='listen')fb.append(el('p',null,'<b>Correct answer:</b> '+correctLabel));
+  if(q.steps&&q.steps.length){const st=el('div','steps','<b>The right way</b>');const ol=document.createElement('ol');q.steps.forEach(t=>ol.append(el('li',null,t)));st.append(ol);fb.append(st)}
+  else fb.append(el('p',null,q.why));
+  if(!q.retry)fb.append(el('p','note','This one comes back at the end for a second try.'))}
+ if(q.t==='listen'&&S.pair){fb.append(el('p','note','Here is what those two sounds look like:'));const g=el('div','cmp');S.pair.forEach((s,k)=>{const box=el('div','cmpbtn','Sound '+'AB'[k]);const cv=document.createElement('canvas');box.prepend(cv);g.append(box);requestAnimationFrame(()=>drawWave(cv,{cycles:s.f/160,amp:Math.min(.95,s.g*2.2),pad:10,lw:2.5}))});fb.append(g)}
+ const nx=btn('next',S.i+1<S.queue.length?'Next →':'Finish level',()=>{S.i++;if(S.i<S.queue.length)showQ();else finish()});fb.append(nx);
+ fb.hidden=false;kbHandler=e=>{if(e.key==='Enter'){e.preventDefault();nx.click()}};
+ setTimeout(()=>{nx.focus({preventScroll:true});fb.scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest'})},50)}
+function finish(){const {w,lv}=S,n=lv.count,f=S.first;let stars=0;if(f>=lv.pass)stars=1;if(f>=n-1)stars=2;if(f===n)stars=3;
+ const b0=beltIdx();let gotPass=false;if(stars){P.wins=(P.wins||0)+1;if(P.wins%PASS_EVERY===0){P.passes=(P.passes||0)+1;P.passesEarned=(P.passesEarned||0)+1;gotPass=true}}
+ const k=skey(w,lv);if(stars>(P.stars[k]||0))P.stars[k]=stars;save();
+ const got=[];if(lv.boss&&stars>=1&&award('w_'+w.id))got.push('w_'+w.id);if(f===n&&award('perfect'))got.push('perfect');
+ if(WORLDS.every(W=>worldStars(W)>0)&&award('explorer'))got.push('explorer');
+ if(WORLDS.every(W=>W.levels.filter(l=>l.boss).every(l=>starsOf(W,l)===3))&&award('legend'))got.push('legend');
+ const card=$('#doneCard');card.innerHTML='';
+ card.append(el('div','bigstars',starStr(stars)));
+ card.append(el('h2',null,stars?(stars===3?'Perfect! ':'Level passed! ')+who():'So close, '+who()));
+ card.append(el('p',null,f+' of '+n+' right on the first try · '+S.score+' points'));
+ if(!stars)card.append(el('p','note','You need '+lv.pass+' first-try answers to pass. Every round makes you sharper.'));
+ got.forEach(id=>card.append(el('p',null,'<b>New badge:</b> '+BADGES[id].n)));
+ const b1=beltIdx();if(b1===8)award('black');if(b1>b0){card.append(el('div','beltUp',beltSvg(b1)+'<h3>BELT UP! '+BELTS[b1][0]+' Belt!</h3>'));setTimeout(()=>{toot(.5,200,.15);sfx.badge()},700)}
+ if(stars)card.append(el('p','passline',gotPass?'<b>PLAY PASS EARNED!</b> '+PASS_MIN+' minutes in the Goofball Arcade.':'Arcade pass: '+(P.wins%PASS_EVERY)+' of '+PASS_EVERY+' wins'));
+ const row=el('div','row');row.style.justifyContent='center';
+ row.append(btn('ghost','Play again',()=>start(S.wi,S.li)));
+ if(stars&&S.li+1<w.levels.length)row.append(btn('big','Next level →',()=>start(S.wi,S.li+1)));
+ row.append(btn('ghost','Levels',()=>show('world')));if(gotPass)row.append(btn('big','Go to Arcade',()=>show('arcade')));card.append(row);
+ show('done');if(stars){sfx.level();confetti(160);setTimeout(()=>confetti(120),500)}}
+
+/* ================= report ================= */
+function renderParent(){const box=$('#parent');box.innerHTML='';box.append(el('h3',null,'Rewards'));box.append(el('p',null,'Levels won: <b>'+(P.wins||0)+'</b> · Play Passes earned: <b>'+(P.passesEarned||0)+'</b> · Unused: <b>'+(P.passes||0)+'</b>'));box.append(el('p','note','One pass every '+PASS_EVERY+' wins = '+PASS_MIN+' minutes. You can also honor passes as screen time on another game system.'));
+ const lab=el('label',null,'Bonus game link (optional)');lab.setAttribute('for','rewardUrl');const inp=document.createElement('input');inp.id='rewardUrl';inp.type='url';inp.placeholder='https://';inp.value=P.rewardUrl||'';inp.className='txt';inp.onchange=()=>{const u=inp.value.trim();P.rewardUrl=/^https:\/\//.test(u)?u:'';inp.value=P.rewardUrl;save();toast(P.rewardUrl?'Bonus link saved':'Link cleared (must start with https://)')};box.append(lab,inp,el('p','note','When set, an "Open bonus game" button appears in the arcade while a pass is running.'));
+ const a=ri(12,29),b=ri(12,29);const g=el('div','row');const gi=document.createElement('input');gi.id='gate';gi.className='txt';gi.inputMode='numeric';gi.placeholder=a+' × '+b+' = ?';gi.setAttribute('aria-label','Grown-up check: '+a+' times '+b);g.append(gi,btn('ghost','Give 1 pass',()=>{if(parseInt(gi.value,10)===a*b){P.passes=(P.passes||0)+1;save();toast('Pass added');renderParent()}else toast('Grown-up check didn\u2019t match')}),btn('ghost','Reset handwriting',()=>{P.hw=[];HW.setUser([]);save();toast('Handwriting learning cleared')}));box.append(el('p','note','Grown-up check (keeps the pass button kid-proof):'),g)}
+function renderReport(){renderParent();const R=$('#rep');R.innerHTML='';const all=[];
+ WORLDS.forEach(w=>{const box=el('div','repw');box.append(el('h3',null,w.name+' <span class="grade">'+w.sub+'</span>'));
+  w.levels.filter(l=>!l.boss).forEach(l=>{const s=P.stats[w.id+'.'+l.id]||{a:0,c:0};const pct=s.a?Math.round(s.c/s.a*100):null;let pill;
+   if(s.a<5)pill='<span class="pill n">'+(s.a?'Need more':'Not started')+'</span>';else if(pct>=85)pill='<span class="pill g">Strong</span>';else if(pct>=60)pill='<span class="pill y">Getting there</span>';else pill='<span class="pill r">Needs work</span>';
+   if(s.a>=5)all.push({n:w.name+': '+l.name,pct});
+   box.append(el('div','repr','<span>'+l.name+' <span class="grade">'+l.grade+'</span></span><span class="n">'+(s.a?s.c+'/'+s.a+' · '+pct+'%':'—')+'</span>'+pill))});R.append(box)});
+ const F=$('#focus');const weak=all.filter(x=>x.pct<85).sort((a,b)=>a.pct-b.pct).slice(0,3);
+ F.innerHTML=weak.length?'<b>Practice next</b><ol>'+weak.map(x=>'<li>'+x.n+' ('+x.pct+'%)</li>').join('')+'</ol>':'<b>Practice next:</b> play a few levels and this fills in with the skills that need the most work.'}
+
+/* ================= lab ================= */
+let labOsc=null,labGain=null,labLabels=false,labPh=0;const labT={f:false,a:false,p:false};
+const lf=$('#labFreq'),la=$('#labAmp');
+const labHz=()=>Math.round(110*parseFloat(lf.value));
+function labText(){const hz=labHz(),a=parseFloat(la.value);$('#labFreqOut').textContent=hz+' Hz · '+(hz<300?'low':hz<600?'medium':'high')+' pitch';$('#labAmpOut').textContent=(a<.35?'soft':a<.7?'medium':'loud');$('#labPlay').innerHTML=labOsc?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>Stop':PLAYSVG+'Play my wave';$('#labPlay').classList.toggle('on',!!labOsc);$('#labLabels').textContent=labLabels?'Hide labels':'Show labels'}
+function labUpdate(){if(labOsc&&actx){labOsc.frequency.setTargetAtTime(labHz(),actx.currentTime,.03);labGain.gain.setTargetAtTime(parseFloat(la.value)*.3,actx.currentTime,.03)}labText();if(labT.f&&labT.a&&labT.p)award('lab')}
+function labStop(){if(labOsc){try{labGain.gain.setTargetAtTime(0.0001,actx.currentTime,.05);labOsc.stop(actx.currentTime+.2)}catch(e){}labOsc=null;labText()}}
+lf.oninput=()=>{labT.f=true;labUpdate()};la.oninput=()=>{labT.a=true;labUpdate()};
+$('#labPlay').onclick=()=>{if(labOsc){labStop();return}const a=ensureAudio();if(!a)return;labOsc=a.createOscillator();labGain=a.createGain();labOsc.type='sine';labOsc.frequency.value=labHz();labGain.gain.value=.0001;labOsc.connect(labGain).connect(a.destination);labOsc.start();labGain.gain.setTargetAtTime(parseFloat(la.value)*.3,a.currentTime,.05);labT.p=true;labUpdate()};
+$('#labLabels').onclick=()=>{labLabels=!labLabels;labText()};
+$('#labOpen').onclick=()=>{show('lab');labText()};$('#labBack').onclick=()=>show('world');
+function drawLab(){drawWave($('#labWave'),{cycles:parseFloat(lf.value),amp:parseFloat(la.value),phase:labPh,pad:34,reveal:labLabels,after:labLabels?(g=>{const col=css('--coral');g.c.fillStyle=css('--ink');g.c.font='700 12px '+css('--body');if(g.crests.length>1){const a=g.crests[0],b=g.crests[1];arrow(g.c,a.x,a.y-22,b.x,b.y-22,col);g.c.fillStyle=css('--ink');g.c.textAlign='center';g.c.fillText('wavelength',(a.x+b.x)/2,a.y-28)}const t=g.troughs[0];if(t&&g.A>14){arrow(g.c,t.x,g.mid,t.x,t.y,col);g.c.fillStyle=css('--ink');g.c.textAlign='left';g.c.fillText('amplitude',t.x+8,(g.mid+t.y)/2+4)}}):null})}
+
+/* ================= loop ================= */
+let last=0,heroPh=0;
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
+ if(!$('#home').hidden){if(!RM)heroPh-=dt*3;const cv=$('#heroWave');const {c,w,h}=fit(cv);[[css('--teal'),1,.8,4],[css('--coral'),2.2,.35,3],[css('--sun'),4,.2,2.5]].forEach(([col,f,a,lw],i)=>{c.strokeStyle=col;c.lineWidth=lw;c.lineCap='round';c.beginPath();for(let x=0;x<=w;x+=2){const y=h/2-a*(h/2-8)*Math.sin(2*Math.PI*f*x/w*1.5+heroPh*(1+i*.6));x?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()})}
+ if(!$('#lab').hidden){if(!RM)labPh-=2*Math.PI*.35*parseFloat(lf.value)*dt;drawLab()}
+ if(parts.length){stepFx();fx.dataset.dirty='1'}else if(fx.dataset.dirty==='1'){fit(fx);fx.dataset.dirty='0'}
+ requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{if(S&&S.redraw&&!$('#play').hidden)S.redraw()});
+
+/* ================= silly sounds ================= */
+function toot(len,pitch,vol){const a=ensureAudio();if(!a)return;len=len||.6;pitch=pitch||95;vol=vol==null?.35:vol;const t=a.currentTime;
+ const o=a.createOscillator(),lfo=a.createOscillator(),lg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+ o.type='sawtooth';o.frequency.setValueAtTime(pitch*1.15,t);o.frequency.exponentialRampToValueAtTime(pitch*.8,t+len);
+ lfo.type='square';lfo.frequency.value=22+Math.random()*10;lg.gain.value=pitch*.25;lfo.connect(lg).connect(o.frequency);
+ f.type='lowpass';f.frequency.value=pitch*7;f.Q.value=3;
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.04);g.gain.setValueAtTime(vol,t+len*.7);g.gain.exponentialRampToValueAtTime(.0001,t+len);
+ o.connect(f).connect(g).connect(a.destination);o.start(t);lfo.start(t);o.stop(t+len+.05);lfo.stop(t+len+.05)}
+function burp(){const a=ensureAudio();if(!a)return;const t=a.currentTime;const o=a.createOscillator(),v=a.createOscillator(),vg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+ o.type='sawtooth';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(70,t+.6);v.frequency.value=14;vg.gain.value=18;v.connect(vg).connect(o.frequency);
+ f.type='lowpass';f.frequency.value=700;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.65);
+ o.connect(f).connect(g).connect(a.destination);o.start(t);v.start(t);o.stop(t+.7);v.stop(t+.7)}
+function blorp(){const a=ensureAudio();if(!a)return;const t=a.currentTime;const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.setValueAtTime(500,t);o.frequency.exponentialRampToValueAtTime(60,t+.35);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.0001,t+.4);o.connect(g).connect(a.destination);o.start(t);o.stop(t+.45)}
+
+/* ================= silly characters (SVG) ================= */
+const ART={
+ dragon:'<svg viewBox="0 0 90 60" aria-hidden="true"><path class="a-slime" d="M10 38 Q4 30 12 26 L22 30Z"/><ellipse class="a-slime" cx="40" cy="38" rx="24" ry="14"/><path class="a-wing" d="M34 28 L44 6 L56 26Z"/><circle class="a-slime" cx="66" cy="28" r="12"/><circle class="a-eye" cx="70" cy="25" r="4"/><circle class="a-pupil" cx="71" cy="25" r="2"/><path class="a-line" d="M68 34 Q73 37 77 33"/><path class="a-slime" d="M30 50 L30 58 M48 50 L48 58" style="stroke:var(--slime);stroke-width:5"/></svg>',
+ goblin:'<svg viewBox="0 0 70 60" aria-hidden="true"><path class="a-gob" d="M8 22 L22 28 L20 34Z M62 22 L48 28 L50 34Z"/><circle class="a-gob" cx="35" cy="32" r="18"/><circle class="a-eye" cx="28" cy="28" r="5"/><circle class="a-eye" cx="42" cy="28" r="5"/><circle class="a-pupil" cx="29" cy="29" r="2.4"/><circle class="a-pupil" cx="43" cy="29" r="2.4"/><path class="a-line" d="M26 40 Q35 46 44 40"/><path class="a-tooth" d="M30 41 L32 45 L34 42Z"/></svg>',
+ troll:'<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse class="a-troll" cx="60" cy="74" rx="44" ry="38"/><circle class="a-eye" cx="45" cy="56" r="9"/><circle class="a-eye" cx="75" cy="56" r="9"/><circle class="a-pupil" cx="47" cy="58" r="4"/><circle class="a-pupil" cx="73" cy="58" r="4"/><ellipse class="a-nose" cx="60" cy="72" rx="9" ry="7"/><path class="a-line" d="M40 90 Q60 100 80 90"/><path class="a-tooth" d="M46 90 L50 80 L54 92Z M66 92 L70 80 L74 90Z"/><path class="a-hair" d="M40 38 Q45 26 50 38 Q55 24 60 38 Q65 26 70 38 Q75 28 80 38"/></svg>',
+ wizard:'<svg viewBox="0 0 100 120" aria-hidden="true"><path class="a-hat" d="M20 52 L50 4 L80 52Z"/><circle class="a-star" cx="48" cy="30" r="4"/><circle class="a-face" cx="50" cy="64" r="20"/><circle class="a-pupil" cx="43" cy="60" r="3"/><circle class="a-pupil" cx="57" cy="60" r="3"/><path class="a-beard" d="M30 70 Q50 120 70 70 Q60 82 50 80 Q40 82 30 70Z"/><ellipse class="a-mouth" cx="50" cy="76" rx="6" ry="4"/></svg>',
+ slime:'<svg viewBox="0 0 60 50" aria-hidden="true"><path class="a-slime" d="M6 46 Q4 20 30 8 Q56 20 54 46Z"/><circle class="a-eye" cx="22" cy="26" r="6"/><circle class="a-eye" cx="38" cy="26" r="6"/><circle class="a-pupil" cx="23" cy="27" r="3"/><circle class="a-pupil" cx="39" cy="27" r="3"/><path class="a-line" d="M22 36 Q30 42 38 36"/></svg>',
+ hero:'<svg viewBox="0 0 40 60" aria-hidden="true"><circle class="a-face" cx="20" cy="14" r="10"/><rect class="a-wing" x="10" y="25" width="20" height="20" rx="6"/><path class="a-line" d="M14 45 L12 58 M26 45 L28 58"/><circle class="a-pupil" cx="16" cy="13" r="2"/><circle class="a-pupil" cx="24" cy="13" r="2"/></svg>',
+ cushion:'<svg viewBox="0 0 100 70" aria-hidden="true"><ellipse class="a-cush" cx="44" cy="38" rx="40" ry="26"/><path class="a-cush" d="M80 34 L98 28 L98 46 L80 42Z"/><ellipse class="a-shine" cx="30" cy="28" rx="12" ry="5"/></svg>',
+ cloud:'<svg viewBox="0 0 60 40" aria-hidden="true"><circle class="a-gas" cx="18" cy="24" r="12"/><circle class="a-gas" cx="32" cy="16" r="13"/><circle class="a-gas" cx="44" cy="25" r="11"/></svg>'
+};
+function puff(host,cls){const p=el('div','puff '+(cls||''),ART.cloud);host.append(p);setTimeout(()=>p.remove(),1300)}
+
+/* ================= belts & pass ================= */
+const BELTS=[['White','#f4f4f4'],['Yellow','#f5d000'],['Orange','#f28a1a'],['Green','#2e9e4f'],['Blue','#2563c9'],['Purple','#7b3fc4'],['Red','#d22f2f'],['Brown','#7a4a24'],['Black','#161616']];
+const BELT_AT=[0,.05,.12,.2,.3,.42,.55,.7,.85];
+function totalStars(){return WORLDS.reduce((a,w)=>a+worldStars(w),0)}
+function maxStars(){return WORLDS.reduce((a,w)=>a+w.levels.length*3,0)}
+function beltIdx(s){s=s==null?totalStars():s;const m=maxStars();let b=0;BELT_AT.forEach((f,i)=>{if(s>=Math.ceil(f*m))b=i});return b}
+function beltSvg(i){const [,c]=BELTS[i];return '<svg viewBox="0 0 160 60" aria-hidden="true"><rect x="2" y="18" width="156" height="20" rx="4" fill="'+c+'" stroke="var(--ink)" stroke-width="2"/><rect x="66" y="12" width="28" height="32" rx="5" fill="'+c+'" stroke="var(--ink)" stroke-width="2"/><path d="M72 42 L60 58 L72 56 M88 42 L100 58 L88 56" fill="'+c+'" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/></svg>'}
+const PASS_EVERY=5,PASS_MIN=15;
+function arcadeLeft(){return Math.max(0,(P.arcadeEnd||0)-Date.now())}
+const mmss=ms=>{const s=Math.ceil(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+
+/* ================= arcade hub ================= */
+const GAMES=[
+ {id:'dragon',name:'Toot Dragon Dash',sub:'Multiplication',art:'dragon',blurb:'Answer fast so Sir Flaps-a-Lot can toot-boost past Grumbles the goblin.',run:gDragon},
+ {id:'troll',name:'Troll Bridge Toll',sub:'Division',art:'troll',blurb:'Five gassy trolls. Five bridges. Write the answer or get tooted on.',run:gTroll},
+ {id:'potion',name:'Burp Potion Brew',sub:'Fractions',art:'wizard',blurb:'Pour exactly the right fraction or the cauldron goes BLORP.',run:gPotion},
+ {id:'cushion',name:'Whoopee Cushion Lab',sub:'Science: sound',art:'cushion',blurb:'Which cushion made that toot? Big, small, gentle, or SQUISHED?',run:gCushion},
+ {id:'slime',name:'Slime Pen Builder',sub:'Area & perimeter',art:'slime',blurb:'Build the right-size pen for Blobert, a slime who toots bubbles.',run:gSlime}
+];
+let arcTick=null,agCleanup=null;
+function renderArcade(){const box=$('#arcBody');box.innerHTML='';const left=arcadeLeft();
+ const head=el('div','arcHead');
+ if(left>0){head.innerHTML='<b>Arcade open</b><span class="score" id="arcClock">'+mmss(left)+'</span>';box.append(head);
+  const g=el('div','agrid');GAMES.forEach(G=>g.append(btn('agame-tile','<div class="aart">'+ART[G.art]+'</div><div><b>'+G.name+'</b><span class="grade">'+G.sub+'</span><p>'+G.blurb+'</p><small>Best: '+((P.best||{})[G.id]||0)+'</small></div>',()=>openGame(G))));box.append(g)}
+ else{const n=P.passes||0;head.innerHTML='<b>'+(n?'You have '+n+' Play Pass'+(n>1?'es':'')+'!':'Arcade closed')+'</b>';box.append(head);
+  if(n)box.append(btn('big','Use 1 pass · '+PASS_MIN+' minutes',()=>{P.passes--;P.arcadeEnd=Date.now()+PASS_MIN*60000;save();sfx.level();toot(.5,140,.2);renderArcade()}));
+  else box.append(el('p',null,'Win '+(PASS_EVERY-(P.wins||0)%PASS_EVERY)+' more level'+((PASS_EVERY-(P.wins||0)%PASS_EVERY)>1?'s':'')+' to earn a '+PASS_MIN+'-minute Play Pass.'));
+  const g=el('div','agrid locked');GAMES.forEach(G=>g.append(el('div','agame-tile','<div class="aart">'+ART[G.art]+'</div><div><b>'+G.name+'</b><span class="grade">'+G.sub+'</span><p>'+G.blurb+'</p></div>')));box.append(g)}
+ if(P.rewardUrl){const a=el('a','big reward','Open bonus game ↗');a.href=P.rewardUrl;a.target='_blank';a.rel='noopener';if(left<=0){a.classList.add('dis');a.removeAttribute('href');a.textContent='Bonus game opens with a Play Pass'}box.append(a)}
+ clearInterval(arcTick);arcTick=setInterval(()=>{const l=arcadeLeft();const c1=$('#arcClock'),c2=$('#agClock');if(c1)c1.textContent=mmss(l);if(c2)c2.textContent=l>0?mmss(l):'Time’s up';if(l<=0&&c1){clearInterval(arcTick);renderArcade()}},1000)}
+function openGame(G){show('agame');$('#agTitle').textContent=G.name;$('#agClock').textContent=mmss(arcadeLeft());const box=$('#ag');box.innerHTML='';if(agCleanup){agCleanup();agCleanup=null}agCleanup=G.run(box,G)||null}
+function gameOver(G,score,line,sub){const box=$('#ag');if(agCleanup){agCleanup();agCleanup=null}P.best=P.best||{};const best=Math.max(P.best[G.id]||0,score);const nb=score>(P.best[G.id]||0);P.best[G.id]=best;save();
+ box.innerHTML='';const c=el('div','card done');c.append(el('div','aart big',ART[G.art]),el('h2',null,line),el('p',null,sub+(nb?' · New best!':'')));
+ const row=el('div','row');row.style.justifyContent='center';if(arcadeLeft()>0)row.append(btn('big','Play again',()=>openGame(G)));else row.append(el('p','note','Time’s up! Win more levels to earn another pass.'));row.append(btn('ghost','Arcade',()=>show('arcade')));c.append(row);box.append(c);confetti(100)}
+
+/* ---------- 1. Toot Dragon Dash (multiplication) ---------- */
+function gDragon(box,G){let me=0,gob=0,right=0,done=false;const GOB_S=70;
+ const track=el('div','track','<div class="finish"></div>');const d=el('div','racer',ART.dragon),g=el('div','racer gob',ART.goblin);track.append(g,d);
+ const q=el('div','eq'),opts=el('div','opts three'),msg=el('p','note','Each right answer = a toot boost. First to the flag wins!');box.append(track,q,opts,msg);
+ const pos=()=>{d.style.left='calc((100% - 70px) * '+(me/100)+')';g.style.left='calc((100% - 60px) * '+(gob/100)+')'};
+ function next(){const a=ri(2,9),b=ri(2,9),ans=a*b;q.textContent=a+' × '+b+' = ?';const c=[ans];shuffle([a*(b+1),a*(b-1),a+b,(a+1)*b,ans+10,ans-1]).forEach(v=>{if(c.length<3&&v>0&&!c.includes(v))c.push(v)});
+  opts.innerHTML='';shuffle(c).forEach(v=>opts.append(btn('opt cloudbtn',String(v),()=>{if(done)return;if(v===ans){right++;me=Math.min(100,me+10);toot(.35,180+ri(0,80),.25);puff(track,'');msg.textContent=pick(['TOOOT! Boost!','Pfffft! Zoom!','Rainbow toot!','Flaps go brrrr!'])}else{me=Math.max(0,me-3);sfx.bad();msg.textContent='Hiccup! '+a+' × '+b+' = '+ans+'. Skip count by '+b+': '+skip(b,a)+'.'}pos();if(me>=100)end(true);else next()})))}
+ const iv=setInterval(()=>{if(done)return;gob=Math.min(100,gob+100/GOB_S/10);pos();if(gob>=100)end(false)},100);
+ function end(win){done=true;clearInterval(iv);setTimeout(()=>{if(win){toot(1.1,120,.35);gameOver(G,right,'Sir Flaps-a-Lot WINS!',right+' facts right. Grumbles is stuck in your toot cloud.')}else gameOver(G,right,'Grumbles won by a nose…',right+' facts right. Get 10 before he reaches the flag!')},400)}
+ pos();next();return()=>{done=true;clearInterval(iv)}}
+
+/* ---------- 2. Troll Bridge Toll (division, handwriting) ---------- */
+function gTroll(box,G){const TROLLS=['Gassy Gary','Sir Stinkbottom','Mildred the Muddy','Big Burpus','King Toots-a-Lot'];let i=0,first=0;
+ const scene=el('div','bridgeScene');const path=el('div','bridges');for(let k=0;k<5;k++)path.append(el('span','plank'+(k===0?' here':'')));scene.append(path);
+ const troll=el('div','trollBox',ART.troll);const speech=el('div','bubble');scene.append(troll,speech);const area=el('div','card');box.append(scene,area);
+ function round(){const b=ri(2,9),qq=ri(2,9),n=b*qq,s=pick(['stinky socks','moldy muffins','toad toots in a jar','boogers (gross!)','mud pies']);let tries=0;
+  speech.innerHTML='<b>'+TROLLS[i]+':</b> "Split '+n+' '+s+' equally between '+b+' trolls. How many does each troll get? Write it!"';area.innerHTML='';area.append(el('div','eq',n+' ÷ '+b+' = ?'));
+  const fb=el('div','note');answerPad(area,{onSubmit:(v,pad)=>{tries++;if(v===qq){if(tries===1)first++;toot(.6,70,.25);puff(scene,'big');speech.innerHTML='<b>'+TROLLS[i]+':</b> "Hmph. Correct. *sad toot* You may pass."';path.children[i].classList.add('done');i++;setTimeout(()=>{if(i<5){path.children[i].classList.add('here');round()}else gameOver(G,first,first===5?'Bridge Boss! 5 for 5!':'You crossed all 5 bridges!',first+' of 5 right on the first try. The trolls are off to brush their teeth.')},1300)}
+   else if(tries===1){toot(.9,60,.4);puff(scene,'big green');speech.innerHTML='<b>'+TROLLS[i]+':</b> "PEE-YEW! WRONG! Try again."';fb.textContent=checkDiv(n,b)(v)+' Think: '+b+' × ? = '+n+'.';pad.reset()}
+   else{speech.innerHTML='<b>'+TROLLS[i]+':</b> "Ugh, fine. It’s '+qq+'. '+b+' × '+qq+' = '+n+'. Go on, smelly."';path.children[i].classList.add('done');i++;setTimeout(()=>{if(i<5){path.children[i].classList.add('here');round()}else gameOver(G,first,'You made it across!',first+' of 5 right on the first try.')},2200)}},max:3});area.append(fb)}
+ round()}
+
+/* ---------- 3. Burp Potion Brew (fractions) ---------- */
+function gPotion(box,G){const ING=['Troll Snot','Dragon Drool','Slug Slime','Toad Sweat','Goblin Earwax'];const POT=['Giggle','Bouncy Butt','Rainbow Burp','Invisible Toe','Super Sneeze','Upside-Down'];let r=0,score=0,cur=0,d=8,target=1,bottles=[];
+ const wiz=el('div','wizBox',ART.wizard),say=el('div','bubble');const top=el('div','echoRow');top.append(wiz,say);const caul=el('div','caul');const row=el('div','bottles');const ctl=el('div','row');const msg=el('p','note');box.append(top,caul,row,ctl,msg);
+ function draw(){caul.innerHTML='';for(let k=0;k<d;k++)caul.append(el('span','seg'+(k<cur?' on':'')+(k<target?' tgt':'')));caul.append(el('b','caulLbl',frac(cur,d)+' of '+frac(target,d)))}
+ function setup(){cur=0;if(r<3){d=pick([4,6,8]);target=ri(2,d-1);bottles=[1,2,3].filter(x=>x<d).map(x=>[x,d])}else{d=8;target=pick([3,5,6,7]);bottles=[[1,2],[1,4],[1,8]]}
+  say.innerHTML='<b>Burpy the Wizard:</b> "Brew me exactly '+frac(target,d)+' of '+POT[r%POT.length]+' Potion! Not a drop more!"';
+  row.innerHTML='';bottles.forEach(([n,dd],k)=>row.append(btn('bottle','<span class="liq"></span><b>'+frac(n,dd)+'</b><small>'+ING[k]+'</small>',()=>{cur+=n*(d/dd);if(cur>target){draw();blorp();puff(caul,'big green');msg.innerHTML='BLORP! Overflow! You poured '+frac(cur,d)+' but the recipe says '+frac(target,d)+'.'+(dd!==d?' Remember: '+frac(n,dd)+' = '+frac(n*d/dd,d)+'.':'')+' Dump it and try again.'}else{draw();msg.textContent=''}})));draw()}
+ ctl.append(btn('ghost','Dump it',()=>{cur=0;draw();msg.textContent='Glug glug. Empty.'}),btn('big','Brew!',()=>{if(cur===target){score++;burp();confetti(60);say.innerHTML='<b>Burpy the Wizard:</b> "*BUUURP* Magnificent! '+pick(['My toes are glowing!','I can taste colors!','My beard is ticklish!'])+'"';r++;setTimeout(()=>{if(r<6)setup();else gameOver(G,score,'Master Potion Brewer!',score+' perfect potions. Burpy hasn’t stopped burping.')},1400)}else if(cur<target)msg.innerHTML='Not enough! You have '+frac(cur,d)+'. You need '+frac(target,d)+'. That’s '+(target-cur)+' more '+frac(1,d)+' piece'+(target-cur>1?'s':'')+'.';else msg.textContent='Too much! Dump it first.'}));
+ setup()}
+
+/* ---------- 4. Whoopee Cushion Lab (sound science) ---------- */
+function gCushion(box,G){let r=0,score=0;const N=8;const head=el('div','card');box.append(head);
+ function round(){head.innerHTML='';const vol=r>=5;const set=vol?[['Gentle squeeze',95,.06,1],['Medium squeeze',95,.18,1],['SQUISHED!',95,.45,1]]:[['Tiny cushion',300,.25,.6],['Medium cushion',165,.25,.85],['GIANT cushion',85,.25,1.15]];
+  const m=ri(0,2);head.append(el('h2',null,'Round '+(r+1)+' of '+N+': '+(vol?'Same cushion, different squeeze. Which squeeze made the mystery toot?':'Which cushion made the mystery toot?')));
+  head.append(btn('play big','Play mystery toot',()=>toot(.7,set[m][1],set[m][2])));
+  const g=el('div','cush3');set.forEach(([nm,f,v,sz],k)=>{const c=el('div','cushCard');const art=el('div','cushArt',ART.cushion);art.style.transform='scale('+sz+')';c.append(art,el('b',null,nm),btn('ghost','Squeeze',()=>{toot(.7,f,v);art.classList.remove('squish');void art.offsetWidth;art.classList.add('squish')}),btn('big pickb','This one!',()=>{g.querySelectorAll('button').forEach(b=>b.disabled=true);const ok=k===m;if(ok){score++;confetti(50);sfx.good()}else sfx.bad();
+   const why=vol?(ok?'Yes! ':'Nope, it was "'+set[m][0]+'". ')+'Squeezing harder pushes air out with more force, so the vibrations are BIGGER (more amplitude) and the toot is LOUDER. The pitch stays the same because it’s the same cushion.':(ok?'Yes! ':'Nope, it was the '+set[m][0].toLowerCase()+'. ')+'Small cushions have a small opening that flaps FAST, which means high frequency and a high, squeaky toot. Giant cushions flap SLOWLY, which means low frequency and a deep BRAAAP.';
+   head.append(el('div','fb '+(ok?'good':'bad'),'<h3>'+(ok?'Correct!':'Not quite')+'</h3><p>'+why+'</p>'));const nx=btn('next',r+1<N?'Next round →':'See results',()=>{r++;if(r<N)round();else gameOver(G,score,score>=7?'Professor of Toot Science!':'Toot Scientist!',score+' of '+N+' toots identified.')});head.lastChild.append(nx)}));g.append(c)});head.append(g,el('p','note','Squeeze each cushion to compare, then pick.'))}
+ round()}
+
+/* ---------- 5. Slime Pen Builder (area / perimeter) ---------- */
+function gSlime(box,G){const W=10,H=7;let r=0,score=0,a=null,b=null,req;
+ const top=el('div','echoRow');const sl=el('div','slimeBox',ART.slime);const say=el('div','bubble');top.append(sl,say);const info=el('div','score');const grid=el('div','pen');const msg=el('p','note');const ctl=el('div','row');box.append(top,info,grid,ctl,msg);
+ const cells=[];for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=btn('cell','',()=>tap(x,y));c.setAttribute('aria-label','row '+(y+1)+' column '+(x+1));cells.push(c);grid.append(c)}
+ const rect=()=>a&&b?{x0:Math.min(a[0],b[0]),x1:Math.max(a[0],b[0]),y0:Math.min(a[1],b[1]),y1:Math.max(a[1],b[1])}:null;
+ function paint(){const R=rect();cells.forEach((c,i)=>{const x=i%W,y=Math.floor(i/W);c.className='cell'+(R&&x>=R.x0&&x<=R.x1&&y>=R.y0&&y<=R.y1?' in':'')+(a&&!b&&x===a[0]&&y===a[1]?' corner':'')});
+  if(R){const w=R.x1-R.x0+1,h=R.y1-R.y0+1;info.textContent=w+' × '+h+' · Area '+w*h+' squares · Perimeter '+2*(w+h)+' units'}else info.textContent=a?'Now tap the opposite corner':'Tap one corner, then the opposite corner'}
+ function tap(x,y){if(!a||b){a=[x,y];b=null}else b=[x,y];paint()}
+ function setup(){a=b=null;const area=r%2===0;let w=ri(2,6),h=ri(2,5);req={area,val:area?w*h:2*(w+h)};say.innerHTML='<b>Blobert:</b> "'+(area?'I need a pen with an AREA of exactly '+req.val+' squares. Room to wiggle!':'I need a FENCE that is exactly '+req.val+' units around. That’s the PERIMETER!')+'"';msg.textContent='';paint()}
+ ctl.append(btn('big','Build it!',()=>{const R=rect();if(!R){msg.textContent='Tap two corners first.';return}const w=R.x1-R.x0+1,h=R.y1-R.y0+1,A=w*h,Pm=2*(w+h);const got=req.area?A:Pm;
+  if(got===req.val){score++;toot(.4,260,.2);sl.classList.remove('wiggle');void sl.offsetWidth;sl.classList.add('wiggle');confetti(60);say.innerHTML='<b>Blobert:</b> "'+pick(['*happy bubble toot* PERFECT!','Bloop bloop! I love it!','So roomy! *toot*'])+'"';r++;setTimeout(()=>{if(r<6)setup();else gameOver(G,score,'Blobert’s Favorite Builder!',score+' of 6 pens built just right.')},1300)}
+  else{blorp();const other=req.area?Pm:A;msg.innerHTML=(other===req.val?'Blorp! That’s the '+(req.area?'PERIMETER':'AREA')+' that matches, not the '+(req.area?'area':'perimeter')+'. ':'Blorp! ')+'Your pen is '+w+' × '+h+': area '+A+' (squares inside), perimeter '+Pm+' (distance around). I need '+(req.area?'area':'perimeter')+' '+req.val+'.'+(req.area?' Try sides that multiply to '+req.val+'.':' Two sides added together should make '+req.val/2+'.')}}),btn('ghost','Clear',()=>{a=b=null;paint()}));
+ setup()}
+
+/* ================= chrome ================= */
+function effTheme(){return P.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function applyTheme(){if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);else document.documentElement.removeAttribute('data-theme')}
+$('#themeBtn').onclick=()=>{P.theme=effTheme()==='dark'?'light':'dark';save();applyTheme();renderHome()};
+$('#muteBtn').onclick=()=>{P.muted=!P.muted;save();renderHome()};
+$('#nameIn').oninput=e=>{P.name=e.target.value.trim();save()};
+$('#quitBtn').onclick=()=>show('world');$('#worldBack').onclick=()=>show('home');
+$('#reportBtn').onclick=()=>show('report');$('#repBack').onclick=()=>show('home');
+$('#resetBtn').onclick=()=>{$('#confirmReset').hidden=false};$('#noReset').onclick=()=>{$('#confirmReset').hidden=true};
+$('#arcBtn').onclick=()=>show('arcade');$('#arcBack').onclick=()=>show('home');$('#agBack').onclick=()=>show('arcade');
+$('#yesReset').onclick=()=>{P.stars={};P.badges=[];P.ear=0;P.fast=0;P.stats={};P.wins=0;P.best={};save();$('#confirmReset').hidden=true;renderHome();toast('Progress erased')};
+window.__QQ={WORLDS,genFor,HW,P};HW.setUser(P.hw);
+applyTheme();renderHome();
+})();
+</script>
+</body>
+</html>
