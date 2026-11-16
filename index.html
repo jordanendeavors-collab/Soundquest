@@ -221,6 +221,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:32px}
 .beltCard .wtx,.arcTile .wtx{display:grid;gap:4px;flex:1;min-width:0}
 .beltCard b{font-family:var(--display);font-size:1.15rem}.beltCard span{color:var(--muted);font-size:.86rem}
 .arcTile{border-color:var(--pink);border-style:dashed}
+.storyTile{text-decoration:none;color:inherit;border-color:var(--sun)}
 .aart{flex:none;width:64px}.aart svg{width:100%;height:auto;display:block}.aart.big{width:120px;margin:0 auto}
 .beltUp{display:grid;justify-items:center;gap:4px}.beltUp svg{width:200px}
 .passline{background:var(--tealsoft);border-radius:12px;padding:8px 12px}
@@ -310,7 +311,7 @@ a.dis{opacity:.5;pointer-events:none}
       <div id="installPanel" class="fb good" hidden></div>
       <div id="confirmReset" hidden class="fb bad"><p>Erase all stars, badges and report data?</p><div class="row"><button class="big" id="yesReset" type="button">Erase</button><button class="ghost" id="noReset" type="button">Keep them</button></div></div>
     </div>
-    <div class="rankrow"><div class="beltCard" id="beltCard"></div><button class="world arcTile" id="arcBtn" type="button"></button></div>
+    <div class="rankrow"><div class="beltCard" id="beltCard"></div><button class="world arcTile" id="arcBtn" type="button"></button><a class="world storyTile" href="/wavewords.html"><div class="wic c-sun">✎</div><div class="wtx"><b>Wave Words</b><span>Silly science stories · signals, frequency, energy</span></div></a></div>
     <div class="sect"><h2>Worlds</h2></div>
     <div class="worlds" id="worlds"></div>
     <div class="sect"><h2>Badges</h2><small id="badgeCount"></small></div>

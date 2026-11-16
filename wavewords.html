@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0e7a85">
+<title>Wave Words: Signal, Frequency and Energy Mad Libs</title>
+<style>
+:root{
+  --bg:#e8f2f3; --card:#ffffff; --surface:#ffffff; --ink:#12313a; --soft:#52707a; --line:#c6dbdf;
+  --a:#0e7a85; --a2:#df5139; --a3:#1d8549; --a4:#f0a91a; --teal:#0e7a85; --coral:#df5139; --sun:#f0a91a;
+  --blank:#fff1c9; --blankInk:#7a4b00; --sci:#d6ecef; --sciInk:#0b5a62;
+  --good:#1d8549; --bad:#bf3a2a; --shadow:0 4px 14px rgba(18,49,58,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1c21; --card:#12282e; --surface:#12282e; --ink:#e3f0f1; --soft:#97b3b9; --line:#244148;
+  --a:#4bc0ca; --a2:#ff7a5e; --a3:#4fd18a; --a4:#ffc84a; --teal:#4bc0ca; --coral:#ff7a5e; --sun:#ffc84a;
+  --blank:#4a3a10; --blankInk:#ffe08a; --sci:#163840; --sciInk:#8fe3ea; --good:#4fd18a; --bad:#ff7a6a; --shadow:0 4px 14px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1c21; --card:#12282e; --surface:#12282e; --ink:#e3f0f1; --soft:#97b3b9; --line:#244148;
+  --a:#4bc0ca; --a2:#ff7a5e; --a3:#4fd18a; --a4:#ffc84a; --teal:#4bc0ca; --coral:#ff7a5e; --sun:#ffc84a;
+  --blank:#4a3a10; --blankInk:#ffe08a; --sci:#163840; --sciInk:#8fe3ea; --good:#4fd18a; --bad:#ff7a6a; --shadow:0 4px 14px rgba(0,0,0,.35); color-scheme:dark}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab.on{color:var(--surface)!important}.btn{color:var(--surface)!important}.btn.ghost{color:var(--ink)!important}
+.echo{width:64px;height:64px}
+.homelink{color:var(--a);font-weight:700;text-decoration:none;font-size:.95rem}
+.echoRow{display:flex;align-items:center;gap:12px}
+.echo{width:84px;height:84px;flex:none}
+.echo{overflow:visible}
+.echo .core{fill:var(--teal)}
+.echo .glow{fill:var(--sun);opacity:.22;animation:pulse 2.4s ease-in-out infinite}
+.echo .jet{fill:var(--sun);transform-origin:60px 60px}
+.echo .disk{stroke:var(--coral);fill:none;stroke-width:5;stroke-linecap:round}
+.echo .spark{fill:var(--sun)}
+.echo.happy .jet{animation:flare .8s ease}
+.echo.happy .glow{opacity:.45}
+.echo.sad .glow{opacity:.06}
+@keyframes pulse{0%,100%{opacity:.16}50%{opacity:.34}}
+@keyframes flare{0%,100%{transform:scaleY(1)}40%{transform:scaleY(1.35)}}
+.echo .eye{fill:var(--surface)}
+.echo .pupil{fill:var(--ink)}
+.echo .mouth{stroke:var(--surface);stroke-width:4;fill:none;stroke-linecap:round}
+.echo .ring{stroke:var(--coral);stroke-width:4;fill:none;stroke-linecap:round;opacity:0}
+.echo.happy{animation:hop .7s ease}
+.echo.happy .ring{animation:ring .9s ease-out}
+.echo.happy .r2{animation-delay:.12s}.echo.happy .r3{animation-delay:.24s}
+.echo.sad{animation:wob .6s ease}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-16px) rotate(-6deg)}65%{transform:translateY(0) rotate(4deg)}}
+@keyframes ring{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(14px)}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:18px;line-height:1.5}
+header{display:flex;align-items:center;gap:12px;padding:14px 16px;max-width:900px;margin:0 auto}
+header h1{font-size:1.35rem;margin:0;line-height:1.15}
+header .sub{color:var(--soft);font-size:.85rem}
+.grow{flex:1}
+.stars{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;white-space:nowrap}
+.iconbtn{background:var(--card);border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 10px;font-size:1rem;cursor:pointer}
+main{max-width:900px;margin:0 auto;padding:0 16px 40px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+.tab{flex:1;min-width:140px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px;font-size:1rem;font-weight:700;cursor:pointer}
+.tab.on{background:var(--a);border-color:var(--a);color:#fff}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.pick{cursor:pointer;text-align:left;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:14px;font-size:1rem;box-shadow:var(--shadow);transition:transform .12s}
+.pick:hover{transform:translateY(-3px);border-color:var(--a)}
+.pick .em{font-size:2rem;display:block}
+.pick b{display:block;margin:4px 0}
+.pick small{color:var(--soft)}
+.pick.done{border-color:var(--a3)}
+.pick.done::after{content:"★ done";color:var(--a3);font-weight:700;font-size:.8rem}
+label.f{display:block;margin:10px 0}
+label.f span{display:block;font-weight:700;font-size:.95rem}
+label.f span em{font-style:normal;color:var(--soft);font-weight:400;font-size:.8rem}
+input.w{width:100%;font-size:1.1rem;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.w:focus{outline:none;border-color:var(--a)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:12px;padding:11px 16px;font-size:1rem;font-weight:700;cursor:pointer;background:var(--a);color:#fff}
+.btn.alt{background:var(--a3)}
+.btn.warm{background:var(--a2)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.story{font-size:1.2rem;line-height:1.8}
+.story .b{background:var(--blank);color:var(--blankInk);font-weight:800;padding:1px 6px;border-radius:6px}
+.story .s,.q .s{background:var(--sci);color:var(--sciInk);font-weight:700;padding:1px 5px;border-radius:6px;cursor:pointer;border-bottom:2px dotted var(--sciInk)}
+.tip{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--sci);color:var(--sciInk);font-size:.95rem;display:none}
+.fact{margin-top:14px;padding:12px;border-left:6px solid var(--a4);background:var(--bg);border-radius:10px;font-size:.98rem}
+.q{font-size:1.25rem;font-weight:700;margin:6px 0 14px}
+.q .gap{display:inline-block;min-width:110px;border-bottom:3px solid var(--a);text-align:center;color:var(--a)}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.choice{font-size:1.05rem;font-weight:700;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choice.right{background:var(--good);border-color:var(--good);color:#fff}
+.choice.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{margin-top:12px;font-size:1rem;display:none;padding:10px 12px;border-radius:12px;background:var(--bg)}
+.prog{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin-bottom:10px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--a),var(--a2));width:0;transition:width .3s}
+.word{padding:10px 0;border-bottom:1px dashed var(--line)}
+.word:last-child{border-bottom:none}
+.word b{color:var(--sciInk);background:var(--sci);padding:1px 8px;border-radius:6px}
+.mascot{width:56px;height:56px;flex:none}
+.bubble{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.bubble p{margin:0;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:8px 12px;font-size:.95rem}
+.hide{display:none}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) scale(.9);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.on{opacity:1;transform:translateX(-50%) scale(1)}
+
+@media print{header .iconbtn,.tabs,.row,.stars{display:none}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <svg class="echo" id="mascot" viewBox="0 0 120 120" aria-label="Quazart"><circle class="glow" cx="60" cy="60" r="40"/><path class="jet" d="M54 42 L60 0 L66 42Z"/><path class="jet" d="M54 78 L60 120 L66 78Z"/><ellipse class="disk" cx="60" cy="62" rx="50" ry="12"/><circle class="core" cx="60" cy="60" r="25"/><path class="disk" d="M10 62 A50 12 0 0 0 110 62"/><circle class="eye" cx="51" cy="55" r="7"/><circle class="eye" cx="69" cy="55" r="7"/><circle class="pupil" cx="52" cy="56" r="3.5"/><circle class="pupil" cx="70" cy="56" r="3.5"/><path class="mouth" d="M52 66 Q60 73 68 66" style="stroke-width:3"/><path class="spark" d="M20 24 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="spark" d="M98 96 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z"/><path class="ring r1" d="M86 22 Q92 30 86 38"/><path class="ring r2" d="M94 16 Q103 30 94 44"/><path class="ring r3" d="M102 10 Q114 30 102 50"/></svg>
+  <div class="grow">
+    <h1>Wave Words</h1>
+    <div class="sub">A Quazart's Quest story break</div>
+  </div>
+  <span class="stars" id="stars">★ 0</span>
+  <button class="iconbtn" id="theme" title="Light or dark">🌙</button>
+</header>
+
+<main>
+  <a class="homelink" href="/">← Back to Quazart's Quest</a>
+  <div class="tabs">
+    <button class="tab on" data-v="libs">🤪 Silly Stories</button>
+    <button class="tab" data-v="sci">🔬 Science Fill-In</button>
+    <button class="tab" data-v="wall">📖 Word Wall</button>
+  </div>
+
+  <!-- SILLY STORIES -->
+  <section id="v-libs">
+    <div id="libsPick">
+      <div class="bubble"><svg class="echo" viewBox="0 0 120 120"><circle class="glow" cx="60" cy="60" r="40"/><path class="jet" d="M54 42 L60 0 L66 42Z"/><path class="jet" d="M54 78 L60 120 L66 78Z"/><ellipse class="disk" cx="60" cy="62" rx="50" ry="12"/><circle class="core" cx="60" cy="60" r="25"/><path class="disk" d="M10 62 A50 12 0 0 0 110 62"/><circle class="eye" cx="51" cy="55" r="7"/><circle class="eye" cx="69" cy="55" r="7"/><circle class="pupil" cx="52" cy="56" r="3.5"/><circle class="pupil" cx="70" cy="56" r="3.5"/><path class="mouth" d="M52 66 Q60 73 68 66" style="stroke-width:3"/><path class="spark" d="M20 24 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="spark" d="M98 96 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z"/><path class="ring r1" d="M86 22 Q92 30 86 38"/><path class="ring r2" d="M94 16 Q103 30 94 44"/><path class="ring r3" d="M102 10 Q114 30 102 50"/></svg><p>Hi, I'm <b>Quazart</b>! Pick a story. Give me your words <b>before</b> you see the story. Then we read it and laugh.</p></div>
+      <div class="grid" id="storyGrid"></div>
+    </div>
+    <div id="libsForm" class="card hide">
+      <h2 id="formTitle" style="margin:0 0 4px"></h2>
+      <div style="color:var(--soft);font-size:.9rem">No peeking at the story! Fill in every word.</div>
+      <form id="wordsForm"></form>
+      <div class="row">
+        <button class="btn" id="makeBtn">✨ Make My Story!</button>
+        <button class="btn warm" id="surpriseBtn">🎲 Surprise Me</button>
+        <button class="btn ghost" id="backBtn1">← Stories</button>
+      </div>
+    </div>
+    <div id="libsOut" class="card hide">
+      <h2 id="outTitle" style="margin:0 0 8px"></h2>
+      <div class="story" id="storyText"></div>
+      <div class="tip" id="tip"></div>
+      <div class="fact" id="fact"></div>
+      <div class="row">
+        <button class="btn alt" id="readBtn">🔊 Read It to Me</button>
+        <button class="btn warm" id="againBtn">🔁 New Words</button>
+        <button class="btn ghost" id="copyBtn">📋 Copy</button>
+        <button class="btn ghost" id="backBtn2">← Stories</button>
+      </div>
+      <div style="margin-top:10px;color:var(--soft);font-size:.85rem">Tap a <span class="s" style="background:var(--sci);color:var(--sciInk);padding:0 5px;border-radius:6px">purple word</span> to learn what it means.</div>
+    </div>
+  </section>
+
+  <!-- SCIENCE FILL-IN -->
+  <section id="v-sci" class="hide">
+    <div class="card">
+      <div class="prog"><i id="progBar"></i></div>
+      <div style="color:var(--soft);font-size:.9rem" id="qCount"></div>
+      <div class="q" id="qText"></div>
+      <div class="choices" id="qChoices"></div>
+      <div class="fb" id="qFb"></div>
+      <div class="row">
+        <button class="btn hide" id="nextBtn">Next →</button>
+        <button class="btn ghost" id="shuffleBtn">🔀 Start Over</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORD WALL -->
+  <section id="v-wall" class="hide">
+    <div class="card" id="wallList"></div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+if("serviceWorker" in navigator){try{navigator.serviceWorker.register("/sw.js");}catch(e){}}
+"use strict";
+/* ---------- storage (safe) ---------- */
+var store = {
+  get:function(k,d){try{var v=localStorage.getItem("wavewords_"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+  set:function(k,v){try{localStorage.setItem("wavewords_"+k,JSON.stringify(v));}catch(e){}}
+};
+
+/* ---------- word wall ---------- */
+var GLOSS = {
+  "vibrate":"To wiggle back and forth really fast. All sound starts with something vibrating.",
+  "vibrations":"Fast back-and-forth wiggles. Vibrations make sound.",
+  "sound wave":"Vibrations moving through air, water or solid stuff, carrying sound to your ears.",
+  "wave":"A moving pattern that carries energy from one place to another. The wave moves, but the stuff it moves through mostly stays put.",
+  "energy":"The power to make something move, light up, heat up or make noise.",
+  "amplitude":"How big a wave is. Bigger amplitude = more energy = LOUDER sound.",
+  "frequency":"How many times something vibrates every second.",
+  "hertz":"The unit for frequency. 1 hertz (Hz) = 1 vibration every second.",
+  "pitch":"How high or low a sound is. Fast vibrations = high pitch. Slow vibrations = low pitch.",
+  "signal":"A sound, light, or pattern that sends a message or information.",
+  "pattern":"Something that repeats in a way you can predict, like beep-beep-pause. Patterns can carry messages.",
+  "code":"A set of patterns that stand for letters or words, like Morse code.",
+  "echo":"A sound that bounces off a hard surface and comes back to you.",
+  "reflect":"To bounce off something. Sound and light can both reflect.",
+  "radio waves":"Invisible waves that carry signals through the air and even through space. Walkie-talkies and radios use them.",
+  "vacuum":"Totally empty space with no air. Sound cannot travel through a vacuum.",
+  "echolocation":"Finding things by making sounds and listening for the echo. Bats and dolphins do it.",
+  "circuit":"A complete loop that electricity travels around.",
+  "battery":"Stores energy and lets it out as electricity.",
+  "light":"Energy we can see. Light travels WAY faster than sound."
+};
+function sci(w){return "[["+w+"]]";}
+
+/* ---------- silly stories ---------- */
+var STORIES = [
+ {id:"drum",em:"🥁",title:"The Rumbling Band Room",hint:"Vibrations and loudness",
+  blanks:[["adjective","describes something: squishy, sparkly"],["silly name",""],["noun","a thing"],["body part",""],["silly sound","like BLOOP or PPFFT"],["number",""],["animal (more than one)","like penguins"],["verb ending in -ing","like dancing"]],
+  text:"Yesterday my {0} band teacher, Mr. {1}, whacked the giant drum with a {2}. The drumhead started to "+sci("vibrate")+", which means it wiggled back and forth super fast! Those "+sci("vibrations")+" pushed the air and made a "+sci("sound wave")+" that zoomed straight to my {3}. When he hit it harder, the sound got LOUDER, because a bigger hit gives the wave more "+sci("energy")+" and a bigger "+sci("amplitude")+". The drum went \"{4}!\" so loud that {5} {6} ran out of the room {7}.",
+  fact:"Real science: Put rice on a drum and tap it. The rice jumps because the drum is vibrating! Hit harder and the rice jumps higher. That is more energy and bigger amplitude."},
+ {id:"pitch",em:"🎵",title:"High Squeak, Low Rumble",hint:"Frequency and pitch",
+  blanks:[["animal",""],["food",""],["number (big!)",""],["really big thing","like a school bus"],["adjective",""],["number (small)",""],["silly sound",""],["place",""]],
+  text:"A tiny {0} ate a {1} and started to sing a high, squeaky note. Its voice vibrated {2} times every second! That is a high "+sci("frequency")+", so we hear a high "+sci("pitch")+". Then a {3} started humming a {4}, low note. It only vibrated {5} times a second, so its frequency was just {5} "+sci("hertz")+". Slow vibrations make a low pitch. Together they sounded like \"{6}!\" and people could hear them all the way in {7}.",
+  fact:"Real science: Snap a ruler on a desk. Make the sticking-out part short and it vibrates fast with a high pitch. Make it long and it vibrates slow with a low pitch."},
+ {id:"space",em:"🚀",title:"The Silent Space Concert",hint:"Sound needs stuff to travel through",
+  blanks:[["silly name",""],["musical instrument",""],["adjective",""],["noun (more than one)","like socks"],["verb (past tense)","like jumped"],["silly sound",""],["food",""]],
+  text:"Astronaut {0} floated outside the space station and played a {1} as hard as she could. But nobody heard a thing! Space is a "+sci("vacuum")+", with no air to carry the "+sci("vibrations")+". A "+sci("sound wave")+" needs air, water or something solid to travel through. So her {2} crew sent her a "+sci("signal")+" using "+sci("radio waves")+", which CAN travel through space. The message said: \"Stop playing, your {3} are floating away!\" She {4}, yelled \"{5}!\" into her radio, and went inside for space {6}.",
+  fact:"Real science: Astronauts on spacewalks talk to each other by radio, even when they are right next to each other."},
+ {id:"echo",em:"⛰️",title:"Echo Canyon Burp Contest",hint:"Echoes and reflecting sound",
+  blanks:[["friend's name",""],["silly sound","a big burp sound"],["adjective",""],["number",""],["animal",""],["verb ending in -ing",""]],
+  text:"My friend {0} stood at the edge of Echo Canyon and let out a giant \"{1}!\" The "+sci("sound wave")+" zoomed across the canyon, hit the {2} rock wall, and bounced back. When sound bounces off something, we say it "+sci("reflects")+". A sound that comes back to you is called an "+sci("echo")+". We heard \"{1}!\" come back {3} times! A {4} poked its head out and started {5}, like it wanted to join the contest.",
+  fact:"Real science: Hard, flat surfaces like rock walls and gym walls reflect sound well. Soft things like pillows and curtains soak it up."},
+ {id:"flash",em:"🔦",title:"The Secret Flashlight Message",hint:"Signals, patterns and codes",
+  blanks:[["friend's name",""],["number",""],["food",""],["adjective",""],["noun",""],["place",""]],
+  text:"After bedtime, {0} flashed a flashlight from across the street. Blink, blink, looooong blink! It was a "+sci("signal")+"! We made a "+sci("code")+" where each "+sci("pattern")+" of blinks stands for a word. {1} short blinks meant \"I have {2}.\" Two long blinks meant \"Bring a {3} {4}.\" Patterns of "+sci("light")+" or sound can send information really far. We planned a secret snack meeting at the {5} without saying one word out loud!",
+  fact:"Real science: Morse code uses patterns of short and long beeps or blinks for every letter. S-O-S is short-short-short, long-long-long, short-short-short."},
+ {id:"energy",em:"🔋",title:"The Energy Zoom Machine",hint:"Energy changing forms",
+  blanks:[["adjective",""],["noun",""],["color",""],["silly sound",""],["animal",""],["verb ending in -ing",""]],
+  text:"For the science fair I built a {0} machine out of a {1}. I hooked a "+sci("battery")+" to some wires to make a "+sci("circuit")+", a full loop for electricity to travel around. ZAP! The "+sci("energy")+" from the battery turned into "+sci("light")+" when a {2} bulb lit up. It turned into sound when a buzzer went \"{3}!\" And it turned into motion when a tiny fan blew my pet {4} across the table, {5}. Energy doesn't disappear. It just changes form!",
+  fact:"Real science: If you break the loop of a circuit, even with one wire, the energy stops flowing and everything turns off."},
+ {id:"bat",em:"🦇",title:"Bat Pizza Delivery",hint:"Echolocation and high frequencies",
+  blanks:[["silly name","for the bat"],["pizza topping",""],["noun",""],["adjective",""],["number",""],["silly sound",""]],
+  text:"{0} the Bat delivers {1} pizza at night. But how does a bat find houses in the dark? It uses "+sci("echolocation")+"! The bat squeaks at a super high "+sci("frequency")+", way too high for people to hear. The squeak bounces off a {2} and comes back as an "+sci("echo")+". The bat listens and knows exactly where things are. Tonight it found a {3} house in {4} seconds, dropped the pizza, and yelled \"{5}!\" which nobody heard, because the "+sci("pitch")+" was too high.",
+  fact:"Real science: People hear from about 20 hertz up to about 20,000 hertz. Some bats make sounds over 100,000 hertz!"},
+ {id:"storm",em:"⚡",title:"The Great Thunder Race",hint:"Light is faster than sound",
+  blanks:[["relative","like grandma"],["number",""],["adjective",""],["noun",""],["silly sound",""],["verb (past tense)",""]],
+  text:"During a storm, my {0} and I watched the sky. FLASH! We saw "+sci("light")+"ning first. Then we counted to {1} before the thunder went \"{4}!\" Why the wait? Light and sound both carry "+sci("energy")+", but "+sci("light")+" is way, WAY faster than sound. The sound "+sci("wave")+" took its time like a {2} {3}. My {0} jumped so high that the cat {5} under the couch.",
+  fact:"Real science: Count the seconds between flash and boom, then divide by 5. That is about how many miles away the lightning is."}
+];
+
+var RANDOM = {
+  "adjective":["squishy","sparkly","grumpy","enormous","stinky","fluffy","wobbly","sticky","sneaky","glittery"],
+  "silly name":["Noodlebottom","McWiggles","Puddlesworth","Zippy","Captain Socks","Bubbles","Sir Toots-a-Lot","Pickles"],
+  "noun":["rubber chicken","whoopee cushion","banana","flip-flop","trombone","pool noodle","toaster","sock puppet"],
+  "noun (more than one)":["socks","pancakes","rubber ducks","toothbrushes","marshmallows","sneakers"],
+  "body part":["elbow","left nostril","belly button","pinky toe","eyebrow","knee"],
+  "silly sound":["BLOOP","PPFFFFT","KA-BOING","SPLORT","BRAAAP","WUBBA-WUB","ZOINK","FWEEEE"],
+  "number":["7","42","99","3","500","12"],
+  "number (big!)":["1,000","5,000","9,999","20,000"],
+  "number (small)":["30","40","50","60"],
+  "animal":["llama","penguin","hamster","goat","octopus","sloth","chicken"],
+  "animal (more than one)":["llamas","penguins","goats","hamsters","ducks","raccoons"],
+  "verb ending in -ing":["dancing","hopping","giggling","moonwalking","wiggling","cartwheeling"],
+  "verb (past tense)":["jumped","wiggled","sneezed","hiccuped","spun","giggled"],
+  "food":["taco","meatball","pickle","waffle","cheese stick","burrito"],
+  "really big thing":["school bus","whale","dump truck","dinosaur","hot air balloon"],
+  "place":["Gilbert","the moon","the cafeteria","the North Pole","grandma's house","the zoo"],
+  "musical instrument":["tuba","kazoo","electric guitar","drum set","trumpet"],
+  "friend's name":["Max","Ava","Leo","Zoe","Jayden","Mia"],
+  "color":["purple","neon green","hot pink","orange","glow-in-the-dark"],
+  "pizza topping":["pineapple","pepperoni","gummy worm","extra cheese","broccoli"],
+  "relative":["grandma","uncle","big sister","dad","cousin"]
+};
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+
+/* ---------- science fill-in ---------- */
+var QUESTIONS = [
+ ["All sound is made by something that ___.",["vibrates","glows","melts","freezes"],0,"Sound always starts with vibration. Touch your throat and hum. Feel that buzz? That is your vocal cords vibrating."],
+ ["How high or low a sound is, is called its ___.",["pitch","color","weight","temperature"],0,"Pitch means high or low. A whistle has a high pitch. A tuba has a low pitch."],
+ ["Fast vibrations make a ___ pitch.",["high","low","silent","cold"],0,"Fast vibrations = high frequency = high pitch. Slow vibrations make low pitch."],
+ ["The number of vibrations every second is the ___.",["frequency","amplitude","echo","battery"],0,"Frequency counts vibrations per second. Amplitude is how BIG the wave is, which is a different thing."],
+ ["Frequency is measured in ___.",["hertz","inches","pounds","minutes"],0,"Hertz (Hz) means vibrations per second. 100 Hz = 100 vibrations every second."],
+ ["A bigger wave with more energy sounds ___.",["louder","higher","quieter","slower"],0,"Bigger amplitude means more energy, and that means LOUDER. Watch out: louder does not mean higher pitch."],
+ ["How tall or big a wave is, is called its ___.",["amplitude","frequency","pitch","signal"],0,"Amplitude is the size of the wave. Big amplitude = loud. Small amplitude = soft."],
+ ["Sound CANNOT travel through ___.",["empty space","water","air","wood"],0,"Sound needs stuff to move through: air, water or solids. Space is empty (a vacuum), so it is silent."],
+ ["A sound that bounces back to you is an ___.",["echo","engine","energy","eclipse"],0,"An echo is sound that reflected off a hard surface, like a canyon wall or a gym wall."],
+ ["___ travels faster than sound.",["Light","A turtle","Thunder","A car"],0,"Light is super fast. That is why you see lightning before you hear the thunder."],
+ ["A blinking flashlight pattern that sends a message is a ___.",["signal","sandwich","volume","vacuum"],0,"A signal is a sound, light or pattern that carries information from one place to another."],
+ ["Bats find food in the dark using ___.",["echolocation","flashlights","maps","magnets"],0,"Bats squeak and listen for echoes to tell where things are. That is echolocation."],
+ ["A battery stores ___.",["energy","sound waves","water","echoes"],0,"A battery stores energy and lets it out as electricity when it is in a complete circuit."],
+ ["Electricity needs a complete loop called a ___ to flow.",["circuit","circle dance","signal","hertz"],0,"A circuit is a full loop. Break the loop and the electricity stops."],
+ ["Walkie-talkies send signals using ___.",["radio waves","string","echoes","smoke"],0,"Walkie-talkies use radio waves, which are invisible and can even travel through space."],
+ ["Waves carry ___ from place to place.",["energy","water","rocks","pizza"],0,"Waves carry energy. In the ocean, the water mostly bobs up and down while the wave's energy moves forward."],
+ ["Energy from a battery can change into light, sound and ___.",["motion","nothing","silence","rocks"],0,"Energy changes form. A battery can make a bulb glow, a buzzer buzz and a fan spin."],
+ ["A short guitar string vibrates fast and makes a ___ sound.",["high","low","quiet","loud"],0,"Shorter strings vibrate faster, so the pitch is higher. Pressing a guitar string makes it shorter."]
+];
+
+/* ---------- helpers ---------- */
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function toast(t){var el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(function(){el.classList.remove("on");},1600);}
+var stars=store.get("stars",0), done=store.get("done",{});
+function addStars(n){stars+=n;store.set("stars",stars);$("stars").textContent="★ "+stars;var m=$("mascot");m.classList.remove("happy");void m.getBoundingClientRect();m.classList.add("happy");}
+$("stars").textContent="★ "+stars;
+
+/* theme: shares the Quest profile setting */
+var QKEY="quazartQuest.v1";
+function qp(){try{return JSON.parse(localStorage.getItem(QKEY))||null;}catch(e){return null;}}
+function effDark(){var p=qp();if(p&&p.theme)return p.theme==="dark";try{return matchMedia("(prefers-color-scheme: dark)").matches;}catch(e){return false;}}
+function applyTheme(){var p=qp();if(p&&p.theme)document.documentElement.setAttribute("data-theme",p.theme);else document.documentElement.removeAttribute("data-theme");$("theme").textContent=effDark()?"☀️":"🌙";}
+applyTheme();
+$("theme").onclick=function(){var p=qp()||{};p.theme=effDark()?"light":"dark";try{localStorage.setItem(QKEY,JSON.stringify(p));}catch(e){}applyTheme();};
+/* tabs */
+var tabs=document.querySelectorAll(".tab");
+tabs.forEach(function(t){t.onclick=function(){
+  tabs.forEach(function(x){x.classList.toggle("on",x===t);});
+  ["libs","sci","wall"].forEach(function(v){$("v-"+v).classList.toggle("hide",v!==t.dataset.v);});
+  stopSpeak();
+};});
+
+/* ---------- silly stories UI ---------- */
+var cur=null;
+function drawGrid(){
+  $("storyGrid").innerHTML=STORIES.map(function(s,i){
+    return '<button class="pick'+(done[s.id]?' done':'')+'" data-i="'+i+'"><span class="em">'+s.em+'</span><b>'+esc(s.title)+'</b><small>'+esc(s.hint)+'</small></button>';
+  }).join("");
+  $("storyGrid").querySelectorAll(".pick").forEach(function(b){b.onclick=function(){openStory(+b.dataset.i);};});
+}
+function show(which){["libsPick","libsForm","libsOut"].forEach(function(id){$(id).classList.toggle("hide",id!==which);});window.scrollTo(0,0);}
+function openStory(i){
+  cur=STORIES[i];
+  $("formTitle").textContent=cur.em+" "+cur.title;
+  $("wordsForm").innerHTML=cur.blanks.map(function(b,j){
+    return '<label class="f"><span>'+esc(b[0][0].toUpperCase()+b[0].slice(1))+(b[1]?' <em>('+esc(b[1])+')</em>':'')+'</span><input class="w" data-j="'+j+'" autocomplete="off" autocapitalize="off" maxlength="30"></label>';
+  }).join("");
+  show("libsForm");
+}
+function inputs(){return $("wordsForm").querySelectorAll("input");}
+$("wordsForm").onsubmit=function(e){e.preventDefault();};
+$("surpriseBtn").onclick=function(e){e.preventDefault();inputs().forEach(function(inp){var t=cur.blanks[+inp.dataset.j][0];inp.value=rnd(RANDOM[t]||RANDOM.noun);});};
+$("makeBtn").onclick=function(e){
+  e.preventDefault();
+  var vals=[],miss=null;
+  inputs().forEach(function(inp){var v=inp.value.trim();if(!v&&!miss)miss=inp;vals.push(v);});
+  if(miss){miss.focus();toast("Fill in every word first!");return;}
+  render(vals);
+};
+var plainStory="";
+function render(vals){
+  var html=esc(cur.text).replace(/\{(\d+)\}/g,function(_,n){return '<span class="b">'+esc(vals[+n])+'</span>';})
+    .replace(/\[\[([^\]]+)\]\]/g,function(_,w){return '<span class="s" data-w="'+w+'">'+w+'</span>';});
+  plainStory=cur.text.replace(/\{(\d+)\}/g,function(_,n){return vals[+n];}).replace(/\[\[([^\]]+)\]\]/g,"$1");
+  $("outTitle").textContent=cur.em+" "+cur.title;
+  $("storyText").innerHTML=html;
+  $("fact").textContent="💡 "+cur.fact;
+  $("tip").style.display="none";
+  $("storyText").querySelectorAll(".s").forEach(function(s){s.onclick=function(){showTip(s.dataset.w);};});
+  show("libsOut");
+  if(!done[cur.id]){done[cur.id]=1;store.set("done",done);addStars(3);toast("+3 stars! New story unlocked in your collection");}
+  else{addStars(1);toast("+1 star!");}
+  drawGrid();
+}
+function glossFor(w){
+  var k=w.toLowerCase();
+  if(GLOSS[k])return [k,GLOSS[k]];
+  var alt={"reflects":"reflect","vibrations":"vibrations","light":"light"};
+  if(alt[k]&&GLOSS[alt[k]])return [alt[k],GLOSS[alt[k]]];
+  return [k,""];
+}
+function showTip(w){var g=glossFor(w);var t=$("tip");t.innerHTML="<b>"+esc(g[0])+":</b> "+esc(g[1]);t.style.display="block";}
+$("againBtn").onclick=function(){inputs().forEach(function(i){i.value="";});show("libsForm");};
+$("backBtn1").onclick=function(e){e.preventDefault();show("libsPick");};
+$("backBtn2").onclick=function(){stopSpeak();show("libsPick");};
+$("copyBtn").onclick=function(){
+  var txt=cur.title+"\n\n"+plainStory;
+  try{navigator.clipboard.writeText(txt).then(function(){toast("Copied!");},function(){toast("Copy didn't work here");});}
+  catch(e){toast("Copy didn't work here");}
+};
+
+/* read aloud */
+function stopSpeak(){try{window.speechSynthesis.cancel();}catch(e){}}
+$("readBtn").onclick=function(){
+  try{
+    var ss=window.speechSynthesis; ss.cancel();
+    var u=new SpeechSynthesisUtterance(cur.title+". "+plainStory);
+    u.rate=0.95;u.pitch=1.1;ss.speak(u);
+  }catch(e){toast("Read-aloud isn't available on this device");}
+};
+
+/* ---------- science fill-in UI ---------- */
+var order=[],qi=0,qScore=0,answered=false;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function startQuiz(){order=shuffle(QUESTIONS.map(function(_,i){return i;}));qi=0;qScore=0;drawQ();}
+function drawQ(){
+  answered=false;
+  $("nextBtn").classList.add("hide");$("qFb").style.display="none";
+  if(qi>=order.length){
+    $("progBar").style.width="100%";
+    $("qCount").textContent="All done!";
+    $("qText").innerHTML="🎉 You got <b>"+qScore+"</b> out of "+order.length+" on the first try!";
+    $("qChoices").innerHTML="";
+    if(qScore===order.length)toast("PERFECT! Wave Master!");
+    return;
+  }
+  var q=QUESTIONS[order[qi]];
+  $("progBar").style.width=(qi/order.length*100)+"%";
+  $("qCount").textContent="Question "+(qi+1)+" of "+order.length+"  •  First-try correct: "+qScore;
+  $("qText").innerHTML=esc(q[0]).replace("___",'<span class="gap">?</span>');
+  var opts=shuffle(q[1].map(function(t,i){return {t:t,ok:i===q[2]};}));
+  $("qChoices").innerHTML=opts.map(function(o,i){return '<button class="choice" data-ok="'+(o.ok?1:0)+'">'+esc(o.t)+'</button>';}).join("");
+  var firstTry=true;
+  $("qChoices").querySelectorAll(".choice").forEach(function(b){b.onclick=function(){
+    if(answered)return;
+    if(b.dataset.ok==="1"){
+      answered=true;b.classList.add("right");
+      $("qText").querySelector(".gap").textContent=b.textContent;
+      var fb=$("qFb");fb.style.display="block";fb.innerHTML="✅ <b>Yes!</b> "+esc(q[3]);
+      if(firstTry){qScore++;addStars(1);}
+      $("nextBtn").classList.remove("hide");
+    }else{
+      firstTry=false;b.classList.add("wrong");b.disabled=true;
+      var fb2=$("qFb");fb2.style.display="block";fb2.innerHTML="🤔 Not <b>"+esc(b.textContent)+"</b>. Hint: "+esc(q[3].split(".")[0])+". Try again!";
+    }
+  };});
+}
+$("nextBtn").onclick=function(){qi++;drawQ();};
+$("shuffleBtn").onclick=startQuiz;
+
+/* ---------- word wall ---------- */
+$("wallList").innerHTML='<h2 style="margin-top:0">📖 Wave Words</h2>'+Object.keys(GLOSS).map(function(k){return '<div class="word"><b>'+esc(k)+'</b> '+esc(GLOSS[k])+'</div>';}).join("");
+
+drawGrid();startQuiz();
+})();
+</script>
+</body>
+</html>
