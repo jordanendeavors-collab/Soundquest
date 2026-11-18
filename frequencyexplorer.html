@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Frequency Explorer — Sound Wave Quest</title>
+<style>
+  html[data-theme="light"]{--bg:#F3F7FB;--card:#FFFFFF;--ink:#17222E;--dim:#5C6B7A;
+    --line:#DCE5EE;--accent:#2E7CD6;--accent2:#E86A2C;--good:#1FA463;--track:#E3EAF2}
+  html[data-theme="dark"]{--bg:#0E1620;--card:#172330;--ink:#EAF1F8;--dim:#8FA2B4;
+    --line:#26384A;--accent:#5AA6F0;--accent2:#FF8A4C;--good:#3FD089;--track:#22303F}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    transition:background .4s,color .4s;display:flex;flex-direction:column;align-items:center;min-height:100%}
+  button{font:inherit;cursor:pointer}
+  .wrap{width:min(96vw,560px);padding:18px 16px 50px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .top h1{font-size:21px;margin:0;line-height:1.1}
+  .top .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .tog{border:1px solid var(--line);background:var(--card);color:var(--dim);border-radius:20px;
+    font-size:12px;padding:7px 13px;font-weight:600}
+
+  .stage{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;
+    box-shadow:0 6px 20px rgba(20,40,70,.06)}
+  canvas{width:100%;height:130px;display:block;border-radius:12px;background:var(--track)}
+  .big{text-align:center;margin:14px 0 4px}
+  .big .hz{font-size:46px;font-weight:800;line-height:1;color:var(--accent)}
+  .big .hz small{font-size:18px;font-weight:700;color:var(--dim)}
+  .zone{text-align:center;font-weight:700;font-size:15px;margin-bottom:2px}
+  .wiggle{text-align:center;font-size:13px;color:var(--dim);margin-bottom:12px}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:6px;
+    background:linear-gradient(90deg,#8E63D6,#2E7CD6,#1FA463,#E8B52C,#E86A2C)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-10px;
+    border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  input[type=range]::-moz-range-track{height:8px;border-radius:6px;background:var(--accent)}
+  input[type=range]::-moz-range-thumb{width:28px;height:28px;border:3px solid var(--accent);border-radius:50%;background:#fff}
+
+  .row{display:flex;gap:9px;margin-top:14px}
+  .btn{flex:1;padding:14px 8px;border-radius:13px;border:0;font-weight:700;font-size:14px;color:#fff;background:var(--accent)}
+  .btn.play{font-size:16px}
+  .btn.on{background:var(--accent2)}
+  .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--line)}
+
+  .facts{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:4px 16px 14px;margin-bottom:14px}
+  .facts h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:14px 0 8px}
+  .facts p{margin:0 0 9px;font-size:14px;line-height:1.5}
+  .facts b{color:var(--accent)}
+
+  .game{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+  .game h2{margin:0 0 4px;font-size:17px}
+  .game .sub{color:var(--dim);font-size:13px;margin:0 0 12px}
+  .score{text-align:center;font-weight:800;font-size:15px;margin-top:10px;min-height:20px}
+  .score.win{color:var(--good)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="k">Sound Wave Quest</div><h1>Frequency Explorer</h1></div>
+    <button class="tog" id="tog">Dark</button>
+  </div>
+
+  <div class="stage">
+    <canvas id="wave"></canvas>
+    <div class="big"><span class="hz" id="hz">440</span><span class="hz"><small> Hz</small></span></div>
+    <div class="zone" id="zone">Middle</div>
+    <div class="wiggle" id="wig">The wave wiggles 440 times every second</div>
+    <input type="range" id="pitch" min="40" max="2000" step="1" value="440" aria-label="Pitch">
+    <div class="row">
+      <button class="btn play" id="play">▶ Play tone</button>
+      <button class="btn ghost" id="down">÷2 lower</button>
+      <button class="btn ghost" id="up">×2 higher</button>
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="feel" style="flex:2">Feel 40 Hz — the one you feel, not hear</button>
+    </div>
+  </div>
+
+  <div class="game">
+    <h2>Mystery Tone</h2>
+    <p class="sub">I'll play a secret pitch. Slide until yours matches, then lock it in.</p>
+    <div class="row">
+      <button class="btn" id="mystery">🎵 Play mystery tone</button>
+      <button class="btn ghost" id="guess">Lock my guess</button>
+    </div>
+    <div class="score" id="score"></div>
+  </div>
+
+  <div class="facts">
+    <h2>What is a frequency?</h2>
+    <p>Sound is the air <b>wiggling</b>. <b>Frequency</b> counts how many wiggles happen in one second. That count has a name: <b>Hertz</b> (Hz).</p>
+    <p>Few wiggles a second = a <b>low</b> rumble. Lots of wiggles = a <b>high</b> squeak. Slide the bar and watch the wave speed up.</p>
+    <p>Double the number and you get the <b>same note, higher</b> — that's an octave. 220, 440, 880 are all an “A”. Try the ×2 button.</p>
+    <p>Humans hear about <b>20 Hz to 20,000 Hz</b>. Dogs hear way higher. The very low 40 Hz is one you feel in your chest more than you hear.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i)};
+  var AC=window.AudioContext||window.webkitAudioContext;
+  var ac=null, osc=null, gain=null, freq=440, playing=false;
+  var mystery=null, mOsc=null, mGain=null;
+
+  function theme(t){ document.documentElement.setAttribute('data-theme',t);
+    $('tog').textContent= t==='light'?'Dark':'Light';
+    try{localStorage.setItem('freqexp_theme',t)}catch(e){} }
+  $('tog').addEventListener('click',function(){
+    theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+  });
+  try{var st=localStorage.getItem('freqexp_theme'); if(st) theme(st);}catch(e){}
+
+  function zoneName(f){
+    if(f<80) return 'Deep Bass — you feel it';
+    if(f<250) return 'Bass';
+    if(f<600) return 'Middle';
+    if(f<1200) return 'High';
+    return 'Very High — squeaky!';
+  }
+  function tone(f){
+    if(!ac){ ac=new AC(); }
+    if(ac.state==='suspended') ac.resume();
+    if(!osc){
+      osc=ac.createOscillator(); osc.type='sine';
+      gain=ac.createGain(); gain.gain.value=0.0001;
+      osc.connect(gain); gain.connect(ac.destination); osc.start();
+    }
+    osc.frequency.setTargetAtTime(f, ac.currentTime, 0.02);
+    gain.gain.setTargetAtTime(0.18, ac.currentTime, 0.02);
+    playing=true; $('play').textContent='■ Stop'; $('play').classList.add('on');
+  }
+  function stopTone(){
+    if(gain&&ac) gain.gain.setTargetAtTime(0.0001, ac.currentTime, 0.03);
+    playing=false; $('play').textContent='▶ Play tone'; $('play').classList.remove('on');
+  }
+  function setFreq(f){
+    freq=Math.max(40,Math.min(2000,Math.round(f)));
+    $('pitch').value=freq; $('hz').textContent=freq;
+    $('zone').textContent=zoneName(freq);
+    $('wig').textContent='The wave wiggles '+freq+' times every second';
+    if(playing) tone(freq);
+  }
+  $('pitch').addEventListener('input',function(e){ setFreq(+e.target.value); });
+  $('play').addEventListener('click',function(){ playing?stopTone():tone(freq); });
+  $('up').addEventListener('click',function(){ setFreq(freq*2); });
+  $('down').addEventListener('click',function(){ setFreq(freq/2); });
+  $('feel').addEventListener('click',function(){ setFreq(40); tone(40); });
+
+  /* mystery tone game */
+  $('mystery').addEventListener('click',function(){
+    if(!ac){ ac=new AC(); } if(ac.state==='suspended') ac.resume();
+    var choices=[110,165,220,330,440,550,660,880];
+    mystery=choices[Math.floor(Math.random()*choices.length)];
+    if(mOsc){ try{mOsc.stop()}catch(e){} }
+    mOsc=ac.createOscillator(); mOsc.type='sine'; mOsc.frequency.value=mystery;
+    mGain=ac.createGain(); mGain.gain.value=0.0001;
+    mOsc.connect(mGain); mGain.connect(ac.destination); mOsc.start();
+    mGain.gain.setTargetAtTime(0.18,ac.currentTime,0.02);
+    mGain.gain.setTargetAtTime(0.0001,ac.currentTime+1.4,0.1);
+    setTimeout(function(){try{mOsc.stop()}catch(e){}},2000);
+    $('score').textContent='Playing… now match it with the slider.';
+    $('score').className='score';
+  });
+  $('guess').addEventListener('click',function(){
+    if(!mystery){ $('score').textContent='Press “Play mystery tone” first!'; return; }
+    var cents=1200*Math.log(freq/mystery)/Math.log(2);
+    var off=Math.abs(cents);
+    var sc=$('score');
+    if(off<50){ sc.textContent='🎯 Perfect! It was '+mystery+' Hz.'; sc.className='score win'; }
+    else if(off<150){ sc.textContent='So close! It was '+mystery+' Hz. You were '+(freq>mystery?'a touch high.':'a touch low.'); sc.className='score'; }
+    else { sc.textContent=(freq>mystery?'Too high — ':'Too low — ')+'it was '+mystery+' Hz. Try again!'; sc.className='score'; }
+    mystery=null;
+  });
+
+  /* live waveform — wiggle speed shows the frequency */
+  var cv=$('wave'), ctx=cv.getContext('2d'), W=0,H=0,DPR=1,t0=Date.now();
+  function resize(){ DPR=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight; cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
+  window.addEventListener('resize',resize);
+  function cvar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#2E7CD6'; }
+  function draw(){
+    requestAnimationFrame(draw);
+    if(!W){ resize(); if(!W) return; }
+    ctx.clearRect(0,0,W,H);
+    var mid=H/2, t=(Date.now()-t0)/1000;
+    // visual cycles across the canvas scaled so low looks slow, high looks fast (log-mapped, capped)
+    var cyc=Math.max(1, Math.min(26, Math.log(freq/20)/Math.log(2)*3));
+    var speed= playing? 2.2 : 0.6;
+    ctx.beginPath();
+    for(var x=0;x<=W;x++){
+      var ph=(x/W)*cyc*Math.PI*2 - t*speed*cyc;
+      var y=mid + Math.sin(ph)*(H*0.34);
+      if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=cvar('--accent'); ctx.lineWidth=3; ctx.lineJoin='round'; ctx.stroke();
+  }
+  requestAnimationFrame(draw);
+
+  setFreq(440);
+})();
+</script>
+</body>
+</html>
